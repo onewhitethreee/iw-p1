@@ -34,5 +34,5 @@
 ## Notes
 
 - Validación: iteración 1 superada, sin marcadores [NEEDS CLARIFICATION]; los puntos dudosos se resolvieron con los acuerdos A1–A10 y se registraron como supuestos.
-- Candidato a clarify: editar/retirar una propuesta enviada (excluido como supuesto).
+- Clarify 2026-11-03: P1 sin edición ni retirada, P2 sin límite, P3 el ponente solo ve el estado.
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`

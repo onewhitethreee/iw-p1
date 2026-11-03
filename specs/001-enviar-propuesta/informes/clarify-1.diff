@@ -1,0 +1,57 @@
+--- specs/001-enviar-propuesta/informes/spec-antes-clarify-1.md	2026-11-03 14:26:22.165124818 +0000
++++ specs/001-enviar-propuesta/spec.md	2026-11-03 14:26:57.397069260 +0000
+@@ -12,6 +12,14 @@
+ 
+ **Input**: User description: "HU-01 · Como ponente, quiero enviar una propuesta de ponencia con un resumen y su área temática para que el comité científico la valore."
+ 
++## Clarifications
++
++### Session 2026-11-03
++
++- Q: ¿Puede el ponente editar o retirar una propuesta ya enviada? → A: No en la versión 1: una vez enviada, la propuesta no se puede editar ni retirar.
++- Q: ¿Cuántas propuestas puede enviar un ponente al mismo congreso? → A: Sin límite.
++- Q: Cuando la propuesta se decide, ¿qué ve el ponente? → A: Solo el estado (Enviada, En evaluación, Aceptada, Rechazada); nunca puntuaciones, comentarios ni evaluadores.
++
+ ## User Scenarios & Testing *(mandatory)*
+ 
+ ### User Story 1 - Enviar una propuesta dentro del plazo (Priority: P1)
+@@ -47,14 +55,15 @@
+ 
+ 1. **Given** un ponente con propuestas en varios estados, **When** abre «Mis propuestas», **Then** ve todas las suyas con su estado actual, ordenadas de la más reciente a la más antigua.
+ 2. **Given** dos ponentes, **When** uno abre «Mis propuestas», **Then** no ve ninguna propuesta del otro.
+-3. **Given** una propuesta en evaluación, **When** su autor la consulta, **Then** ve el estado pero no las puntuaciones, los comentarios ni la identidad de los evaluadores.
++3. **Given** una propuesta en evaluación o ya decidida (aceptada o rechazada), **When** su autor la consulta, **Then** ve solo el estado; ni la pantalla ni la respuesta del servidor incluyen puntuaciones, comentarios ni identidad de los evaluadores.
++4. **Given** una propuesta enviada, **When** su autor intenta modificarla o retirarla (también con una petición directa), **Then** no existe esa operación y la propuesta conserva sus datos.
+ 
+ ### Edge Cases
+ 
+ - Último día del plazo (000-core FR-005a, clarify P1): el plazo incluye el día de cierre completo en la zona del congreso; un envío a las 23:59 del día de cierre se acepta y uno a las 00:00 del día siguiente se rechaza. Cuenta la hora del servidor.
+ - Dos envíos idénticos seguidos por doble clic: el botón se desactiva mientras se envía; si aun así llegan dos, se guardan como dos propuestas (no hay regla de unicidad en la narrativa).
+-- Un ponente puede enviar varias propuestas al mismo congreso.
+-- Una vez enviada, la propuesta no se puede editar ni retirar en la versión 1 (ver Assumptions).
++- Un ponente puede enviar varias propuestas al mismo congreso, sin límite (Clarifications P2).
++- Una vez enviada, la propuesta no se puede editar ni retirar (Clarifications P1).
+ 
+ ## Requirements *(mandatory)*
+ 
+@@ -66,7 +75,10 @@
+ - **FR-004**: El sistema MUST registrar como autor al usuario que envía, la fecha de envío y el estado `ENVIADA`.
+ - **FR-005**: El sistema MUST mostrar al ponente solo sus propias propuestas, con su estado actual.
+ - **FR-006**: Las reglas FR-001 … FR-004 MUST validarse en el servidor (Constitución IV).
+-- **FR-007**: La lista de congresos para enviar MUST mostrar solo los que tienen la llamada abierta e indicar la fecha de cierre del plazo.
++- **FR-007**: La lista de congresos para enviar MUST mostrar solo los que tienen la llamada abierta e indicar el día de cierre del plazo.
++- **FR-008**: Una propuesta enviada MUST ser inmutable para su autor: no se ofrece ni existe operación para editarla o retirarla (Clarifications P1).
++- **FR-009**: El sistema MUST NOT limitar el número de propuestas de un ponente por congreso (Clarifications P2).
++- **FR-010**: Lo que ve el ponente de sus propuestas (pantalla y respuesta del servidor) MUST limitarse a congreso, título, área, resumen, fecha de envío y estado; nunca puntuaciones, comentarios ni evaluadores (Clarifications P3).
+ 
+ ### Key Entities
+ 
+@@ -82,7 +94,7 @@
+ 
+ ## Assumptions
+ 
+-- Editar o retirar una propuesta enviada no lo pide la narrativa; queda fuera de la versión 1 (Constitución II). Candidato a `/speckit-clarify`.
++- **Decisión (Clarifications P1)**: editar o retirar una propuesta enviada queda fuera de la versión 1; la narrativa no lo pide (Constitución II) y cambiar una propuesta en evaluación alteraría lo que evalúa el comité.
+ - Una propuesta tiene un único autor, que es también el ponente que la presentará.
+ - No se adjuntan ficheros; el resumen es texto.
+ - Los límites de longitud del título y del resumen son supuestos del grupo.
