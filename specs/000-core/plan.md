@@ -112,7 +112,7 @@ packages/
     │   ├── congreso.ts               # faseCongreso(), plazoAbierto()
     │   ├── propuesta.ts              # transiciones de estado — A1
     │   ├── tarifa.ts                 # calcularTarifa() — A4
-    │   ├── certificado.ts            # porcentajeAsistencia(), horasCertificadas() — 80 %
+    │   ├── certificado.ts            # porcentajeAsistencia() (entero truncado, spec-007 P2), horasCertificadas() — 80 %
     │   ├── formato.ts                # euros(), fecha() en es-ES
     │   └── fechas.ts                 # inicioDeDia(), finDeDia() — clarify P1
     └── tests/                        # Vitest
@@ -136,7 +136,7 @@ de forma que el trabajo de cada historia quede aislado y trazable.
 | 004 | `inscripcion` | `/congresos/[slug]/inscripcion`, `/area-personal` | `tarifa.ts` |
 | 005 | `agenda` | `/area-personal/[slug]/agenda` | `intervalos.ts` |
 | 006 | `acreditacion` | `/acreditacion/[slug]` | — |
-| 007 | `certificado` | `/area-personal/[slug]/certificado` | `certificado.ts` |
+| 007 | `certificado` | `/area-personal/certificado/[slug]` (concretado por spec-007, como la agenda de spec-005) | `certificado.ts` |
 | 008 | `panel` | `/organizador/[slug]/panel` | — |
 
 ## Cambios tras `/speckit-clarify` (2026-11-03)
