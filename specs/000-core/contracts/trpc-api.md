@@ -35,7 +35,7 @@ Leyenda de acceso: **P** público · **A** cualquier usuario con sesión · rol 
 ## programa (spec-003)
 | `programa.pendientes` | query | ORGANIZADOR | `{congresoId}` | Propuestas aceptadas aún sin sesión. |
 | `programa.programar` | mutation | ORGANIZADOR | `{propuestaId, salaId, inicio, fin}` | `CONFLICT` si la propuesta no está aceptada, solapa sala o ponente, o cae fuera de las fechas. |
-| `programa.mover` | mutation | ORGANIZADOR | `{sesionId, salaId?, inicio?, fin?}` | Mismas reglas que `programar` y además el aforo de la nueva sala ≥ reservas de la agenda (lo usa spec-008). |
+| `programa.mover` | mutation | ORGANIZADOR | `{sesionId, salaId?, inicio?, fin?}` | Mismas reglas que `programar` y además el aforo de la nueva sala ≥ reservas de la agenda. (El panel usa `panel.cambiarSala`, que aplica las reglas de cambio de sala; spec-008.) |
 | `programa.quitar` | mutation | ORGANIZADOR | `{sesionId}` | `CONFLICT` si la sesión está en alguna agenda o tiene asistencias. |
 | `programa.publicar` | mutation | ORGANIZADOR | `{congresoId}` | Pasa a `PUBLICADO` y regenera las páginas públicas. |
 | `programa.publico` | query | P | `{slug}` | Solo si está `PUBLICADO`. |
@@ -61,5 +61,6 @@ Leyenda de acceso: **P** público · **A** cualquier usuario con sesión · rol 
 | `GET /api/certificado/[congresoId]` | route handler | ASISTENTE (propietario) | — | PDF; `403` con motivo si no cumple las condiciones. |
 
 ## panel (spec-008)
-| `panel.resumen` | query | ORGANIZADOR | `{congresoId}` | Inscripciones (confirmadas/pendientes), ingresos y desglose por tipo de asistente y tarifa; ocupación (reservas y asistencias) de cada sesión frente a su aforo; momento del cálculo. Se consulta cada 5 s. |
-| `panel.salasLibres` | query | ORGANIZADOR | `{sesionId}` | Salas sin solape en ese horario con aforo ≥ reservas de la sesión. |
+| `panel.resumen` | query | ORGANIZADOR | `{congresoId}` | `{calculadoEn, inscripciones:{confirmadas, pendientes}, ingresosCent, desglose[6]: {tipoAsistente, tarifa, confirmadas, pendientes, ingresosCent}, sesiones[]: {id, titulo, sala, inicio, fin, aforo, reservas, asistencias, ocupacion (% entero), nivel: COMPLETA\|CASI_COMPLETA\|null, movible}}`. Ocupación = máx(reservas, asistencias) / aforo (spec-008 P1). Ingresos = pagos `APROBADO`. Se consulta cada 5 s. |
+| `panel.salasLibres` | query | ORGANIZADOR | `{sesionId}` | `[{id, nombre, aforo}]`: otras salas del congreso sin solape en ese horario y con aforo ≥ máx(reservas, asistencias) (spec-008 P2). `CONFLICT` si la sesión no es movible (terminada o congreso finalizado, spec-008 P3). |
+| `panel.cambiarSala` | mutation | ORGANIZADOR | `{sesionId, salaId}` | Cambia solo la sala con las reglas de spec-003 que aplican a un cambio de sala (solape de sala con mensaje que nombra la sesión, congreso finalizado) más P2/P3; bloqueo de la sala destino. Concretado por spec-008: no depende de `programa.mover`. |
