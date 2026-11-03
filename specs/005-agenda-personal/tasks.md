@@ -1,0 +1,66 @@
+---
+description: "Lista de tareas de spec-005 (HU-05 Construir mi agenda personal)"
+---
+
+# Tasks: Construir mi agenda personal (HU-05)
+
+**Input**: `/specs/005-agenda-personal/` · **Prerequisites**: [plan.md](plan.md), [spec.md](spec.md), [research.md](research.md), [data-model.md](data-model.md), [contracts/agenda.md](contracts/agenda.md), base [000-core](../000-core/tasks.md)
+
+**Tests**: SÍ (Constitución). **Responsable**: Yangfeng Liu · **Fecha**: 2026-11-03 · **Rama**: `spec-005`
+
+- **[Story]**: US1 = añadir respetando solapes y aforo · US2 = consultar y quitar
+
+## Phase 1: Setup
+
+- [ ] T001 Comprobar la base en `spec-005` (`pnpm test` en verde; seed con `asistente3` confirmado y agenda vacía en Innovación Educativa)
+
+## Phase 2: Foundational
+
+- [ ] T002 Router vacío `agendaRouter` en `apps/web/src/server/api/routers/agenda.ts`, registrado como `agenda` en `apps/web/src/server/api/root.ts`; fixtures `apps/web/tests/integration/005/fixtures.ts` (congreso publicado con sala «Grande» aforo 100 y «Pequeña» aforo 1, sesiones futuras incluidas dos solapadas y dos contiguas, una sesión empezada, asistente con inscripción `CONFIRMADA`, otro `PENDIENTE_PAGO`)
+
+## Phase 3: User Story 1 - Añadir sesiones respetando solapes y aforo (P1) 🎯 MVP
+
+**Independent Test**: `asistente3` añade «Gamificación…»; «Evaluación formativa…» se rechaza por solape.
+
+- [ ] T003 [P] [US1] Prueba de integración `apps/web/tests/integration/005/anadir.test.ts`: (a) US1-1 añade y `sesiones` refleja `enAgenda` y `plazasLibres` −1; (b) US1-2 solape → `CONFLICT` «Se solapa con «…» de HH:mm a HH:mm»; (c) US1-3 contiguas aceptadas; (d) US1-4 sala «Pequeña» llena → `CONFLICT` «Aforo completo» y `completa: true`; (e) US1-5/SC-002 20 asistentes a la vez por 1 plaza → 1 aceptado; (f) US1-6 inscripción pendiente o sin inscripción → `FORBIDDEN` «Necesitas una inscripción confirmada en este congreso»; (g) US1-7 duplicada → `CONFLICT` «Esta sesión ya está en tu agenda»; (h) FR-002 programa en borrador → `CONFLICT`; sesión empezada → `CONFLICT` «La sesión ya ha empezado»; (i) dos `anadir` simultáneos de la misma persona con sesiones solapadas → solo uno
+- [ ] T004 [US1] Implementar `congresos`, `sesiones` y `anadir` en `apps/web/src/server/api/routers/agenda.ts` con bloqueo inscripción → sesión (`FOR UPDATE`) y el orden de validación del plan (R2) — FR-001…FR-005, FR-007, FR-008
+- [ ] T005 [US1] Páginas `apps/web/src/app/area-personal/agenda/page.tsx` (congresos con inscripción confirmada; vacío «No tienes inscripciones confirmadas») y `apps/web/src/app/area-personal/agenda/[slug]/page.tsx` + `acciones.tsx`: sección «Programa» por día con plazas libres, «Completa», «En tu agenda», «Ya empezada» y botón «Añadir»; errores del servidor en línea; programa en borrador → aviso — US1-1…US1-7, FR-007
+
+## Phase 4: User Story 2 - Consultar y quitar sesiones (P2)
+
+**Independent Test**: quitar una sesión futura libera su plaza.
+
+- [ ] T006 [P] [US2] Prueba de integración `apps/web/tests/integration/005/quitar.test.ts`: (a) US2-1 `mia` ordenada por hora; (b) US2-2 quitar libera la plaza; (c) US2-3 quitar una sesión empezada → `CONFLICT`; (d) quitar algo que no está en la agenda → `NOT_FOUND`; (e) US2-4/FR-009 si dos entradas pasan a solaparse (se actualiza una sesión directamente en BD) `mia` devuelve `solapaCon` en ambas y no las quita; (f) un asistente no ve ni puede quitar entradas de otro
+- [ ] T007 [US2] Implementar `quitar` y `mia` (con `solapaCon`) en `apps/web/src/server/api/routers/agenda.ts` — FR-006, FR-009
+- [ ] T008 [US2] Sección «Mi agenda» en `apps/web/src/app/area-personal/agenda/[slug]/page.tsx` (por día y hora, sala, aviso «Se solapa con «…»», botón «Quitar» si no ha empezado) — US2-1…US2-4
+
+## Phase 5: Polish
+
+- [ ] T009 E2E `apps/web/tests/e2e/005-agenda.spec.ts`: `asistente3` añade «Gamificación…» (US1-1), «Evaluación formativa…» rechazada por solape (US1-2), quita «Gamificación…» (US2-2); «Rúbricas compartidas…» (Aula 3, ya empezada y completa) no ofrece «Añadir»; `asistente4` (pendiente) no tiene congresos en su agenda (US1-6)
+- [ ] T010 Regresión completa y resultados en este fichero; [quickstart.md](quickstart.md) y `informes/verificacion.md`
+
+## Dependencies & Execution Order
+
+T001 → T002 → US1 (T003 → T004 → T005) → US2 (T006 → T007 → T008) → T009 → T010. T004/T007 mismo router. Consume sesiones (spec-003) e inscripciones confirmadas (spec-004) vía seed; produce las reservas que usan spec-007 (80 %) y spec-008 (ocupación). Integración: enlace «Mi agenda» desde `app/area-personal/page.tsx` (spec-004).
+
+## Parallel Example
+
+```text
+Tras T002:  T003 (anadir.test) ∥ T006 (quitar.test)
+```
+
+## Trazabilidad
+
+| Requisito / escenario | Tareas |
+|-----------------------|--------|
+| FR-001 (solo confirmada) | T003f, T004 |
+| FR-002 (publicado, no empezada) | T003h, T004 |
+| FR-003 (solape A7) | T003b/c/i, T004 |
+| FR-004 (aforo A6, concurrencia) | T003d/e, T004 |
+| FR-005 (sin duplicar) | T003g, T004 |
+| FR-006 (quitar no empezadas) | T006b/c, T007 |
+| FR-007 (plazas, completa, en agenda) | T003a/d, T005 |
+| FR-008 (servidor) | T003, T006 |
+| FR-009 (aviso de solape, P1) | T006e, T007, T008 |
+| US1-1…7 / US2-1…4 | T003–T009 |
+| SC-001 / SC-002 / SC-003 | T003b,i / T003e / T005 (manual) |
