@@ -40,7 +40,7 @@ description: "Lista de tareas de spec-006 (HU-06 Controlar el acceso a la sala c
 
 ## Resultados (T009)
 
-Dominio 34/34 · integración 38/38 (spec-006: 16) · e2e 11/11 (spec-006: 4) · lint, typecheck y build sin errores. Detalle en [informes/verificacion.md](informes/verificacion.md).
+Dominio 34/34 · integración 38/38 (spec-006: 16) · e2e 12/12 (spec-006: 5, incluida T010) · lint, typecheck y build sin errores. Detalle en [informes/verificacion.md](informes/verificacion.md).
 
 ## Dependencies & Execution Order
 
@@ -62,3 +62,7 @@ T001 → T002 → US1 (T003 → T004 → T005) → US2 (T006 → T007) → T008 
 | FR-010 (ventana, P2) | T003g |
 | US1-1…7 / US2-1 | T003–T008 |
 | SC-001 / SC-002 / SC-003 | T009 / T003i / T003c,d |
+
+## Phase 6: Convergence
+
+- [X] T010 En `apps/web/src/app/acreditacion/[slug]/[sesionId]/escaner.tsx`, ante un fallo de red de `escanear` mostrar «Sin conexión: no se puede validar. Comprueba la red y vuelve a intentarlo.» (no el mensaje técnico del navegador) y, si falla el refresco de `ocupacion`, avisar «Ocupación sin actualizar»; e2e en `apps/web/tests/e2e/006-acceso.spec.ts` cortando `/api/trpc` con `page.route` per Edge Cases «Sin conexión» y Constitución VI (partial)

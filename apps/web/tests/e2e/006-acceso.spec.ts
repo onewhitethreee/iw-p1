@@ -70,6 +70,20 @@ test.describe.serial("spec-006 · control de acceso con QR (HU-06)", () => {
     await expect(page.getByTestId("resultado")).toContainText("Acreditación no válida");
   });
 
+  test("Edge «Sin conexión» (converge T010): mensaje en español y aviso de ocupación sin actualizar", async ({ page }) => {
+    await entrar(page, "acreditacion@congresalia.es");
+    await abrirPuerta(page, "Aprendizaje basado en proyectos en secundaria");
+    await page.route("**/api/trpc/**", (r) => r.abort("internetdisconnected"));
+    await validar(page, "cualquier-codigo");
+    await expect(page.getByRole("alert").filter({ hasText: "Sin conexión" })).toHaveText(
+      "Sin conexión: no se puede validar. Comprueba la red y vuelve a intentarlo.",
+    );
+    await expect(page.getByText("Failed to fetch")).toHaveCount(0);
+    await expect(page.getByText("Ocupación sin actualizar")).toBeVisible({ timeout: 10_000 });
+    await page.unroute("**/api/trpc/**");
+    await expect(page.getByText("Ocupación sin actualizar")).toHaveCount(0, { timeout: 10_000 });
+  });
+
   test("US1-6: un asistente no puede entrar en la zona de acreditación", async ({ page }) => {
     await entrar(page, "asistente1@congresalia.es");
     await page.goto("/acreditacion");
