@@ -1,0 +1,28 @@
+--- specs/006-acceso-qr/informes/spec-antes-clarify-2.md	2026-11-03 15:39:25.541449789 +0000
++++ specs/006-acceso-qr/spec.md	2026-11-03 15:39:25.561002086 +0000
+@@ -18,6 +18,7 @@
+ 
+ - Q: ¿Para entrar en una sala, la sesión tiene que estar en la agenda del asistente? → A: No; se admite a cualquier asistente con inscripción confirmada en el congreso mientras quede aforo. La asistencia a sesiones fuera de la agenda no cuenta para el certificado (HU-07).
+ - Q: ¿Desde cuándo y hasta cuándo se puede escanear la entrada de una sesión? → A: Desde 30 minutos antes del inicio hasta el fin de la sesión.
++- Q: (sesión 2, por el hallazgo H1 de analyze) Si la sala tiene reservas, ¿puede quien no reservó ocupar esas plazas? → A: No. Quien tiene la sesión en su agenda tiene la plaza garantizada; quien no la reservó solo entra si quedan plazas sin reservar: aforo − reservas − asistentes que entraron sin reserva > 0.
+ 
+ ## User Scenarios & Testing *(mandatory)*
+ 
+@@ -59,7 +60,7 @@
+ 
+ - Dos puertas de la misma sala escanean a la vez con una sola plaza libre: solo una entrada se admite (bloqueo en el servidor, R4).
+ - Escanear para una sesión que ya ha terminado: se rechaza («La sesión ya ha terminado»). Se permite escanear desde 30 minutos antes del inicio.
+-- Un asistente que entra en una sesión que no está en su agenda: se admite si hay aforo (la narrativa controla el aforo de la sala, no la agenda); la asistencia cuenta para el panel pero no suma al certificado (HU-07 solo cuenta las sesiones de la agenda).
++- Un asistente que entra en una sesión que no está en su agenda: se admite si quedan plazas sin reservar (Clarifications P3) (la narrativa controla el aforo de la sala, no la agenda); la asistencia cuenta para el panel pero no suma al certificado (HU-07 solo cuenta las sesiones de la agenda).
+ - Sin conexión a la red: fuera de alcance; el escáner indica que no puede validar.
+ 
+ ## Requirements *(mandatory)*
+@@ -74,7 +75,7 @@
+ - **FR-006**: Cada rechazo MUST mostrar un motivo comprensible.
+ - **FR-007**: La pantalla MUST mostrar la ocupación actual de la sesión frente a su aforo.
+ - **FR-008**: El control de aforo MUST ser correcto con escaneos simultáneos.
+-- **FR-009**: La entrada MUST no depender de que la sesión esté en la agenda del asistente (Clarifications P1).
++- **FR-009**: La entrada MUST no depender de que la sesión esté en la agenda del asistente (Clarifications P1), pero quien no la reservó MUST entrar solo si quedan plazas sin reservar (aforo − reservas − asistentes sin reserva > 0); quien la reservó MUST entrar siempre que no se haya registrado ya (Clarifications P3). Motivo de rechazo: «No quedan plazas sin reservar».
+ - **FR-010**: Fuera de la ventana de acceso el escaneo MUST rechazarse con «La sesión aún no está abierta (se abre a las HH:mm)» o «La sesión ya ha terminado» (Clarifications P2).
+ 
+ ### Key Entities

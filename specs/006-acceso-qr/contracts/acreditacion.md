@@ -10,6 +10,6 @@
 |-----------|--------|
 | ADMITIDO | «Admitido» |
 | YA_REGISTRADO | «Ya registrado en esta sesión» |
-| RECHAZADO | «Acreditación no válida» · «Acreditación de otro congreso» · «Inscripción no confirmada» · «La sesión aún no está abierta (se abre a las HH:mm)» · «La sesión ya ha terminado» · «Aforo completo» |
+| RECHAZADO | «Acreditación no válida» · «Acreditación de otro congreso» · «Inscripción no confirmada» · «La sesión aún no está abierta (se abre a las HH:mm)» · «La sesión ya ha terminado» · «Aforo completo» · «No quedan plazas sin reservar» (clarify P3) |
 
 `FORBIDDEN` solo para usuarios sin rol ACREDITACION; `NOT_FOUND` si la sesión no existe.
