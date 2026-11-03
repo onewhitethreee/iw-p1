@@ -5,3 +5,4 @@ export * from "./tarifa";
 export * from "./certificado";
 export * from "./formato";
 export * from "./fechas";
+export * from "./ocupacion";
