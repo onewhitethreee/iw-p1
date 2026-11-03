@@ -135,6 +135,12 @@ de forma que el trabajo de cada historia quede aislado y trazable.
 | 007 | `certificado` | `/area-personal/[slug]/certificado` | `certificado.ts` |
 | 008 | `panel` | `/organizador/[slug]/panel` | — |
 
+## Cambios tras `/speckit-clarify` (2026-11-03)
+
+- **P1** (días completos): helper `finDeDia(dia, zona)` / `inicioDeDia(dia, zona)` en `packages/domain/src/fechas.ts`; el seed y las pruebas construyen las fechas límite con él. Sin cambios de esquema.
+- **P2** (rol propio): procedimiento `auth.anadirRolPropio` y botón «Quiero ser también ponente/asistente» en la cabecera.
+- **P3** (sin gestión de congresos) y **P4** (comité global): confirman el diseño actual; sin cambios.
+
 ## Complexity Tracking
 
 Sin violaciones de la Constitución que justificar.

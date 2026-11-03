@@ -14,6 +14,7 @@ Leyenda de acceso: **P** público · **A** cualquier usuario con sesión · rol 
 | `auth.registrar` | mutation | P | `{nombre, email, password, rol: PONENTE\|ASISTENTE}` | Crea el usuario. `CONFLICT` si el correo existe. |
 | `auth.yo` | query | A | — | `{id, nombre, email, roles[]}` |
 | `auth.asignarRol` | mutation | ORGANIZADOR | `{usuarioId, rol}` | Añade un rol. |
+| `auth.anadirRolPropio` | mutation | A | `{rol: PONENTE\|ASISTENTE}` | Clarify P2. Añade el rol al propio usuario (idempotente). Cualquier otro rol → `BAD_REQUEST`. |
 
 ## congreso (000-core)
 | `congreso.listar` | query | P | — | Congresos con fase calculada. |
