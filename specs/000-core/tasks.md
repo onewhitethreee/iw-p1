@@ -185,3 +185,9 @@ T020 auth.test · T021 roles.test · T023 componentes UI
 2. US1 (MVP): ya se puede entrar con cualquier usuario del seed.
 3. US2: portada pública.
 4. Polish: lint, e2e humo, quickstart validado. Commit en `main` y rebase de las ramas `spec-00X`.
+
+## Phase 7: Convergence
+
+- [ ] T042 Añadir `apps/web/src/app/error.tsx` y `apps/web/src/app/global-error.tsx` con mensaje en español («Algo ha ido mal», botón «Reintentar» y enlace a la portada) para que ningún error inesperado se muestre en inglés per FR-021 / Constitución VI (partial)
+- [ ] T043 Añadir una migración con restricciones CHECK de data-model.md (`Congreso`: `inicio < fin`, `envioAbre < envioCierra`, `envioCierra <= inicio`, `limiteTemprana <= inicio`; `Sala`: `aforo > 0`; `Tarifa`: `importeTempranoCent >= 0` y `importeGeneralCent >= importeTempranoCent`; `Evaluacion`: `puntuacion BETWEEN 1 AND 10`) en `apps/web/prisma/migrations/` y una prueba de integración que verifique el rechazo en `apps/web/tests/integration/core/invariantes.test.ts` per data-model.md / Constitución IV (partial)
+- [ ] T044 Corregir `specs/000-core/quickstart.md`: comandos `pnpm db:migrate` / `pnpm db:seed` (los actuales `pnpm --filter web prisma …` fallan), requisito pnpm 10, título «Puesta en marcha» y ejecución de e2e (`pnpm build && pnpm test:e2e`) per plan: quickstart (contradicts)
