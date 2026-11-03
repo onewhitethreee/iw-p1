@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { diaLocal, finDeDia, inicioDeDia, inicioDelDiaSiguiente } from "../src/fechas";
+import { diaLocal, finDeDia, inicioDeDia, inicioDelDiaSiguiente, instanteLocal } from "../src/fechas";
 
 const Z = "Europe/Madrid";
 
@@ -27,3 +27,21 @@ describe("días completos en la zona del congreso (clarify P1, FR-005a)", () => 
     expect(() => inicioDeDia("4/10/2026", Z)).toThrow();
   });
 });
+
+describe("instanteLocal (spec-003 clarify P2, FR-014)", () => {
+  it("10:00 de Madrid en verano es 08:00 UTC", () => {
+    expect(instanteLocal("2027-07-01T10:00", Z).toISOString()).toBe("2027-07-01T08:00:00.000Z");
+  });
+  it("10:00 de Madrid en invierno es 09:00 UTC", () => {
+    expect(instanteLocal("2027-01-15T10:00", Z).toISOString()).toBe("2027-01-15T09:00:00.000Z");
+  });
+  it("00:00 coincide con inicioDeDia", () => {
+    expect(instanteLocal("2027-04-20T00:00", Z).getTime()).toBe(inicioDeDia("2027-04-20", Z).getTime());
+  });
+  it("rechaza formatos no válidos", () => {
+    for (const v of ["2027-04-20 10:00", "2027-04-20T25:00", "2027-04-20T10:60", "20-04-2027T10:00"]) {
+      expect(() => instanteLocal(v, Z)).toThrow();
+    }
+  });
+});
+
