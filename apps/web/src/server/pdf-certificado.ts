@@ -44,6 +44,26 @@ export function lineasCertificado(d: EstadoCertificado, emitido: Date): string[]
   ];
 }
 
+/** Equivalencias para letras sin descomposición Unicode y símbolos frecuentes. */
+const EQUIVALENTES: Record<string, string> = { Ł: "L", ł: "l", Ø: "O", ø: "o", Đ: "D", đ: "d", ı: "i", ß: "ss", "≥": ">=", "≤": "<=", "≠": "!=" };
+
+/**
+ * Converge T011: las fuentes estándar solo cubren WinAnsi. Cada carácter no representable se sustituye por su
+ * equivalente, por la letra base sin diacrítico o, si no hay otra opción, por «?», para que el PDF se genere siempre.
+ */
+export function sanearTexto(texto: string, admitidos: ReadonlySet<number>): string {
+  let out = "";
+  for (const ch of texto) {
+    if (admitidos.has(ch.codePointAt(0)!)) {
+      out += ch;
+      continue;
+    }
+    const alt = EQUIVALENTES[ch] ?? ch.normalize("NFD").replace(/\p{M}/gu, "");
+    out += [...alt].every((c) => admitidos.has(c.codePointAt(0)!)) && alt ? alt : "?";
+  }
+  return out;
+}
+
 function partir(texto: string, fuente: PDFFont, tam: number, ancho: number): string[] {
   const out: string[] = [];
   let linea = "";
@@ -60,18 +80,20 @@ function partir(texto: string, fuente: PDFFont, tam: number, ancho: number): str
 
 export async function generarPdfCertificado(d: EstadoCertificado, emitido: Date): Promise<Uint8Array> {
   const pdf = await PDFDocument.create();
+  const normal = await pdf.embedFont(StandardFonts.Helvetica);
+  const negrita = await pdf.embedFont(StandardFonts.HelveticaBold);
+  const admitidos = new Set(normal.getCharacterSet());
+  const limpio = (t: string) => sanearTexto(t, admitidos);
   pdf.setTitle(TITULO);
-  pdf.setSubject(`${d.titular ?? ""} · ${d.congreso.nombre}`);
+  pdf.setSubject(limpio(`${d.titular ?? ""} · ${d.congreso.nombre}`));
   pdf.setAuthor("Congresalia");
   pdf.setCreationDate(emitido);
   const pagina = pdf.addPage([595.28, 841.89]); // A4
-  const normal = await pdf.embedFont(StandardFonts.Helvetica);
-  const negrita = await pdf.embedFont(StandardFonts.HelveticaBold);
   const margen = 64;
   const ancho = pagina.getWidth() - 2 * margen;
   let y = pagina.getHeight() - 96;
 
-  const [titulo, , intro, nombre, ...resto] = lineasCertificado(d, emitido);
+  const [titulo, , intro, nombre, ...resto] = lineasCertificado(d, emitido).map(limpio);
   const centrado = (t: string, f: PDFFont, tam: number) => {
     pagina.drawText(t, { x: (pagina.getWidth() - f.widthOfTextAtSize(t, tam)) / 2, y, size: tam, font: f, color: rgb(0.1, 0.1, 0.2) });
     y -= tam * 1.6;

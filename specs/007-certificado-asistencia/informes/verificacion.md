@@ -17,4 +17,10 @@
 
 **Notas**: `certificado.congresos` devuelve también `zonaHoraria` para mostrar la fecha de fin en la zona del congreso (contratos de spec-007 y 000-core actualizados). El caso «7 de 9» de T004f se cubre en la prueba de dominio (el escenario de integración tiene 5 sesiones).
 
-**Regresión**: dominio 35/35 · integración 35/35 (000-core 22 + spec-007 13) · e2e 11/11 (000-core 7 + spec-007 4) · lint, typecheck y `next build` sin errores.
+## Iteración 2 (converge T011)
+
+| # | Escenario | Cómo se comprobó | Esperado | Observado | Resultado |
+|---|-----------|------------------|----------|-----------|-----------|
+| 8 | FR-004 con nombre no latino | integración descarga (T011): titular «刘洋峰 Łukasz», título con «≥» | 200 y PDF válido; caracteres no representables sustituidos («Lukasz», «>=», «?») | Igual | ✔ |
+
+**Regresión**: dominio 35/35 · integración 36/36 (000-core 22 + spec-007 14) · e2e 11/11 (000-core 7 + spec-007 4) · lint, typecheck y `next build` sin errores.
