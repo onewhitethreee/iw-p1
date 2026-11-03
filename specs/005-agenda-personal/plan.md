@@ -56,3 +56,4 @@ apps/web/tests/
 3. **Aviso de solapes** (R3, clarify P1): `mia` calcula para cada entrada los títulos con los que se solapa (pares con `solapa`).
 4. **Quitar** (R4): solo entradas propias de sesiones no empezadas; borra la fila y libera la plaza.
 5. **Plazas libres** (R5): `sala.aforo − count(EntradaAgenda)`; nunca negativo en pantalla.
+6. **Dónde se añade** (analyze U1, SC-003): el clic único «Añadir» está en la sección «Programa» de `/area-personal/agenda/[slug]`. La página pública del programa (spec-003) no cambia: es pública y no conoce al usuario.
