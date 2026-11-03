@@ -2,7 +2,7 @@ import Link from "next/link";
 import { CalendarDays } from "lucide-react";
 import { Button } from "~/components/ui/button";
 import { ETIQUETA_ROL, ZONA_ROL } from "~/lib/roles";
-import { salir } from "~/server/acciones-auth";
+import { anadirRolPropio, salir } from "~/server/acciones-auth";
 import { getUsuarioActual } from "~/server/usuario-actual";
 
 export async function Cabecera() {
@@ -27,6 +27,16 @@ export async function Cabecera() {
               <span className="hidden text-muted-foreground sm:inline" data-testid="usuario-actual">
                 {usuario.nombre} · {usuario.roles.map((r) => ETIQUETA_ROL[r]).join(", ")}
               </span>
+              {(["PONENTE", "ASISTENTE"] as const)
+                .filter((r) => !usuario.roles.includes(r))
+                .map((r) => (
+                  <form key={r} action={anadirRolPropio}>
+                    <input type="hidden" name="rol" value={r} />
+                    <Button variant="ghost" size="sm" type="submit">
+                      Quiero ser también {r === "PONENTE" ? "ponente" : "asistente"}
+                    </Button>
+                  </form>
+                ))}
               <form action={salir}>
                 <Button variant="outline" size="sm" type="submit">
                   Salir

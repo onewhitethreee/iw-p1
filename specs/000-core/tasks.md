@@ -136,15 +136,15 @@ description: "Lista de tareas de la base común (000-core)"
 
 **Purpose**: aplicar las decisiones P1 y P2 de [informes/clarify-1.md](informes/clarify-1.md).
 
-- [ ] T033 [P] Pruebas de `inicioDeDia(dia, zona)` y `finDeDia(dia, zona)` (Europe/Madrid en horario de verano e invierno; `finDeDia` = 23:59:59.999 local) en `packages/domain/tests/fechas.test.ts`
-- [ ] T034 Implementar `fechas.ts` (`inicioDeDia`, `finDeDia`, `inicioDelDiaSiguiente`) y exportarlo en `packages/domain/src/index.ts` hasta que T033 pase
-- [ ] T035 Usar `inicioDeDia`/`inicioDelDiaSiguiente`/`finDeDia` para `envioAbre`, `envioCierra` y `limiteTemprana` en `apps/web/prisma/seed.ts` (FR-005a)
-- [ ] T036 [P] [US1] Prueba de integración de `auth.anadirRolPropio` (asistente se añade PONENTE y conserva ASISTENTE; idempotente; COMITE/ORGANIZADOR/ACREDITACION → `BAD_REQUEST` sin cambios; sin sesión → `UNAUTHORIZED`) en `apps/web/tests/integration/core/rol-propio.test.ts`
-- [ ] T037 [US1] Procedimiento `auth.anadirRolPropio` en `apps/web/src/server/api/routers/auth.ts` (FR-003a)
-- [ ] T038 [US1] Botón «Quiero ser también ponente» / «Quiero ser también asistente» en `apps/web/src/components/cabecera.tsx` mediante una acción de servidor en `apps/web/src/server/acciones-auth.ts`, y prueba e2e en `apps/web/tests/e2e/core.spec.ts` (US1 escenario 5)
-- [ ] T039 Mostrar en la ficha del congreso los plazos como días («hasta el 4 de septiembre») usando el día local de `envioCierra − 1 ms` en `apps/web/src/app/congresos/[slug]/page.tsx` (FR-005a)
-- [ ] T040 [US2] Página 404 en español («Página no encontrada» + enlace a la portada) en `apps/web/src/app/not-found.tsx` (analyze D1, US2 escenario 2)
-- [ ] T041 [P] [US2] Pruebas e2e de US2 escenarios 2 y 3 (slug inexistente → «Página no encontrada»; fases «Finalizado» y «Llamada a comunicaciones abierta» en la ficha) en `apps/web/tests/e2e/core.spec.ts`
+- [x] T033 [P] Pruebas de `inicioDeDia(dia, zona)` y `finDeDia(dia, zona)` (Europe/Madrid en horario de verano e invierno; `finDeDia` = 23:59:59.999 local) en `packages/domain/tests/fechas.test.ts`
+- [x] T034 Implementar `fechas.ts` (`inicioDeDia`, `finDeDia`, `inicioDelDiaSiguiente`) y exportarlo en `packages/domain/src/index.ts` hasta que T033 pase
+- [x] T035 Usar `inicioDeDia`/`inicioDelDiaSiguiente`/`finDeDia` para `envioAbre`, `envioCierra` y `limiteTemprana` en `apps/web/prisma/seed.ts` (FR-005a)
+- [x] T036 [P] [US1] Prueba de integración de `auth.anadirRolPropio` (asistente se añade PONENTE y conserva ASISTENTE; idempotente; COMITE/ORGANIZADOR/ACREDITACION → `BAD_REQUEST` sin cambios; sin sesión → `UNAUTHORIZED`) en `apps/web/tests/integration/core/rol-propio.test.ts`
+- [x] T037 [US1] Procedimiento `auth.anadirRolPropio` en `apps/web/src/server/api/routers/auth.ts` (FR-003a)
+- [x] T038 [US1] Botón «Quiero ser también ponente» / «Quiero ser también asistente» en `apps/web/src/components/cabecera.tsx` mediante una acción de servidor en `apps/web/src/server/acciones-auth.ts`, y prueba e2e en `apps/web/tests/e2e/core.spec.ts` (US1 escenario 5)
+- [x] T039 Mostrar en la ficha del congreso los plazos como días («hasta el 4 de septiembre») usando el día local de `envioCierra − 1 ms` en `apps/web/src/app/congresos/[slug]/page.tsx` (FR-005a)
+- [x] T040 [US2] Página 404 en español («Página no encontrada» + enlace a la portada) en `apps/web/src/app/not-found.tsx` (analyze D1, US2 escenario 2)
+- [x] T041 [P] [US2] Pruebas e2e de US2 escenarios 2 y 3 (slug inexistente → «Página no encontrada»; fases «Finalizado» y «Llamada a comunicaciones abierta» en la ficha) en `apps/web/tests/e2e/core.spec.ts`
 
 ## Notas de implementación (iteración 1, 2026-11-03)
 
@@ -158,9 +158,9 @@ description: "Lista de tareas de la base común (000-core)"
 
 | Comprobación | Resultado |
 |--------------|-----------|
-| `packages/domain` (Vitest) | 28/28 ✔ |
-| Integración `apps/web` (Vitest + PostgreSQL) | 12/12 ✔ |
-| E2E Playwright (`tests/e2e/core.spec.ts`) | 4/4 ✔ |
+| `packages/domain` (Vitest) | 28/28 ✔ (iteración 1) → 34/34 ✔ (iteración 2) |
+| Integración `apps/web` (Vitest + PostgreSQL) | 12/12 ✔ → 16/16 ✔ |
+| E2E Playwright (`tests/e2e/core.spec.ts`) | 4/4 ✔ → 7/7 ✔ |
 | `pnpm lint` · `pnpm typecheck` · `pnpm build` | sin errores |
 
 ## Dependencies & Execution Order
