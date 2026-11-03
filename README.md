@@ -12,3 +12,36 @@ Proyecto de Ingeniería Web (UA, 2026-27), Parte I: desarrollo mediante Spec-Dri
 - Memoria: `docs/memoria.md` (se redacta en la fase 5 siguiendo el índice del ejemplo Biblioteca)
 
 Pila: Next.js (App Router) · tRPC + Prisma · PostgreSQL · shadcn/ui
+
+## Puesta en marcha
+
+Requisitos: Node.js 22, pnpm 10 y Docker.
+
+```bash
+cp apps/web/.env.example apps/web/.env   # y cambia AUTH_SECRET (openssl rand -base64 32)
+docker compose up -d                     # PostgreSQL 16 (BD de desarrollo y de pruebas)
+pnpm install
+pnpm db:migrate                          # aplica las migraciones
+pnpm db:seed                             # datos de ejemplo (fechas relativas a hoy)
+pnpm dev                                 # http://localhost:3000
+```
+
+Usuarios de ejemplo (contraseña `congreso123`): `organizador@`, `comite1@`, `ponente1@`, `ponente.comite@`,
+`asistente1@` … `asistente5@`, `acreditacion@` (todos `@congresalia.es`). Lista completa en
+[specs/000-core/quickstart.md](specs/000-core/quickstart.md).
+
+## Pruebas
+
+```bash
+pnpm test        # unitarias (packages/domain) + integración de la API (apps/web, BD congresalia_test)
+pnpm build && pnpm test:e2e   # Playwright contra `next start` (requiere el seed cargado)
+pnpm lint && pnpm typecheck
+```
+
+## Estructura
+
+```text
+apps/web/          Next.js: páginas (src/app), API tRPC (src/server/api), Prisma (prisma/), pruebas (tests/)
+packages/domain/   Reglas de negocio puras y probadas: solapes, plazos, tarifas, certificado, formato
+specs/             Especificaciones Spec Kit (000-core común + 001…008, una por historia)
+```
