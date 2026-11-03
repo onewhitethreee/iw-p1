@@ -9,7 +9,7 @@ Proyecto de Ingeniería Web (UA, 2026-27), Parte I: desarrollo mediante Spec-Dri
 - Especificaciones: [specs/](specs/)
   - [000-core](specs/000-core/spec.md): base común (plan, modelo de datos y contrato de la API compartidos)
   - [001](specs/001-enviar-propuesta/spec.md) · [002](specs/002-evaluar-propuestas/spec.md) · [003](specs/003-programa-congreso/spec.md) · [004](specs/004-inscripcion-pago/spec.md) · [005](specs/005-agenda-personal/spec.md) · [006](specs/006-acceso-qr/spec.md) · [007](specs/007-certificado-asistencia/spec.md) · [008](specs/008-panel-tiempo-real/spec.md)
-- Memoria: `docs/memoria.md` (se redacta en la fase 5 siguiendo el índice del ejemplo Biblioteca)
+- Memoria: [docs/memoria.md](docs/memoria.md)
 
 Pila: Next.js (App Router) · tRPC + Prisma · PostgreSQL · shadcn/ui
 
