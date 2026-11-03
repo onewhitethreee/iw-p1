@@ -91,7 +91,7 @@ apps/web/tests/
 
 1. **Bloqueo por congreso** (R1): `programar` y `mover` hacen `SELECT … FROM "Congreso" WHERE id = $1 FOR UPDATE` al empezar la transacción; así dos organizadores no pueden crear solapes simultáneos (SC-001).
 2. **Solapes** (R2): se cargan las sesiones del congreso de la misma sala o del mismo autor (excluida la propia al mover) y se usa `primerSolape` (A7); el mensaje identifica la sesión en conflicto con su horario local (FR-008).
-3. **Horas locales** (R3, clarify P2): la entrada es `{ dia: "AAAA-MM-DD", horaInicio: "HH:mm", horaFin: "HH:mm" }`; el servidor convierte con `instanteLocal` y la zona del congreso.
+3. **Horas locales** (R3, clarify P2): la entrada es `{ dia: "AAAA-MM-DD", horaInicio: "HH:mm", horaFin: "HH:mm" }`; el servidor convierte con `instanteLocal` y la zona del congreso. Como inicio y fin comparten `dia`, una sesión no puede cruzar la medianoche (clarify P3): `horaFin ≤ horaInicio` se rechaza.
 4. **Estados** (clarify P1): `ahora ≥ congreso.fin` → todo bloqueado; `sesion.inicio ≤ ahora` → `mover` solo admite `salaId` y `quitar` se rechaza.
 5. **Aforo al mover** (FR-006): reservas = `count(EntradaAgenda)` de la sesión ≤ `sala.aforo` destino.
 6. **Público dinámico** (R4): `export const dynamic = "force-dynamic"` en las páginas públicas → los cambios se ven en la siguiente visita (US3-4) y el HTML siempre se genera en el servidor (SC-003).
