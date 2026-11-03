@@ -12,6 +12,13 @@
 
 **Input**: User description: "HU-03 · Como organizador, quiero asignar cada ponencia aceptada a una sala y un horario y publicar el programa para que los asistentes y el público lo consulten."
 
+## Clarifications
+
+### Session 2026-11-03
+
+- Q: ¿Qué puede cambiar el organizador en sesiones que ya han empezado o en congresos ya terminados? → A: Con el congreso finalizado el programa queda bloqueado (no se programa, mueve ni quita nada). Una sesión que ya ha empezado solo puede cambiar de sala; no se puede cambiar su horario ni quitarla.
+- Q: ¿En qué zona horaria introduce el organizador la hora de inicio y fin de una sesión? → A: En la zona horaria del congreso, la misma en la que se muestran.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Programar ponencias aceptadas sin solapamientos (Priority: P1)
@@ -49,6 +56,8 @@ El organizador puede cambiar la sala o el horario de una sesión, o quitarla, co
 2. **Given** un movimiento que provoca solapamiento de ponente o de sala, **When** se guarda, **Then** el sistema lo rechaza y la sesión conserva su sala y horario anteriores.
 3. **Given** una sesión con reservas en agendas, **When** se mueve a una sala con aforo menor que el número de reservas, **Then** el sistema lo rechaza indicando el número de reservas.
 4. **Given** una sesión que está en alguna agenda o tiene asistencias, **When** el organizador intenta quitarla, **Then** el sistema lo rechaza; sin reservas ni asistencias, se quita y la ponencia vuelve a «pendientes».
+5. **Given** una sesión que ya ha empezado, **When** el organizador intenta cambiar su horario o quitarla, **Then** el sistema lo rechaza («La sesión ya ha empezado: solo se puede cambiar de sala»); **When** la cambia a otra sala libre con aforo suficiente, **Then** se acepta.
+6. **Given** un congreso finalizado, **When** el organizador intenta programar, mover o quitar cualquier sesión, **Then** el sistema lo rechaza («El congreso ha finalizado: el programa ya no se puede modificar»).
 
 ---
 
@@ -75,6 +84,7 @@ congreso, renderizada en el servidor y con metadatos para buscadores.
 - Sesión que cruza la medianoche: se permite si está dentro de las fechas del congreso.
 - Dos organizadores programando a la vez la misma sala: el segundo recibe el rechazo por solapamiento (bloqueo en el servidor, R4).
 - Publicar un programa vacío está permitido (muestra «Sin sesiones todavía»).
+- Las horas que introduce el organizador se interpretan en la zona horaria del congreso (Clarifications P2): «10:00» en un congreso de Madrid en verano se guarda como 08:00 UTC.
 
 ## Requirements *(mandatory)*
 
@@ -88,6 +98,9 @@ congreso, renderizada en el servidor y con metadatos para buscadores.
 - **FR-006**: Al mover una sesión, el aforo de la nueva sala MUST ser ≥ número de reservas de esa sesión en agendas.
 - **FR-007**: No MUST poder quitarse una sesión con reservas o asistencias.
 - **FR-008**: Los mensajes de rechazo MUST identificar la sesión con la que se produce el conflicto.
+- **FR-012**: Con el congreso finalizado, el sistema MUST rechazar programar, mover y quitar sesiones (Clarifications P1).
+- **FR-013**: Una sesión cuyo inicio ya ha pasado MUST poder cambiar solo de sala; cambiar su horario o quitarla MUST rechazarse (Clarifications P1).
+- **FR-014**: Las horas de inicio y fin MUST introducirse y mostrarse en la zona horaria del congreso (Clarifications P2).
 - **FR-009**: El programa publicado MUST ser accesible sin sesión, renderizado en el servidor, con título, descripción, URL canónica, Open Graph, datos estructurados de evento por congreso y por sesión, e incluido en `sitemap.xml`; `robots.txt` MUST permitir su indexación.
 - **FR-010**: Mientras el programa esté en borrador, la página pública MUST no mostrar sesiones.
 - **FR-011**: Todas las reglas MUST validarse en el servidor.
