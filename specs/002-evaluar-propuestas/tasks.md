@@ -43,7 +43,7 @@ description: "Lista de tareas de spec-002 (HU-02 Evaluar propuestas de forma an�
 
 ### Implementation for User Story 1
 
-- [ ] T007 [US1] Implementar `misAsignaciones` (`{ congresoId? }`), `detalle` y `evaluar` (upsert sobre `asignacionId`, comprobando que la asignación es del usuario y que `estaDecidida(estado)` es falso) con `roleProcedure("COMITE")` y `SELECT_ANONIMO` en `apps/web/src/server/api/routers/evaluacion.ts` — FR-004…FR-006, FR-009
+- [ ] T007 [US1] Implementar `misAsignaciones` (`{ congresoId? }`), `detalle` y `evaluar` (upsert sobre `asignacionId`, comprobando que la asignación es del usuario y, dentro de una transacción que bloquea la fila de la propuesta con `SELECT … FOR UPDATE`, que `estaDecidida(estado)` es falso) con `roleProcedure("COMITE")` y `SELECT_ANONIMO` en `apps/web/src/server/api/routers/evaluacion.ts` — FR-004…FR-006, FR-009
 - [ ] T008 [US1] Página «Mis evaluaciones» en `apps/web/src/app/comite/page.tsx`: tabla con congreso, título, área, estado de la propuesta, «Pendiente»/«Evaluada (N)» y enlace «Evaluar»/«Ver»; vacío «No tienes propuestas asignadas» — US1-1
 - [ ] T009 [US1] Página de evaluación en `apps/web/src/app/comite/evaluar/[asignacionId]/page.tsx` + `formulario.tsx` (react-hook-form + `evaluacionSchema`): título, área y resumen (sin autor), selector de puntuación 1–10, comentarios con contador; si la propuesta está decidida, formulario en solo lectura con aviso «La propuesta ya está decidida»; `FORBIDDEN` → página «Acceso denegado» — US1-2, US1-3, US1-5, US1-6
 
@@ -79,11 +79,11 @@ description: "Lista de tareas de spec-002 (HU-02 Evaluar propuestas de forma an�
 
 ### Tests for User Story 3 ⚠️
 
-- [ ] T014 [P] [US3] Prueba de integración en `apps/web/tests/integration/002/decidir.test.ts`: (a) US3-1 con 2 evaluaciones `ACEPTAR` → `ACEPTADA` y `decididaEn` fijada; `RECHAZAR` → `RECHAZADA`; (b) US3-2 con 1 → `CONFLICT` «Se necesitan al menos 2 evaluaciones (tiene 1)»; (c) US3-3 ya decidida → `CONFLICT` «La propuesta ya está decidida»; (d) `ENVIADA` sin evaluadores → `CONFLICT`; (e) US3-5/clarify P2: media 4,5 se puede aceptar; (f) dos decisiones simultáneas (`Promise.allSettled`) → exactamente una se aplica; (g) no organizador → `FORBIDDEN`; (h) Edge Case: con 3 asignados y 2 evaluaciones ya se puede decidir; (i) `resumenOrganizador` ordena/expone `media` y `nEvaluaciones` correctos
+- [ ] T014 [P] [US3] Prueba de integración en `apps/web/tests/integration/002/decidir.test.ts`: (a) US3-1 con 2 evaluaciones `ACEPTAR` → `ACEPTADA` y `decididaEn` fijada; `RECHAZAR` → `RECHAZADA`; (b) US3-2 con 1 → `CONFLICT` «Se necesitan al menos 2 evaluaciones (tiene 1)»; (c) US3-3 ya decidida → `CONFLICT` «La propuesta ya está decidida»; (d) `ENVIADA` sin evaluadores → `CONFLICT`; (e) US3-5/clarify P2: media 4,5 se puede aceptar; (f) dos decisiones simultáneas (`Promise.allSettled`) → exactamente una se aplica; (f2) analyze U1: `evaluar` y `decidir` simultáneos → o la evaluación queda guardada antes de la decisión o se rechaza con «La propuesta ya está decidida», y la evaluación nunca tiene `updatedAt` posterior a `decididaEn`; (g) no organizador → `FORBIDDEN`; (h) Edge Case: con 3 asignados y 2 evaluaciones ya se puede decidir; (i) `resumenOrganizador` ordena/expone `media` y `nEvaluaciones` correctos
 
 ### Implementation for User Story 3
 
-- [ ] T015 [US3] Implementar `decidir` (`puedeDecidir` de `@congresalia/domain` + `updateMany` condicionado a `estado: "EN_EVALUACION"`, R4) en `apps/web/src/server/api/routers/evaluacion.ts` — FR-007, FR-011
+- [ ] T015 [US3] Implementar `decidir` (transacción con `SELECT … FOR UPDATE` sobre la propuesta, recuento de evaluaciones dentro del bloqueo, `puedeDecidir` de `@congresalia/domain` y actualización de estado y `decididaEn`, R4) en `apps/web/src/server/api/routers/evaluacion.ts` — FR-007, FR-011
 - [ ] T016 [US3] Botones «Aceptar» y «Rechazar» por fila en `apps/web/src/app/organizador/[slug]/propuestas/acciones.tsx` (desactivados con aviso «Faltan N evaluaciones» si hay < 2; ocultos si está decidida) y ordenación por media con `?orden=media` en `page.tsx` — US3-1…US3-4
 
 **Checkpoint**: HU-02 completa.

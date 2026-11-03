@@ -89,7 +89,7 @@ apps/web/tests/
 1. **Vista anónima** (R1): todas las consultas del comité usan un `select` constante `SELECT_ANONIMO` sin `autorId` ni `autor`; nunca `include`.
 2. **Asignación ajena = FORBIDDEN** (R2): `detalle`/`evaluar` sobre una asignación que no es del usuario devuelven `FORBIDDEN` aunque no exista (no se revela si existe).
 3. **Asignar en transacción** (R3): crear `Asignacion` y pasar `ENVIADA → EN_EVALUACION` con `estadoTrasAsignar` en la misma transacción; la unicidad `(propuestaId, evaluadorId)` de la BD respalda la regla «no dos veces».
-4. **Decidir sin carreras** (R4): `updateMany({ where: { id, estado: "EN_EVALUACION" } })`; si actualiza 0 filas, otra decisión ganó → `CONFLICT`.
+4. **Decidir y evaluar sin carreras** (R4, revisado tras analyze U1): `decidir` y `evaluar` se ejecutan en una transacción que primero bloquea la fila de la propuesta (`SELECT … FOR UPDATE`); así una evaluación no puede guardarse después de la decisión ni dos decisiones aplicarse a la vez. `decidir` cuenta las evaluaciones dentro del bloqueo.
 5. **Evaluar = upsert** sobre `asignacionId` (una por evaluador y propuesta, modificable hasta la decisión).
 6. **Organizador ve al autor** (Edge Case): `resumenOrganizador` sí incluye nombre del autor.
 
