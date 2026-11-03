@@ -53,7 +53,7 @@ description: "Lista de tareas de spec-001 (HU-01 Enviar propuesta de ponencia)"
 - [ ] T005 [US1] Implementar `propuesta.enviar` (`roleProcedure("PONENTE")`) en `apps/web/src/server/api/routers/propuesta.ts`: congreso por id (`NOT_FOUND`), `plazoEnvio(congreso, ctx.ahora())` de `@congresalia/domain` con mensajes de contracts/propuesta.md (`NO_ABIERTO` cita `fecha(envioAbre, zonaHoraria)`), área perteneciente al congreso, `create` con `autorId: ctx.usuario.id`, `estado: "ENVIADA"`, `enviadaEn: ctx.ahora()`; devuelve `{ id, estado }` — FR-001…FR-006
 - [ ] T006 [US1] Página `/ponente/enviar` (Server Component) en `apps/web/src/app/ponente/enviar/page.tsx`: obtiene `congreso.listar`, filtra `fase === "LLAMADA_ABIERTA"`, carga las áreas de cada uno con `congreso.porSlug` y muestra el día de cierre como «hasta el {día}» (`fecha(envioCierra − 1 ms)`); si no hay ninguno, mensaje «Ahora mismo no hay ningún congreso con la llamada a comunicaciones abierta» — FR-007
 - [ ] T007 [US1] Formulario cliente en `apps/web/src/app/ponente/enviar/formulario.tsx` con react-hook-form + `zodResolver(propuestaSchema)`: selector de congreso, selector de área dependiente del congreso, título, resumen con contador «N / 3000 (mínimo 100)», errores por campo y error del servidor en `Alert`; botón desactivado y «Enviando…» mientras la mutación está pendiente (Edge Case doble clic); al terminar, `router.push("/ponente?enviada=1")` — US1-1, US1-4
-- [ ] T008 [US1] Prueba e2e en `apps/web/tests/e2e/001-enviar-propuesta.spec.ts`: `ponente1` envía una propuesta válida y ve «Propuesta enviada» y la propuesta con estado «Enviada» (US1-1); resumen corto muestra el error del campo (US1-4); `asistente1` en `/ponente/enviar` ve «Acceso denegado» (US1-6)
+- [ ] T008 [US1] Prueba e2e en `apps/web/tests/e2e/001-enviar-propuesta.spec.ts`: `ponente1` envía una propuesta válida y ve «Propuesta enviada» y la propuesta con estado «Enviada» (US1-1); resumen corto muestra el error del campo (US1-4); `asistente1` en `/ponente/enviar` ve «Acceso denegado» y un visitante sin sesión es llevado a `/entrar?desde=%2Fponente%2Fenviar` (US1-6)
 
 **Checkpoint**: US1 funcional y probada.
 
@@ -72,8 +72,8 @@ description: "Lista de tareas de spec-001 (HU-01 Enviar propuesta de ponencia)"
 ### Implementation for User Story 2
 
 - [ ] T010 [US2] Implementar `propuesta.mias` (`roleProcedure("PONENTE")`, entrada `{ congresoId?: string }`) con `select` explícito de los campos de FR-010 y `orderBy: { enviadaEn: "desc" }` en `apps/web/src/server/api/routers/propuesta.ts` — FR-005, FR-010
-- [ ] T011 [US2] Sustituir la página provisional `apps/web/src/app/ponente/page.tsx` por «Mis propuestas»: aviso «Propuesta enviada» si `?enviada=1`, botón «Enviar propuesta», tabla con congreso, título, área, fecha de envío (zona del congreso) y estado con `Badge` (`ETIQUETA_ESTADO_PROPUESTA`); estado vacío «Todavía no has enviado ninguna propuesta» — US2-1
-- [ ] T012 [US2] Ampliar la prueba e2e `apps/web/tests/e2e/001-enviar-propuesta.spec.ts`: `ponente1` ve propuestas en los estados «Enviada», «En evaluación», «Aceptada» y «Rechazada» y ninguna de `ponente2` (título «Cuidados centrados en el desarrollo en la UCI neonatal» no aparece) — US2-1, US2-2
+- [ ] T011 [US2] Sustituir la página provisional `apps/web/src/app/ponente/page.tsx` por «Mis propuestas»: aviso «Propuesta enviada» si `?enviada=1`, botón «Enviar propuesta», tabla con congreso, título, área, fecha de envío (zona del congreso) y estado con `Badge` (`ETIQUETA_ESTADO_PROPUESTA`); estado vacío «Todavía no has enviado ninguna propuesta» — US2-1, US2-5
+- [ ] T012 [US2] Ampliar la prueba e2e `apps/web/tests/e2e/001-enviar-propuesta.spec.ts`: `ponente1` ve propuestas en los estados «Enviada», «En evaluación», «Aceptada» y «Rechazada» y ninguna de `ponente2` (título «Cuidados centrados en el desarrollo en la UCI neonatal» no aparece); un ponente recién registrado ve «Todavía no has enviado ninguna propuesta» — US2-1, US2-2, US2-5
 
 **Checkpoint**: US1 y US2 funcionales.
 
@@ -82,7 +82,7 @@ description: "Lista de tareas de spec-001 (HU-01 Enviar propuesta de ponencia)"
 ## Phase 5: Polish & Cross-Cutting Concerns
 
 - [ ] T013 Ejecutar la regresión completa (`pnpm test`, `pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm test:e2e`) y registrar los resultados en este fichero
-- [ ] T014 Recorrer [quickstart.md](quickstart.md) y anotar el resultado observado de cada escenario en `specs/001-enviar-propuesta/informes/verificacion.md`
+- [ ] T014 Recorrer [quickstart.md](quickstart.md) y anotar el resultado observado de cada escenario en `specs/001-enviar-propuesta/informes/verificacion.md`, incluida la medición manual del tiempo para completar el formulario (SC-001 < 3 min)
 
 ---
 
@@ -121,5 +121,6 @@ Tras T003:  T004 (enviar.test.ts)  ∥  T009 (mias.test.ts)
 | FR-009 (sin límite, P2) | T004h |
 | FR-010 (privacidad, P3) | T009c, T010 |
 | US1-1…6 | T004, T007, T008 |
-| US2-1…4 | T009, T011, T012 (US2-4 = T004i) |
-| SC-001…SC-003 | T008, T004b, T011 |
+| US2-1…5 | T009, T011, T012 (US2-4 = T004i, US2-5 = T011/T012) |
+| SC-001 | T014 (manual) |
+| SC-002, SC-003 | T004b, T011 |

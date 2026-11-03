@@ -57,10 +57,11 @@ El ponente ve la lista de sus propuestas con congreso, título, área, fecha de 
 2. **Given** dos ponentes, **When** uno abre «Mis propuestas», **Then** no ve ninguna propuesta del otro.
 3. **Given** una propuesta en evaluación o ya decidida (aceptada o rechazada), **When** su autor la consulta, **Then** ve solo el estado; ni la pantalla ni la respuesta del servidor incluyen puntuaciones, comentarios ni identidad de los evaluadores.
 4. **Given** una propuesta enviada, **When** su autor intenta modificarla o retirarla (también con una petición directa), **Then** no existe esa operación y la propuesta conserva sus datos.
+5. **Given** un ponente que todavía no ha enviado ninguna propuesta, **When** abre «Mis propuestas», **Then** ve el mensaje «Todavía no has enviado ninguna propuesta» y el botón «Enviar propuesta», sin errores.
 
 ### Edge Cases
 
-- Último día del plazo (000-core FR-005a, clarify P1): el plazo incluye el día de cierre completo en la zona del congreso; un envío a las 23:59 del día de cierre se acepta y uno a las 00:00 del día siguiente se rechaza. Cuenta la hora del servidor.
+- Último día del plazo (000-core FR-005a, clarify de 000-core P1): el plazo incluye el día de cierre completo en la zona del congreso; un envío a las 23:59 del día de cierre se acepta y uno a las 00:00 del día siguiente se rechaza. Cuenta la hora del servidor.
 - Dos envíos idénticos seguidos por doble clic: el botón se desactiva mientras se envía; si aun así llegan dos, se guardan como dos propuestas (no hay regla de unicidad en la narrativa).
 - Un ponente puede enviar varias propuestas al mismo congreso, sin límite (Clarifications P2).
 - Una vez enviada, la propuesta no se puede editar ni retirar (Clarifications P1).
