@@ -140,3 +140,7 @@ Tras T003:  T004 (enviar.test.ts)  ∥  T009 (mias.test.ts)
 | US2-1…5 | T009, T011, T012 (US2-4 = T004i, US2-5 = T011/T012) |
 | SC-001 | T014 (manual) |
 | SC-002, SC-003 | T004b, T011 |
+
+## Phase 6: Convergence
+
+- [ ] T015 Medir con una persona real (el responsable u otra) el tiempo desde abrir `/ponente/enviar` hasta ver «Propuesta enviada» con una propuesta válida y registrar el resultado (objetivo < 3 min) en `specs/001-enviar-propuesta/informes/verificacion.md` per SC-001 (partial)
