@@ -1,6 +1,6 @@
 # Quickstart: validar spec-008
 
-Seed `congreso-innovacion-educativa-2026` (en curso): 41 inscripciones (37 confirmadas, 4 pendientes según el seed de relleno), «Rúbricas compartidas…» en Aula 3 (aforo 2) con 2 reservas y 2 asistencias; «Competencia digital docente» mañana en Aula 3 con 1 reserva y el Auditorio libre a esa hora.
+Seed `congreso-innovacion-educativa-2026` (en curso): 40 inscripciones (35 confirmadas y 5 pendientes), «Rúbricas compartidas…» en Aula 3 (aforo 2) con 2 reservas y 2 asistencias; «Competencia digital docente» mañana en Aula 3 con 1 reserva y el Auditorio libre a esa hora.
 
 | # | Escenario | Pasos | Esperado |
 |---|-----------|-------|----------|
