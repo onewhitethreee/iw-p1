@@ -19,4 +19,10 @@
 
 **Nota**: el programa público (spec-003, otra rama) lee la misma fila `Sesion` que cambia `cambiarSala`; se comprobará en pantalla al integrar las ramas (analyze U1).
 
-**Regresión**: dominio 37/37 · integración 38/38 (000-core 22 + spec-008 16) · e2e 11/11 (000-core 7 + spec-008 4) · lint, typecheck y `next build` sin errores.
+## Iteración 2 (converge T014)
+
+| # | Escenario | Cómo se comprobó | Esperado | Observado | Resultado |
+|---|-----------|------------------|----------|-----------|-----------|
+| 10 | Edge «conexión falla» | e2e: `/api/trpc` cortado con `page.route` | «Sin actualizar desde hh:mm:ss», cifras conservadas, «Sin conexión: …» al pedir salas (no «Failed to fetch»); al volver la red, «Actualizado a las» | Igual | ✔ |
+
+**Regresión**: dominio 37/37 · integración 38/38 (000-core 22 + spec-008 16) · e2e 12/12 (000-core 7 + spec-008 5) · lint, typecheck y `next build` sin errores.

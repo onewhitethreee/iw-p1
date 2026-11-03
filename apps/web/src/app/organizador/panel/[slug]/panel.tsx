@@ -16,6 +16,10 @@ type Resumen = inferRouterOutputs<AppRouter>["panel"]["resumen"];
 const horaSeg = (d: Date, zona: string) =>
   new Intl.DateTimeFormat("es-ES", { hour: "2-digit", minute: "2-digit", second: "2-digit", timeZone: zona }).format(d);
 
+/** Sin respuesta del servidor el cliente no recibe `data` de tRPC (converge T014, Constitución VI). */
+const SIN_CONEXION = "Sin conexión: no se puede completar la acción. Comprueba la red y vuelve a intentarlo.";
+const mensajeError = (e: { message: string; data?: unknown }) => (e.data ? e.message : SIN_CONEXION);
+
 const TARIFA = { TEMPRANA: "Temprana", GENERAL: "General" } as const;
 
 /** Panel del congreso: cifras, desglose y ocupación, refrescados cada 5 s (FR-004, plan R1). */
@@ -184,7 +188,7 @@ function CambiarSala({ sesionId, congresoId, alTerminar }: { sesionId: string; c
     }),
   );
   if (libres.isPending) return <p className="text-sm text-muted-foreground">Buscando salas libres…</p>;
-  if (libres.error) return <p role="alert" className="text-sm text-destructive">{libres.error.message}</p>;
+  if (libres.error) return <p role="alert" className="text-sm text-destructive">{mensajeError(libres.error)}</p>;
   if (libres.data.length === 0) return <p className="text-sm text-muted-foreground">No hay salas libres en ese horario con aforo suficiente.</p>;
   return (
     <form
@@ -215,7 +219,7 @@ function CambiarSala({ sesionId, congresoId, alTerminar }: { sesionId: string; c
       </Button>
       {cambiar.error && (
         <p role="alert" className="w-full text-sm text-destructive">
-          {cambiar.error.message}
+          {mensajeError(cambiar.error)}
         </p>
       )}
     </form>

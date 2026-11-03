@@ -49,7 +49,7 @@ description: "Lista de tareas de spec-008 (HU-08 Consultar el panel del congreso
 
 ## Resultados (T013)
 
-Dominio 37/37 · integración 38/38 (spec-008: 16) · e2e 11/11 (spec-008: 4) · lint, typecheck y build sin errores. Detalle en [informes/verificacion.md](informes/verificacion.md).
+Dominio 37/37 · integración 38/38 (spec-008: 16) · e2e 12/12 (spec-008: 5, incluida T014) · lint, typecheck y build sin errores. Detalle en [informes/verificacion.md](informes/verificacion.md).
 
 ## Dependencies & Execution Order
 
@@ -75,3 +75,7 @@ MVP = US1 (cifras e ingresos con refresco). Después US2 (ocupación) y US3 (cam
 | FR-006 (euros) | T006 |
 | US1-1…4 / US2-1…3 / US3-1…4 | T004–T012 |
 | SC-001 / SC-002 / SC-003 / SC-004 | T006, T012, T013 / T004b / T011, T012 / T007d |
+
+## Phase 7: Convergence
+
+- [X] T014 En `apps/web/src/app/organizador/panel/[slug]/panel.tsx` mostrar «Sin conexión: no se puede completar la acción. Comprueba la red y vuelve a intentarlo.» cuando `salasLibres` o `cambiarSala` fallan por red (no el mensaje técnico del navegador), y añadir a `apps/web/tests/e2e/008-panel.spec.ts` una prueba que corta `/api/trpc` con `page.route`: aparece «Sin actualizar desde hh:mm:ss», las cifras se conservan y, al volver la red, «Actualizado a las» per Edge Cases «conexión falla» y Constitución VI (partial)
