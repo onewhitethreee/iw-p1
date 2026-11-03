@@ -113,6 +113,18 @@ description: "Lista de tareas de la base común (000-core)"
 
 ---
 
+## Phase 6: Iteración 2 · cambios derivados de `/speckit-clarify` (2026-11-03)
+
+**Purpose**: aplicar las decisiones P1 y P2 de [informes/clarify-1.md](informes/clarify-1.md).
+
+- [ ] T033 [P] Pruebas de `inicioDeDia(dia, zona)` y `finDeDia(dia, zona)` (Europe/Madrid en horario de verano e invierno; `finDeDia` = 23:59:59.999 local) en `packages/domain/tests/fechas.test.ts`
+- [ ] T034 Implementar `fechas.ts` (`inicioDeDia`, `finDeDia`, `inicioDelDiaSiguiente`) y exportarlo en `packages/domain/src/index.ts` hasta que T033 pase
+- [ ] T035 Usar `inicioDeDia`/`inicioDelDiaSiguiente`/`finDeDia` para `envioAbre`, `envioCierra` y `limiteTemprana` en `apps/web/prisma/seed.ts` (FR-005a)
+- [ ] T036 [P] [US1] Prueba de integración de `auth.anadirRolPropio` (asistente se añade PONENTE y conserva ASISTENTE; idempotente; COMITE/ORGANIZADOR/ACREDITACION → `BAD_REQUEST` sin cambios; sin sesión → `UNAUTHORIZED`) en `apps/web/tests/integration/core/rol-propio.test.ts`
+- [ ] T037 [US1] Procedimiento `auth.anadirRolPropio` en `apps/web/src/server/api/routers/auth.ts` (FR-003a)
+- [ ] T038 [US1] Botón «Quiero ser también ponente» / «Quiero ser también asistente» en `apps/web/src/components/cabecera.tsx` mediante una acción de servidor en `apps/web/src/server/acciones-auth.ts`, y prueba e2e en `apps/web/tests/e2e/core.spec.ts` (US1 escenario 5)
+- [ ] T039 Mostrar en la ficha del congreso los plazos como días («hasta el 4 de septiembre») usando el día local de `envioCierra − 1 ms` en `apps/web/src/app/congresos/[slug]/page.tsx` (FR-005a)
+
 ## Notas de implementación (iteración 1, 2026-11-03)
 
 - **T024**: los formularios de entrar y registro usan `useActionState` + acciones de servidor con validación zod en el servidor, en lugar de react-hook-form: es más simple (Constitución I) y el servidor ya devuelve los errores por campo. react-hook-form se reserva para formularios más largos (spec-001 en adelante).

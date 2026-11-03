@@ -52,7 +52,7 @@ erDiagram
 | passwordHash | String | bcrypt; nunca se devuelve al cliente |
 
 ### UsuarioRol
-`(usuarioId, rol)` clave primaria compuesta. Un usuario puede tener varios roles (A8).
+`(usuarioId, rol)` clave primaria compuesta. Un usuario puede tener varios roles (A8). Clarify P2: el propio usuario puede crear su fila `PONENTE` o `ASISTENTE`; las demás solo un organizador. Clarify P4: `COMITE` es global (no depende del congreso).
 
 ### Congreso
 | Campo | Tipo | Reglas |
@@ -61,8 +61,8 @@ erDiagram
 | nombre, descripcion, sede | String | obligatorios |
 | zonaHoraria | String | IANA, por defecto `Europe/Madrid` |
 | inicio, fin | DateTime | `inicio < fin` |
-| envioAbre, envioCierra | DateTime | `envioAbre < envioCierra ≤ inicio` |
-| limiteTemprana | DateTime | fecha límite de inscripción temprana, `≤ inicio` |
+| envioAbre, envioCierra | DateTime | `envioAbre < envioCierra ≤ inicio`. Clarify P1: el organizador indica **días**; se guardan como instantes exclusivos: `envioAbre` = 00:00 del día de apertura y `envioCierra` = 00:00 del día **siguiente** al de cierre, ambos en la zona del congreso. Así el plazo `[envioAbre, envioCierra)` incluye todo el día de cierre. |
+| limiteTemprana | DateTime | Clarify P1: 23:59:59.999 del día límite en la zona del congreso (inclusive, `creadaEn ≤ limiteTemprana`); `≤ inicio`. En pantalla se muestra solo el día. |
 | estadoPrograma | EstadoPrograma | por defecto `BORRADOR` |
 | publicadoEn | DateTime? | se fija al publicar |
 
