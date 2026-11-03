@@ -4,3 +4,4 @@ export * from "./propuesta";
 export * from "./tarifa";
 export * from "./certificado";
 export * from "./formato";
+export * from "./fechas";

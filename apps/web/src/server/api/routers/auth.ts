@@ -29,6 +29,18 @@ export const authRouter = createTRPCRouter({
 
   yo: protectedProcedure.query(({ ctx }) => ctx.usuario),
 
+  /** Clarify P2 (FR-003a): el propio usuario puede añadirse PONENTE o ASISTENTE; nunca otro rol. */
+  anadirRolPropio: protectedProcedure
+    .input(z.object({ rol: z.enum(["PONENTE", "ASISTENTE"], { message: "Solo puedes añadirte el rol ponente o asistente" }) }))
+    .mutation(async ({ ctx, input }) => {
+      await ctx.db.usuarioRol.upsert({
+        where: { usuarioId_rol: { usuarioId: ctx.usuario.id, rol: input.rol } },
+        create: { usuarioId: ctx.usuario.id, rol: input.rol },
+        update: {},
+      });
+      return { ok: true };
+    }),
+
   asignarRol: roleProcedure("ORGANIZADOR")
     .input(z.object({ usuarioId: z.string(), rol: z.enum(["ORGANIZADOR", "COMITE", "PONENTE", "ASISTENTE", "ACREDITACION"]) }))
     .mutation(async ({ ctx, input }) => {

@@ -1,6 +1,7 @@
 "use server";
 
 import { AuthError } from "next-auth";
+import { revalidatePath } from "next/cache";
 import { TRPCError } from "@trpc/server";
 import { ZodError } from "zod";
 import { signIn, signOut } from "~/server/auth";
@@ -48,6 +49,13 @@ export async function registrar(_prev: EstadoFormulario, form: FormData): Promis
   }
   await signIn("credentials", { email: datos.email, password: datos.password, redirectTo: destinoSeguro(form.get("desde")) });
   return {};
+}
+
+/** Clarify P2: botón «Quiero ser también ponente/asistente». */
+export async function anadirRolPropio(form: FormData) {
+  const rol = form.get("rol") === "PONENTE" ? "PONENTE" : "ASISTENTE";
+  await (await api()).auth.anadirRolPropio({ rol });
+  revalidatePath("/", "layout");
 }
 
 export async function salir() {

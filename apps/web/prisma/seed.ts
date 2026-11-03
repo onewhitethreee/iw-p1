@@ -8,7 +8,7 @@
 import { PrismaClient, type EstadoPropuesta, type Rol, type TipoAsistente } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import { randomUUID } from "node:crypto";
-import { calcularTarifa, solapa } from "@congresalia/domain";
+import { calcularTarifa, diaLocal, finDeDia, inicioDeDia, inicioDelDiaSiguiente, solapa } from "@congresalia/domain";
 
 const db = new PrismaClient();
 const PASSWORD = "congreso123";
@@ -24,6 +24,13 @@ const dia = (d: number, h = 0, m = 0) => {
   const x = new Date(Date.UTC(ahora.getUTCFullYear(), ahora.getUTCMonth(), ahora.getUTCDate()));
   return new Date(x.getTime() + d * DIA + h * HORA + m * MIN);
 };
+
+/** Días límite como días completos en la zona del congreso (clarify P1, FR-005a). */
+const ZONA = "Europe/Madrid";
+const diaRel = (d: number) => diaLocal(new Date(ahora.getTime() + d * DIA), ZONA);
+const abre = (d: number) => inicioDeDia(diaRel(d), ZONA);
+const cierra = (d: number) => inicioDelDiaSiguiente(diaRel(d), ZONA);
+const limite = (d: number) => finDeDia(diaRel(d), ZONA);
 
 async function limpiar() {
   await db.asistencia.deleteMany();
@@ -237,9 +244,9 @@ async function main() {
     nombre: "Jornadas de Pediatría 2027",
     descripcion: "Encuentro anual de profesionales de la pediatría hospitalaria y de atención primaria.",
     sede: "Palacio de Congresos de Valencia",
-    envioAbre: dia(-10),
-    envioCierra: dia(30),
-    limiteTemprana: dia(60),
+    envioAbre: abre(-10),
+    envioCierra: cierra(30),
+    limiteTemprana: limite(60),
     inicio: dia(120, 7),
     fin: dia(122, 16),
     publicado: false,
@@ -285,9 +292,9 @@ async function main() {
     nombre: "Congreso de Innovación Educativa 2026",
     descripcion: "Congreso de referencia sobre metodologías activas, evaluación y tecnología educativa.",
     sede: "Auditorio de la Universidad de Alicante",
-    envioAbre: dia(-120),
-    envioCierra: dia(-60),
-    limiteTemprana: dia(-30),
+    envioAbre: abre(-120),
+    envioCierra: cierra(-60),
+    limiteTemprana: limite(-30),
     inicio: dia(-1, 6),
     fin: dia(2, 18),
     publicado: true,
@@ -342,9 +349,9 @@ async function main() {
     nombre: "Simposio de Salud Digital 2026",
     descripcion: "Simposio sobre telemedicina, historia clínica electrónica y salud móvil.",
     sede: "Hotel Meliá Sevilla",
-    envioAbre: dia(-150),
-    envioCierra: dia(-90),
-    limiteTemprana: dia(-50),
+    envioAbre: abre(-150),
+    envioCierra: cierra(-90),
+    limiteTemprana: limite(-50),
     inicio: dia(-20, 7),
     fin: dia(-19, 17),
     publicado: true,

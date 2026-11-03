@@ -49,4 +49,32 @@ test.describe("000-core · base común", () => {
     await expect(page).toHaveURL(/\/organizador$/);
     await expect(page.getByRole("heading", { name: "Organización" })).toBeVisible();
   });
+
+  test("US1 escenario 5: un asistente se añade el rol ponente sin crear otra cuenta (clarify P2)", async ({ page }) => {
+    const email = `e2e-rol-${Date.now()}@test.es`;
+    await page.goto("/registro");
+    await page.getByLabel("Nombre y apellidos").fill("Doble Rol");
+    await page.getByLabel("Correo electrónico").fill(email);
+    await page.getByLabel("Contraseña").fill("secreta123");
+    await page.getByRole("button", { name: "Crear cuenta" }).click();
+    await expect(page.getByTestId("usuario-actual")).toContainText("Doble Rol · Asistente");
+    await page.getByRole("button", { name: "Quiero ser también ponente" }).click();
+    await expect(page.getByTestId("usuario-actual")).toContainText("Ponente");
+    await expect(page.getByRole("link", { name: "Mis propuestas" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Quiero ser también ponente" })).toHaveCount(0);
+  });
+
+  test("US2 escenario 2: un congreso inexistente muestra «Página no encontrada» (analyze D1)", async ({ page }) => {
+    const r = await page.goto("/congresos/no-existe");
+    expect(r?.status()).toBe(404);
+    await expect(page.getByRole("heading", { name: "Página no encontrada" })).toBeVisible();
+  });
+
+  test("US2 escenario 3: fases en la ficha y plazo mostrado como días (FR-005a)", async ({ page }) => {
+    await page.goto("/congresos/simposio-salud-digital-2026");
+    await expect(page.getByText("Finalizado")).toBeVisible();
+    await page.goto("/congresos/jornadas-pediatria-2027");
+    await expect(page.getByText("Llamada a comunicaciones abierta")).toBeVisible();
+    await expect(page.getByTestId("plazo-envio")).toHaveText(/^Plazo de envío: del \d{1,2} de \p{L}+ de \d{4} al \d{1,2} de \p{L}+ de \d{4} \(ambos incluidos\)\.$/u);
+  });
 });

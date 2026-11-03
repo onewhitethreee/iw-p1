@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { TRPCError } from "@trpc/server";
-import { ETIQUETA_TIPO_ASISTENTE, euros, fecha, fechaHora } from "@congresalia/domain";
+import { ETIQUETA_TIPO_ASISTENTE, euros, fecha } from "@congresalia/domain";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { FaseBadge } from "~/components/fase-badge";
@@ -40,7 +40,10 @@ export default async function CongresoPage({ params }: { params: Promise<{ slug:
             <CardTitle>Llamada a comunicaciones</CardTitle>
           </CardHeader>
           <CardContent className="grid gap-1 text-sm">
-            <p>Plazo de envío: del {fechaHora(c.envioAbre, z)} al {fechaHora(c.envioCierra, z)}.</p>
+            {/* FR-005a: se muestran días completos; envioCierra es exclusivo (00:00 del día siguiente) */}
+            <p data-testid="plazo-envio">
+              Plazo de envío: del {fecha(c.envioAbre, z)} al {fecha(new Date(c.envioCierra.getTime() - 1), z)} (ambos incluidos).
+            </p>
             <p>Áreas temáticas: {c.areas.map((a) => a.nombre).join(", ")}.</p>
           </CardContent>
         </Card>
