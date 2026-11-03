@@ -12,34 +12,46 @@ description: "Lista de tareas de spec-004 (HU-04 Inscribirse y pagar la entrada)
 
 ## Phase 1: Setup
 
-- [ ] T001 Comprobar la base en `spec-004` (`pnpm test` en verde; seed con `asistente5` sin inscripción y `asistente4` pendiente en Innovación Educativa) e instalar `qrcode` y `@types/qrcode` en `apps/web/package.json`
+- [x] T001 Comprobar la base en `spec-004` (`pnpm test` en verde; seed con `asistente5` sin inscripción y `asistente4` pendiente en Innovación Educativa) e instalar `qrcode` y `@types/qrcode` en `apps/web/package.json`
 
 ## Phase 2: Foundational
 
-- [ ] T002 Esquemas zod en `apps/web/src/lib/esquemas/inscripcion.ts`: `crearInscripcionSchema` (`congresoId`, `tipoAsistente` ∈ `PROFESIONAL|SOCIO|ESTUDIANTE`, sin campo de importe) y `pagoSchema` (`inscripcionId`, `tarjeta` que, tras quitar espacios, tiene **exactamente 16 dígitos** — «El número de tarjeta debe tener 16 dígitos») — FR-002, FR-013
-- [ ] T003 Router vacío `inscripcionRouter` en `apps/web/src/server/api/routers/inscripcion.ts`, registrado como `inscripcion` en `apps/web/src/server/api/root.ts`; helper `apps/web/src/server/qr.ts` (`qrDataUrl(codigo)` con `qrcode.toDataURL`, corrección M); fixtures `apps/web/tests/integration/004/fixtures.ts` (congreso con tarifas 250/300, 180/220, 90/120 y día límite temprano en Europe/Madrid; asistente)
+- [x] T002 Esquemas zod en `apps/web/src/lib/esquemas/inscripcion.ts`: `crearInscripcionSchema` (`congresoId`, `tipoAsistente` ∈ `PROFESIONAL|SOCIO|ESTUDIANTE`, sin campo de importe) y `pagoSchema` (`inscripcionId`, `tarjeta` que, tras quitar espacios, tiene **exactamente 16 dígitos** — «El número de tarjeta debe tener 16 dígitos») — FR-002, FR-013
+- [x] T003 Router vacío `inscripcionRouter` en `apps/web/src/server/api/routers/inscripcion.ts`, registrado como `inscripcion` en `apps/web/src/server/api/root.ts`; helper `apps/web/src/server/qr.ts` (`qrDataUrl(codigo)` con `qrcode.toDataURL`, corrección M); fixtures `apps/web/tests/integration/004/fixtures.ts` (congreso con tarifas 250/300, 180/220, 90/120 y día límite temprano en Europe/Madrid; asistente)
 
 ## Phase 3: User Story 1 - Inscribirme con la tarifa correcta (P1) 🎯 MVP
 
 **Independent Test**: estudiante antes del día límite → 90,00 €; después → 120,00 €.
 
-- [ ] T004 [P] [US1] Prueba de integración `apps/web/tests/integration/004/inscribir.test.ts`: (a) US1-1 23:59 del día límite → `TEMPRANA` 9000 y estado `PENDIENTE_PAGO`; (b) US1-2 00:00 del día siguiente → `GENERAL` 12000; (c) US1-3 segunda inscripción en el mismo congreso → `CONFLICT` «Ya tienes una inscripción en este congreso»; (d) US1-4 congreso finalizado → `CONFLICT`; en curso → aceptada (P2); (e) US1-5 sin sesión → `UNAUTHORIZED`; US1-6 solo PONENTE → `FORBIDDEN` (tras añadirse el rol asistente, 000-core FR-003a, se acepta); (f) US1-7 un `importeCent` enviado se ignora; (g) `presupuesto` público devuelve los 3 tipos con la tarifa vigente; (h) FR-011/P1: el router solo expone `presupuesto`, `crear`, `pagar`, `mias` (sin cambiar ni cancelar)
-- [ ] T005 [US1] Implementar `presupuesto` (público) y `crear` (`roleProcedure("ASISTENTE")`, `calcularTarifa` con `ctx.ahora()`, `P2002` → `CONFLICT`, congreso finalizado → `CONFLICT`) en `apps/web/src/server/api/routers/inscripcion.ts` — FR-001…FR-005, FR-011, FR-012
-- [ ] T006 [US1] Página `apps/web/src/app/congresos/[slug]/inscripcion/page.tsx` + `formulario.tsx`: tabla de precios vigentes (temprano hasta el {día}), selector de tipo y botón «Inscribirme»; sin sesión → enlaces a entrar/registrarse con `desde`; con sesión sin rol asistente → botón «Añadirme como asistente» (000-core FR-003a); ya inscrito → enlace a «Área personal»; al crear → `/area-personal/pago/{id}`. Botón «Inscribirme» en `apps/web/src/app/congresos/[slug]/page.tsx` — US1-1…US1-7
+- [x] T004 [P] [US1] Prueba de integración `apps/web/tests/integration/004/inscribir.test.ts`: (a) US1-1 23:59 del día límite → `TEMPRANA` 9000 y estado `PENDIENTE_PAGO`; (b) US1-2 00:00 del día siguiente → `GENERAL` 12000; (c) US1-3 segunda inscripción en el mismo congreso → `CONFLICT` «Ya tienes una inscripción en este congreso»; (d) US1-4 congreso finalizado → `CONFLICT`; en curso → aceptada (P2); (e) US1-5 sin sesión → `UNAUTHORIZED`; US1-6 solo PONENTE → `FORBIDDEN` (tras añadirse el rol asistente, 000-core FR-003a, se acepta); (f) US1-7 un `importeCent` enviado se ignora; (g) `presupuesto` público devuelve los 3 tipos con la tarifa vigente; (h) FR-011/P1: el router solo expone `presupuesto`, `crear`, `pagar`, `mias` (sin cambiar ni cancelar)
+- [x] T005 [US1] Implementar `presupuesto` (público) y `crear` (`roleProcedure("ASISTENTE")`, `calcularTarifa` con `ctx.ahora()`, `P2002` → `CONFLICT`, congreso finalizado → `CONFLICT`) en `apps/web/src/server/api/routers/inscripcion.ts` — FR-001…FR-005, FR-011, FR-012
+- [x] T006 [US1] Página `apps/web/src/app/congresos/[slug]/inscripcion/page.tsx` + `formulario.tsx`: tabla de precios vigentes (temprano hasta el {día}), selector de tipo y botón «Inscribirme»; sin sesión → enlaces a entrar/registrarse con `desde`; con sesión sin rol asistente → botón «Añadirme como asistente» (000-core FR-003a); ya inscrito → enlace a «Área personal»; al crear → `/area-personal/pago/{id}`. Botón «Inscribirme» en `apps/web/src/app/congresos/[slug]/page.tsx` — US1-1…US1-7
 
 ## Phase 4: User Story 2 - Pagar y obtener la acreditación (P1)
 
 **Independent Test**: tarjeta 4111… → confirmada con QR; 4000 0000 0000 0002 → sigue pendiente.
 
-- [ ] T007 [P] [US2] Prueba de integración `apps/web/tests/integration/004/pagar.test.ts`: (a) US2-1 aprobado → `CONFIRMADA`, `confirmadaEn`, `codigoAcreditacion` UUID v4, `Pago APROBADO` con el importe y referencia que termina en los 4 últimos dígitos; (b) US2-2 tarjeta 4000 0000 0000 0002 → `{ resultado: "RECHAZADO" }`, `Pago RECHAZADO`, sigue pendiente sin código; luego aprobado → confirmada; (c) US2-3 ya confirmada → `CONFLICT` «Esta inscripción ya está pagada»; (d) US2-4 inscripción ajena → `FORBIDDEN`; (e) tarjeta de 15 dígitos o con letras → `BAD_REQUEST` sin crear pago; (f) ningún `Pago` guarda el número completo; (g) dos pagos simultáneos → exactamente un `APROBADO`; (h) US2-5 `mias` devuelve QR solo para confirmadas y nunca datos de otros usuarios
-- [ ] T008 [US2] Implementar `pagar` (transacción con `SELECT … FROM "Inscripcion" WHERE id = $1 FOR UPDATE`) y `mias` (con `qrDataUrl` si está confirmada) en `apps/web/src/server/api/routers/inscripcion.ts` — FR-005…FR-009, FR-013
-- [ ] T009 [US2] Pasarela simulada `apps/web/src/app/area-personal/pago/[inscripcionId]/page.tsx` + `formulario.tsx`: congreso, tipo e importe; campo «Número de tarjeta» con ayuda («Tarjeta de prueba que se rechaza: 4000 0000 0000 0002»); botón «Pagar {importe}» desactivado mientras se procesa; resultado rechazado en `Alert`; aprobado → `/area-personal?pagada=1` — US2-1, US2-2
-- [ ] T010 [US2] Área personal `apps/web/src/app/area-personal/page.tsx`: mis inscripciones con congreso, tipo, tarifa, importe y estado; pendientes con «Pagar»; confirmadas con QR grande y su código («Muestra este QR en la entrada de cada sala»); aviso «Pago aprobado» si `?pagada=1`; vacío «No tienes inscripciones» — US2-1, US2-5
+- [x] T007 [P] [US2] Prueba de integración `apps/web/tests/integration/004/pagar.test.ts`: (a) US2-1 aprobado → `CONFIRMADA`, `confirmadaEn`, `codigoAcreditacion` UUID v4, `Pago APROBADO` con el importe y referencia que termina en los 4 últimos dígitos; (b) US2-2 tarjeta 4000 0000 0000 0002 → `{ resultado: "RECHAZADO" }`, `Pago RECHAZADO`, sigue pendiente sin código; luego aprobado → confirmada; (c) US2-3 ya confirmada → `CONFLICT` «Esta inscripción ya está pagada»; (d) US2-4 inscripción ajena → `FORBIDDEN`; (e) tarjeta de 15 dígitos o con letras → `BAD_REQUEST` sin crear pago; (f) ningún `Pago` guarda el número completo; (g) dos pagos simultáneos → exactamente un `APROBADO`; (h) US2-5 `mias` devuelve QR solo para confirmadas y nunca datos de otros usuarios
+- [x] T008 [US2] Implementar `pagar` (transacción con `SELECT … FROM "Inscripcion" WHERE id = $1 FOR UPDATE`) y `mias` (con `qrDataUrl` si está confirmada) en `apps/web/src/server/api/routers/inscripcion.ts` — FR-005…FR-009, FR-013
+- [x] T009 [US2] Pasarela simulada `apps/web/src/app/area-personal/pago/[inscripcionId]/page.tsx` + `formulario.tsx`: congreso, tipo e importe; campo «Número de tarjeta» con ayuda («Tarjeta de prueba que se rechaza: 4000 0000 0000 0002»); botón «Pagar {importe}» desactivado mientras se procesa; resultado rechazado en `Alert`; aprobado → `/area-personal?pagada=1` — US2-1, US2-2
+- [x] T010 [US2] Área personal `apps/web/src/app/area-personal/page.tsx`: mis inscripciones con congreso, tipo, tarifa, importe y estado; pendientes con «Pagar»; confirmadas con QR grande y su código («Muestra este QR en la entrada de cada sala»); aviso «Pago aprobado» si `?pagada=1`; vacío «No tienes inscripciones» — US2-1, US2-5
 
 ## Phase 5: Polish
 
-- [ ] T011 E2E `apps/web/tests/e2e/004-inscripcion.spec.ts`: `asistente5` se inscribe en Jornadas de Pediatría como estudiante (90,00 €, US1-1), paga con la tarjeta de rechazo (sigue «Pendiente de pago», US2-2) y con 4111… (confirmada y `img[alt="Código QR de acreditación"]` visible, US2-1); intento de reinscribirse lleva al área personal (US1-3); `ponente1` ve «Añadirme como asistente» (US1-6/FR-003a); visitante sin sesión ve los enlaces para entrar
-- [ ] T012 Regresión completa y resultados en este fichero; recorrer [quickstart.md](quickstart.md) y registrar lo observado en `specs/004-inscripcion-pago/informes/verificacion.md` (SC-001 medición humana pendiente si no la hace el responsable)
+- [x] T011 E2E `apps/web/tests/e2e/004-inscripcion.spec.ts`: `asistente5` se inscribe en Jornadas de Pediatría como estudiante (90,00 €, US1-1), paga con la tarjeta de rechazo (sigue «Pendiente de pago», US2-2) y con 4111… (confirmada y `img[alt="Código QR de acreditación"]` visible, US2-1); intento de reinscribirse lleva al área personal (US1-3); `ponente1` ve «Añadirme como asistente» (US1-6/FR-003a); visitante sin sesión ve los enlaces para entrar
+- [x] T012 Regresión completa y resultados en este fichero; recorrer [quickstart.md](quickstart.md) y registrar lo observado en `specs/004-inscripcion-pago/informes/verificacion.md` (SC-001 medición humana pendiente si no la hace el responsable)
+
+## Notas de implementación (iteración 1, 2026-11-03)
+
+- Todas las pruebas de integración (16) fallaron antes del código y pasaron después sin cambios en las pruebas.
+- **T011**: `global-setup.ts` copiado de `spec-002` (contenido idéntico) para recargar el seed en e2e.
+- **SC-001**: medición humana pendiente.
+
+| Comprobación | Resultado |
+|--------------|-----------|
+| Integración `tests/integration/004` | 16/16 ✔ (total 38/38) |
+| E2E `tests/e2e/004-inscripcion.spec.ts` | 4/4 ✔ (total 11/11) |
+| lint · typecheck · build | sin errores |
 
 ## Dependencies & Execution Order
 
