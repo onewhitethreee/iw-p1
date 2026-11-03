@@ -46,7 +46,7 @@ su agenda. Si es al menos el 80 %, descarga un certificado en PDF con sus datos,
 - Asistencias a sesiones fuera de la agenda no cuentan ni en el numerador ni en el denominador.
 - Las horas de formación son la suma de la duración de las sesiones de la agenda a las que asistió (p. ej. «6 h 30 min»).
 - El certificado se puede descargar varias veces; siempre refleja los datos actuales.
-- Si una sesión de la agenda se quitó del programa antes del congreso, no está en la agenda y no cuenta.
+- Una sesión que está en alguna agenda no se puede quitar del programa (000-core, `programa.quitar`), así que la agenda siempre contiene sesiones programadas (analyze I1).
 
 ## Requirements *(mandatory)*
 
