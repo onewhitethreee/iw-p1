@@ -14,9 +14,10 @@
 ## R3. Asignación y cambio de estado
 - **Decisión**: `db.$transaction` con `asignacion.create` + `propuesta.update({ estado: estadoTrasAsignar(estado) })`; error de unicidad de Prisma (`P2002`) → `CONFLICT` «Ese evaluador ya tiene asignada esta propuesta».
 
-## R4. Decisiones concurrentes
-- **Decisión**: `updateMany` condicionado a `estado: "EN_EVALUACION"` y comprobación de filas afectadas.
-- **Alternativas**: `SELECT … FOR UPDATE` (innecesario para una sola fila con condición).
+## R4. Decisiones y evaluaciones concurrentes (revisado tras analyze U1)
+- **Decisión**: transacción interactiva con `SELECT id FROM "Propuesta" WHERE id = $1 FOR UPDATE` al inicio de `evaluar` y de `decidir`.
+- **Motivo**: la versión inicial (`updateMany` condicionado) protegía decidir ∥ decidir, pero no evaluar ∥ decidir.
+- **Alternativas**: `updateMany` condicionado (insuficiente, ver arriba); aislamiento `Serializable` (requiere reintentos).
 
 ## R5. Media
 - **Decisión**: media calculada en el servidor con `aggregate` (`_avg`, `_count`), redondeada a 1 decimal y mostrada en es-ES («7,5»).

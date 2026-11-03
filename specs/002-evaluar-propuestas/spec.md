@@ -81,6 +81,7 @@ El organizador ve, por propuesta, el número de evaluaciones y la puntuación me
 - Un usuario con roles ponente y comité solo ve, como evaluador, las propuestas asignadas (nunca las suyas).
 - Un evaluador no ve las puntuaciones ni los comentarios de otros evaluadores; solo la suya.
 - Si se asignan más de dos evaluadores, la decisión puede tomarse cuando haya al menos dos evaluaciones, aunque falten otras.
+- Si un evaluador guarda su evaluación justo cuando el organizador decide, prevalece el orden real: si la decisión llega antes, la evaluación se rechaza («La propuesta ya está decidida»); nunca se modifica una evaluación después de la decisión (analyze U1).
 - Un evaluador asignado que no evalúa no bloquea la propuesta: el organizador asigna otro; las asignaciones no se quitan (Clarifications P1).
 
 ## Requirements *(mandatory)*
@@ -95,9 +96,9 @@ El organizador ve, por propuesta, el número de evaluaciones y la puntuación me
 - **FR-006**: Una evaluación MUST tener puntuación entera de 1 a 10 y comentarios (10–2000 caracteres); una por evaluador y propuesta, modificable hasta que la propuesta se decida.
 - **FR-007**: El organizador MUST poder aceptar o rechazar una propuesta solo si tiene al menos 2 evaluaciones; la decisión es definitiva.
 - **FR-008**: El organizador MUST ver por propuesta el número de evaluaciones y la puntuación media.
+- **FR-009**: Todas las reglas anteriores MUST validarse en el servidor.
 - **FR-010**: Las asignaciones MUST ser permanentes: no existe operación para quitarlas (Clarifications P1).
 - **FR-011**: La decisión MUST depender solo de la voluntad del organizador y del mínimo de 2 evaluaciones; no hay nota mínima ni decisión automática (Clarifications P2).
-- **FR-009**: Todas las reglas anteriores MUST validarse en el servidor.
 
 ### Key Entities
 
