@@ -46,7 +46,7 @@ apps/web/tests/integration/006/escanear.test.ts · apps/web/tests/e2e/006-acceso
 ## Decisiones de diseño
 
 1. **Resultado de negocio, no error** (R1): `escanear` devuelve `{ resultado: ADMITIDO | YA_REGISTRADO | RECHAZADO, motivo, asistente?, ocupacion }`. Solo el rol incorrecto produce `FORBIDDEN`.
-2. **Orden de comprobación** (R2, revisado tras analyze H1 y clarify P3): código existe → mismo congreso → inscripción confirmada → ventana `[inicio − 30 min, fin)` → ya registrado (no consume aforo) → si tiene reserva: aforo (`asistencias < aforo`) · si no tiene reserva: plazas sin reservar (`reservas + asistentesSinReserva < aforo`, motivo «No quedan plazas sin reservar»).
+2. **Orden de comprobación** (R2, revisado tras analyze H1 y clarify P3): código existe → mismo congreso → inscripción confirmada → ventana `[inicio − 30 min, fin)` → ya registrado (no consume aforo) → aforo de la sala para todos (`asistencias < aforo`, motivo «Aforo completo», FR-003) → si no tiene reserva, además plazas sin reservar (`reservas + asistentesSinReserva < aforo`, motivo «No quedan plazas sin reservar», FR-009). *(Precisado en implement: con la sala llena el motivo es «Aforo completo» para todos.)*
 3. **Concurrencia** (R3): `SELECT … FROM "Sesion" WHERE id = $1 FOR UPDATE` antes de contar; la unicidad `(inscripcionId, sesionId)` respalda «ya registrado».
 4. **Ocupación en la puerta** (R4): `ocupacion` consultada cada 3 s (TanStack Query `refetchInterval`), suficiente para «pocos segundos» (US2-1).
 5. **Lector** (R5): `html5-qrcode` en el cliente; tras leer un código se pausa 2 s para no enviar el mismo varias veces; campo manual siempre visible (FR-002, US1-7).
