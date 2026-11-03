@@ -21,6 +21,8 @@
 
 - Q: ¿Las fechas límite (cierre del plazo de envío y límite de inscripción temprana) se expresan como día completo en la zona del congreso o como instante exacto? → A: Día completo en la zona horaria del congreso: «hasta el día D» incluye hasta las 23:59:59 (hora del congreso) del día D.
 - Q: ¿Cómo obtiene un usuario con cuenta el otro rol público (ponente o asistente)? → A: El propio usuario puede añadirse el rol ponente o asistente desde su cuenta con un clic; los roles organizador, comité y acreditación solo los asigna un organizador.
+- Q: ¿El organizador necesita pantallas para dar de alta y editar congresos, salas, áreas temáticas y tarifas, o se cargan desde los datos de ejemplo? → A: Fuera de alcance en la versión 1: se cargan desde los datos de ejemplo, sin pantallas de gestión.
+- Q: ¿El rol comité es global o hay que ser miembro del comité de cada congreso concreto? → A: Global: un usuario con rol comité puede recibir asignaciones de cualquier congreso; la participación en un congreso la determinan sus asignaciones.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -107,7 +109,7 @@ en curso, finalizado), que sirve de punto de entrada a las historias.
 **Reglas de negocio compartidas** (se aplican en las specs que se indican)
 
 - **FR-010** (A1, spec-001/002/003): Estados de la propuesta: `ENVIADA` → `EN_EVALUACION` → `ACEPTADA` | `RECHAZADA`. Solo el organizador decide, y solo con ≥ 2 evaluaciones completadas.
-- **FR-011** (A2, spec-002): Solo el organizador asigna evaluadores con rol comité; nunca al autor de la propuesta ni dos veces al mismo evaluador.
+- **FR-011** (A2, spec-002): Solo el organizador asigna evaluadores con rol comité (rol global, válido para cualquier congreso); nunca al autor de la propuesta ni dos veces al mismo evaluador.
 - **FR-012** (A3, spec-002): La puntuación es un entero de 1 a 10 y los comentarios son obligatorios; una evaluación por evaluador y propuesta.
 - **FR-013** (anonimato, spec-002): Nada de lo que ve un evaluador (pantallas ni respuestas del servidor) MUST incluir el nombre, el correo ni el identificador del autor.
 - **FR-014** (A7, spec-003/005): Dos intervalos `[inicio, fin)` se solapan si `inicioA < finB` y `inicioB < finA`.
@@ -153,7 +155,7 @@ El detalle de campos, restricciones y transiciones está en [data-model.md](data
 ## Assumptions
 
 - Los acuerdos A1–A10 de [docs/agrupamiento.md](../../docs/agrupamiento.md) son supuestos del grupo donde la narrativa no decide.
-- La gestión completa de congresos, salas, áreas y tarifas (alta, edición, borrado) no aparece en la narrativa: en la versión 1 se cargan desde los datos de ejemplo y no tienen pantalla propia (Constitución II).
+- **Decisión (Clarifications 2026-11-03)**: la gestión de congresos, salas, áreas y tarifas (alta, edición, borrado) queda fuera de alcance; se cargan desde los datos de ejemplo y no tienen pantalla propia (Constitución II). Cambiar sus datos requiere modificar el seed.
 - No se envían correos electrónicos (confirmaciones, recuperación de contraseña): fuera de alcance en la versión 1.
 - Una propuesta tiene un único autor; los coautores quedan fuera de alcance.
 - La pasarela de pago es simulada (acuerdo A5); no se tratan datos bancarios reales.
