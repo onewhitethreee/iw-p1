@@ -1,7 +1,9 @@
 # Historias de usuario · SI-19 Gestión de Eventos y Congresos
 
 Extraídas de [descripcion-sistema.md](descripcion-sistema.md). Formato: «Como [rol], quiero [acción] para [beneficio]».
-Los criterios de aceptación son un **borrador inicial** para `/speckit-specify`; se concretarán con `/speckit-clarify`.
+Los criterios de aceptación son un **borrador inicial**; la versión vigente está en `specs/00X-*/spec.md` (generadas el 2026-11-03) y se concretará con `/speckit-clarify`.
+
+Responsable de las 8 historias: **Yangfeng Liu** (ver [agrupamiento.md](agrupamiento.md)).
 
 ## Actores
 
@@ -53,7 +55,7 @@ Los criterios de aceptación son un **borrador inicial** para `/speckit-specify`
 - Solo pueden construir agenda los asistentes con inscripción confirmada.
 - No se pueden añadir dos sesiones que se solapen en el tiempo.
 - No se puede añadir una sesión cuyo aforo ya esté completo.
-- Puedo quitar sesiones de mi agenda.
+- Puedo quitar de mi agenda las sesiones que aún no han empezado.
 
 ## HU-06 · Controlar el acceso a la sala con QR
 **Como** personal de acreditación, **quiero** escanear el QR del asistente a la entrada de la sala **para** controlar el aforo y registrar la asistencia real.
@@ -75,4 +77,4 @@ Los criterios de aceptación son un **borrador inicial** para `/speckit-specify`
 - Muestra inscripciones e ingresos totales y desglosados por tipo de entrada.
 - Muestra la ocupación de cada sesión respecto a su aforo.
 - Los datos se actualizan en tiempo real (sin recargar la página).
-- Permite detectar sesiones llenas para moverlas a una sala más grande.
+- Permite detectar sesiones llenas y moverlas a una sala más grande.
