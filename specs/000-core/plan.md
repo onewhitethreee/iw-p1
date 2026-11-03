@@ -112,6 +112,7 @@ packages/
     │   ├── congreso.ts               # faseCongreso(), plazoAbierto()
     │   ├── propuesta.ts              # transiciones de estado — A1
     │   ├── tarifa.ts                 # calcularTarifa() — A4
+    │   ├── ocupacion.ts              # nivelOcupacion() — spec-008 P1 (≥ 90 % / 100 %)
     │   ├── certificado.ts            # porcentajeAsistencia(), horasCertificadas() — 80 %
     │   ├── formato.ts                # euros(), fecha() en es-ES
     │   └── fechas.ts                 # inicioDeDia(), finDeDia() — clarify P1
