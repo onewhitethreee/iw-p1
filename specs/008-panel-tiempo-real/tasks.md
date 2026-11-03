@@ -38,13 +38,13 @@ description: "Lista de tareas de spec-008 (HU-08 Consultar el panel del congreso
 
 **Independent Test**: «Competencia digital docente» (Aula 3) → Auditorio; el panel muestra aforo 200.
 
-- [ ] T009 [P] [US3] Prueba de integración `apps/web/tests/integration/008/cambiar-sala.test.ts`: (a) US3-1 `salasLibres` excluye la sala actual, las que tienen sesión solapada y las de aforo < máx(reservas, asistencias) (P2), ordenadas por aforo; (b) US3-2 `cambiarSala` cambia la sala, mantiene reservas y asistencias (Edge Cases) y el siguiente `resumen` muestra el nuevo aforo; (c) US3-3 otra sesión ocupa la sala destino antes de confirmar → `CONFLICT` «La sala «X» ya tiene «título» de HH:mm a HH:mm» y la sesión no cambia; dos cambios simultáneos de sesiones solapadas a la misma sala → solo uno; (d) aforo insuficiente → `CONFLICT`; misma sala → `CONFLICT`; sala de otro congreso → `NOT_FOUND`; (e) US3-4 sesión terminada → `CONFLICT` «La sesión ya ha terminado» (también en `salasLibres`); congreso finalizado → `CONFLICT`; sesión empezada y no terminada → permitido (P3)
+- [ ] T009 [P] [US3] Prueba de integración `apps/web/tests/integration/008/cambiar-sala.test.ts`: (a) US3-1 `salasLibres` excluye la sala actual, las que tienen sesión solapada y las de aforo < máx(reservas, asistencias) (P2), ordenadas por aforo; (b) US3-2 `cambiarSala` cambia la sala en la fila `Sesion` (la misma que lee el programa público de spec-003, que se verifica en pantalla al integrar; analyze U1), mantiene reservas y asistencias (Edge Cases) y el siguiente `resumen` muestra el nuevo aforo; (c) US3-3 otra sesión ocupa la sala destino antes de confirmar → `CONFLICT` «La sala «X» ya tiene «título» de HH:mm a HH:mm» y la sesión no cambia; dos cambios simultáneos de sesiones solapadas a la misma sala → solo uno; (d) aforo insuficiente → `CONFLICT`; misma sala → `CONFLICT`; sala de otro congreso → `NOT_FOUND`; (e) US3-4 sesión terminada → `CONFLICT` «La sesión ya ha terminado» (también en `salasLibres`); congreso finalizado → `CONFLICT`; sesión empezada y no terminada → permitido (P3)
 - [ ] T010 [US3] Implementar `salasLibres` y `cambiarSala` en `apps/web/src/server/api/routers/panel.ts` (plan R4/R5: transacción con `FOR UPDATE` de la sala destino y de la sesión, `primerSolape` del dominio, mensajes del contrato con horas en la zona del congreso) — FR-005
-- [ ] T011 [US3] En `panel.tsx`, botón «Cambiar de sala» solo en sesiones `movible`, que despliega un selector con las salas libres (nombre y aforo), «Confirmar» y el error del servidor si lo hay; al confirmar se refresca `resumen` — US3-1, US3-2, SC-003
+- [ ] T011 [US3] En `panel.tsx`, botón «Cambiar de sala» en toda sesión `movible` (la completa es el caso típico; analyze U2), que despliega un selector con las salas libres (nombre y aforo), «Confirmar», «No hay salas libres en ese horario con aforo suficiente» si la lista está vacía (analyze U3) y el error del servidor si lo hay; al confirmar se refresca `resumen` — US3-1, US3-2, SC-003
 
 ## Phase 6: Polish
 
-- [ ] T012 E2E `apps/web/tests/e2e/008-panel.spec.ts`: organizador ve 35 confirmadas, 5 pendientes y el desglose (US1-1); «Rúbricas compartidas…» con «Completa» y filtro (US2-1/US2-3); cambiar «Competencia digital docente» al Auditorio y ver «200» (US3-2); `asistente1` en `/organizador/panel` → acceso denegado (US1-3)
+- [ ] T012 E2E `apps/web/tests/e2e/008-panel.spec.ts`: organizador ve 35 confirmadas, 5 pendientes y el desglose (US1-1); con el panel abierto se inserta un pago aprobado en la BD y la cifra de ingresos cambia en ≤ 6 s sin recargar (US1-2, SC-001, analyze C1); «Rúbricas compartidas…» → «Cambiar de sala» muestra «No hay salas libres…»; «Rúbricas compartidas…» con «Completa» y filtro (US2-1/US2-3); cambiar «Competencia digital docente» al Auditorio y ver «200» (US3-2); `asistente1` en `/organizador/panel` → acceso denegado (US1-3)
 - [ ] T013 Regresión completa y resultados en este fichero; [quickstart.md](quickstart.md) e `informes/verificacion.md` (SC-001 refresco 5 s, SC-002, SC-004 medidos)
 
 ## Dependencies & Execution Order
@@ -70,4 +70,4 @@ MVP = US1 (cifras e ingresos con refresco). Después US2 (ocupación) y US3 (cam
 | FR-005 (cambiar de sala, P2/P3) | T009, T010, T011 |
 | FR-006 (euros) | T006 |
 | US1-1…4 / US2-1…3 / US3-1…4 | T004–T012 |
-| SC-001 / SC-002 / SC-003 / SC-004 | T006, T013 / T004b / T011, T012 / T007d |
+| SC-001 / SC-002 / SC-003 / SC-004 | T006, T012, T013 / T004b / T011, T012 / T007d |
