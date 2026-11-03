@@ -150,6 +150,6 @@ Invariante: `count(Asistencia de la sesión) ≤ sala.aforo`.
 | Puntuación media | media de `Evaluacion.puntuacion` de la propuesta | 002 |
 | Plazas ocupadas por reserva | `count(EntradaAgenda)` de la sesión | 005, 008 |
 | Ocupación real | `count(Asistencia)` de la sesión / `sala.aforo` | 006, 008 |
-| % de asistencia | sesiones de la agenda con asistencia / sesiones de la agenda | 007 |
+| % de asistencia | sesiones de la agenda con asistencia / sesiones de la agenda; se muestra truncado a entero (spec-007 P2) | 007 |
 | Horas certificadas | suma de `fin − inicio` de las sesiones de la agenda a las que asistió | 007 |
 | Ingresos | suma de `Pago.importeCent` con resultado `APROBADO` | 008 |

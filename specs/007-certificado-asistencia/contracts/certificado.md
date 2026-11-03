@@ -4,7 +4,7 @@
 |---------------|------|--------|---------|--------|
 | `certificado.congresos` | query | Con sesión | — | `[{ id, slug, nombre, fin, finalizado }]` (inscripciones `CONFIRMADA` del usuario) |
 | `certificado.estado` | query | Con sesión (titular) | `{ congresoId }` | `EstadoCertificado` ([data-model](../data-model.md)) |
-| `GET /api/certificado/[congresoId]` | route handler | Con sesión (titular) | — | `200 application/pdf` · `401` sin sesión · `403` texto con el motivo |
+| `GET /api/certificado/[congresoId]` | route handler | Con sesión (titular) | — | `200 application/pdf` · `401` sin sesión · `403` texto con el motivo · `404` congreso inexistente |
 
 | Estado | Motivo |
 |--------|--------|
