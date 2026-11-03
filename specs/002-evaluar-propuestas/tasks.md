@@ -151,3 +151,7 @@ US1 (MVP: el comité ya puede evaluar las asignaciones del seed) → US2 → US3
 | US2-1…5 | T010, T013, T017 |
 | US3-1…5 | T014, T016, T017 |
 | SC-001 / SC-002 / SC-003 | T006 / T014b / T019 |
+
+## Phase 7: Convergence
+
+- [ ] T020 Medir con una persona real el tiempo desde abrir una asignación pendiente en `/comite` hasta ver «Evaluación guardada» (objetivo < 2 min tras leer el resumen) y registrarlo en `specs/002-evaluar-propuestas/informes/verificacion.md` per SC-003 (partial)
