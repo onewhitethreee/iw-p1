@@ -12,6 +12,14 @@
 
 **Input**: User description: "HU-08 · Como organizador, quiero un panel con inscripciones, ingresos y ocupación de cada sesión, con desglose por tipo de entrada, para tomar decisiones sobre la marcha."
 
+## Clarifications
+
+### Session 2026-11-03
+
+- Q: ¿Sobre qué cifra se decide que una sesión está «Completa» o «Casi completa»? → A: Sobre la ocupación = la mayor entre reservas y asistencias, dividida por el aforo de la sala.
+- Q: Al cambiar de sala una sesión con gente dentro, ¿qué aforo mínimo debe tener la sala nueva? → A: Aforo ≥ la mayor entre reservas y asistencias de la sesión.
+- Q: ¿Qué sesiones se pueden cambiar de sala desde el panel? → A: Las que no han terminado (`ahora < fin`), aunque ya hayan empezado, en un congreso no finalizado.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Ver inscripciones e ingresos con desglose por tipo de entrada (Priority: P1)
@@ -43,7 +51,7 @@ las sesiones completas o casi completas (≥ 90 %).
 
 **Acceptance Scenarios**:
 
-1. **Given** sesiones programadas, **When** el organizador abre el panel, **Then** ve por sesión: título, sala, horario, reservas / aforo, asistencias / aforo y porcentaje, con indicador «Completa» (100 %) o «Casi completa» (≥ 90 %).
+1. **Given** sesiones programadas, **When** el organizador abre el panel, **Then** ve por sesión: título, sala, horario, reservas / aforo, asistencias / aforo y porcentaje de ocupación (la mayor de las dos cifras / aforo, Clarifications P1), con indicador «Completa» (100 %) o «Casi completa» (≥ 90 %).
 2. **Given** el panel abierto, **When** el personal admite una entrada en una sesión, **Then** la asistencia de esa sesión se actualiza en ≤ 5 s.
 3. **Given** el panel, **When** el organizador ordena o filtra por «solo completas o casi completas», **Then** ve solo esas sesiones.
 
@@ -59,15 +67,17 @@ Desde una sesión llena del panel, el organizador ve las salas libres en ese hor
 
 **Acceptance Scenarios**:
 
-1. **Given** una sesión completa, **When** el organizador pulsa «Cambiar de sala», **Then** ve solo las salas sin otra sesión en ese horario y con aforo mayor o igual que las reservas actuales, con su aforo.
+1. **Given** una sesión completa que no ha terminado, **When** el organizador pulsa «Cambiar de sala», **Then** ve solo las salas sin otra sesión en ese horario y con aforo mayor o igual que la mayor entre reservas y asistencias actuales (Clarifications P2), con su aforo.
 2. **Given** una sala elegida de esa lista, **When** confirma el cambio, **Then** la sesión pasa a la nueva sala, el panel muestra el nuevo aforo y el programa público se actualiza.
 3. **Given** que otra sesión ocupa esa sala entre que se mostró la lista y se confirmó, **When** confirma, **Then** el sistema rechaza el cambio por solapamiento de sala y la sesión se queda donde estaba.
+4. **Given** una sesión ya terminada o un congreso finalizado, **When** el organizador intenta cambiarla de sala (también con una petición directa), **Then** no se ofrece la opción y el servidor lo rechaza (Clarifications P3).
 
 ### Edge Cases
 
 - Las asistencias ya registradas se mantienen al cambiar de sala (pertenecen a la sesión, no a la sala).
 - Si la conexión falla durante el refresco, el panel mantiene los últimos datos y avisa «Sin actualizar desde hh:mm:ss».
 - Ingresos: solo cuentan pagos aprobados; las inscripciones pendientes no suman.
+- Una sesión ya empezada puede cambiar de sala (como en spec-003); una ya terminada no (Clarifications P3).
 
 ## Requirements *(mandatory)*
 
@@ -75,9 +85,9 @@ Desde una sesión llena del panel, el organizador ve las salas libres en ese hor
 
 - **FR-001**: Solo el `ORGANIZADOR` MUST poder ver el panel y sus datos.
 - **FR-002**: El panel MUST mostrar inscripciones confirmadas y pendientes, e ingresos (suma de pagos aprobados), en total y por tipo de asistente y tarifa.
-- **FR-003**: El panel MUST mostrar por sesión: reservas en agendas, asistencias registradas, aforo de la sala y porcentaje, y marcar las completas (100 %) y casi completas (≥ 90 %).
+- **FR-003**: El panel MUST mostrar por sesión: reservas en agendas, asistencias registradas, aforo de la sala y porcentaje de ocupación (máx(reservas, asistencias) / aforo, Clarifications P1), y marcar las completas (100 %) y casi completas (≥ 90 %).
 - **FR-004**: Los datos MUST refrescarse solos cada 5 segundos como máximo sin recargar la página, mostrando la hora del último dato (A9).
-- **FR-005**: El organizador MUST poder mover una sesión a otra sala desde el panel; las opciones MUST limitarse a salas libres en ese horario con aforo ≥ reservas, y el servidor MUST volver a validar el cambio con las reglas de HU-03 (FR-004 a FR-006 de spec-003).
+- **FR-005**: El organizador MUST poder mover una sesión a otra sala desde el panel; las opciones MUST limitarse a salas libres en ese horario con aforo ≥ máx(reservas, asistencias) (Clarifications P2), solo para sesiones no terminadas de un congreso no finalizado (Clarifications P3), y el servidor MUST volver a validar el cambio con esas mismas reglas y las de HU-03 (solapamiento de sala, FR-005 de spec-003; congreso finalizado, FR-012 de spec-003).
 - **FR-006**: Importes en euros con formato español.
 
 ### Key Entities
