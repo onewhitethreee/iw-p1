@@ -16,6 +16,12 @@ describe("certificado (80 %)", () => {
     expect(cumpleUmbral(0, 0)).toBe(false);
     expect(porcentajeAsistencia(0, 0)).toBe(0);
   });
+  it("clarify P2 (spec-007): el porcentaje se muestra truncado a entero", () => {
+    expect(porcentajeAsistencia(2, 3)).toBe(66);
+    expect(porcentajeAsistencia(7, 9)).toBe(77);
+    expect(porcentajeAsistencia(799, 1000)).toBe(79); // 79,9 % nunca se muestra como 80
+    expect(porcentajeAsistencia(5, 5)).toBe(100);
+  });
   it("suma la duración en minutos de las sesiones asistidas", () => {
     const s = (a: string, b: string) => ({ inicio: new Date(a), fin: new Date(b) });
     expect(
