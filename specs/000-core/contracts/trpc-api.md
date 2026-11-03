@@ -33,12 +33,18 @@ Leyenda de acceso: **P** público · **A** cualquier usuario con sesión · rol 
 | `evaluacion.decidir` | mutation | ORGANIZADOR | `{propuestaId, decision: ACEPTAR\|RECHAZAR}` | `CONFLICT` si hay < 2 evaluaciones o ya está decidida. |
 
 ## programa (spec-003)
+Horario de entrada: `{dia: "AAAA-MM-DD", horaInicio: "HH:mm", horaFin: "HH:mm"}` en la zona del congreso, mismo día (spec-003 clarify P2/P3). Detalle y mensajes: [spec-003/contracts/programa.md](../../003-programa-congreso/contracts/programa.md).
+
+| Procedimiento | Tipo | Acceso | Entrada | Salida / reglas |
+|---------------|------|--------|---------|-----------------|
 | `programa.pendientes` | query | ORGANIZADOR | `{congresoId}` | Propuestas aceptadas aún sin sesión. |
-| `programa.programar` | mutation | ORGANIZADOR | `{propuestaId, salaId, inicio, fin}` | `CONFLICT` si la propuesta no está aceptada, solapa sala o ponente, o cae fuera de las fechas. |
-| `programa.mover` | mutation | ORGANIZADOR | `{sesionId, salaId?, inicio?, fin?}` | Mismas reglas que `programar` y además el aforo de la nueva sala ≥ reservas de la agenda (lo usa spec-008). |
-| `programa.quitar` | mutation | ORGANIZADOR | `{sesionId}` | `CONFLICT` si la sesión está en alguna agenda o tiene asistencias. |
-| `programa.publicar` | mutation | ORGANIZADOR | `{congresoId}` | Pasa a `PUBLICADO` y regenera las páginas públicas. |
-| `programa.publico` | query | P | `{slug}` | Solo si está `PUBLICADO`. |
+| `programa.sesiones` | query | ORGANIZADOR | `{congresoId}` | Sesiones con sala, ponencia, reservas y asistencias. |
+| `programa.programar` | mutation | ORGANIZADOR | `{propuestaId, salaId, dia, horaInicio, horaFin}` | `CONFLICT` si la propuesta no está aceptada, solapa sala o ponente, o el congreso ha finalizado; `BAD_REQUEST` si el horario es inválido o cae fuera de las fechas. |
+| `programa.mover` | mutation | ORGANIZADOR | `{sesionId, salaId?, dia?, horaInicio?, horaFin?}` | Mismas reglas que `programar` + aforo de la nueva sala ≥ reservas; sesión empezada → solo `salaId` (lo usa spec-008). |
+| `programa.quitar` | mutation | ORGANIZADOR | `{sesionId}` | `CONFLICT` si tiene reservas o asistencias, ya empezó o el congreso ha finalizado. |
+| `programa.publicar` | mutation | ORGANIZADOR | `{congresoId}` | Pasa a `PUBLICADO` (idempotente). |
+| `programa.publico` | query | P | `{slug}` | Sesiones solo si está `PUBLICADO`. |
+| `programa.sesionPublica` | query | P | `{slug, sesionId}` | Detalle público; `NOT_FOUND` si no procede. |
 
 ## inscripcion (spec-004)
 | `inscripcion.presupuesto` | query | P | `{congresoId, tipoAsistente}` | Tarifa vigente hoy (temprana o general) e importe. |

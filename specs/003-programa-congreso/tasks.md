@@ -39,7 +39,7 @@ description: "Lista de tareas de spec-003 (HU-03 Montar y publicar el programa)"
 
 ### Tests for User Story 1 ⚠️
 
-- [ ] T006 [P] [US1] Prueba de integración `apps/web/tests/integration/003/programar.test.ts`: (a) US1-1 crea la sesión con las horas convertidas desde la zona del congreso (10:00 Madrid → UTC correcto) y la ponencia sale de `pendientes`; (b) US1-2 solape de ponente → `CONFLICT` con nombre del ponente, título y horas locales; (c) US1-3 solape de sala → `CONFLICT` con sala, título y horas; (d) US1-4 sesiones contiguas (fin = inicio) aceptadas, para ponente y para sala; (e) US1-5 propuesta `EN_EVALUACION` → `CONFLICT` «Solo se pueden programar ponencias aceptadas»; ya programada → «Esta ponencia ya está programada»; (f) US1-6 fin ≤ inicio y fuera de las fechas del congreso → `BAD_REQUEST`; sala de otro congreso → `BAD_REQUEST`; (g) US1-7 no organizador → `FORBIDDEN`; (h) FR-012 congreso finalizado → `CONFLICT` «El congreso ha finalizado…»; (i) SC-001 dos `programar` simultáneos en la misma sala y hora → exactamente uno se crea
+- [ ] T006 [P] [US1] Prueba de integración `apps/web/tests/integration/003/programar.test.ts`: (a) US1-1 crea la sesión con las horas convertidas desde la zona del congreso (10:00 Madrid → UTC correcto) y la ponencia sale de `pendientes`; (b) US1-2 solape de ponente → `CONFLICT` con nombre del ponente, título y horas locales; (c) US1-3 solape de sala → `CONFLICT` con sala, título y horas; (d) US1-4 sesiones contiguas (fin = inicio) aceptadas, para ponente y para sala; (e) US1-5 propuesta `EN_EVALUACION` → `CONFLICT` «Solo se pueden programar ponencias aceptadas»; ya programada → «Esta ponencia ya está programada»; (f) US1-6 fin ≤ inicio (incluido el intento de cruzar la medianoche, clarify P3) y fuera de las fechas del congreso → `BAD_REQUEST` «La hora de fin debe ser posterior a la de inicio»; sala de otro congreso → `BAD_REQUEST`; (g) US1-7 no organizador → `FORBIDDEN`; (h) FR-012 congreso finalizado → `CONFLICT` «El congreso ha finalizado…»; (i) SC-001 dos `programar` simultáneos en la misma sala y hora → exactamente uno se crea
 
 ### Implementation for User Story 1
 
@@ -123,7 +123,7 @@ US1 (MVP: montar el programa) → US2 (ajustes) → US3 (publicación y SEO) →
 |-----------------------|--------|
 | FR-001 (solo organizador) | T006g, T009h, T012a, T007, T010, T013 |
 | FR-002 (solo aceptadas, una vez) | T006e, T007 |
-| FR-003 (sala del congreso, inicio < fin, dentro de fechas) | T006f, T007 |
+| FR-003 (sala del congreso, inicio < fin, mismo día, dentro de fechas) | T006f, T007 |
 | FR-004 (solape de ponente) | T006b/d, T009b, T007, T010 |
 | FR-005 (solape de sala) | T006c/d, T009b, T007, T010 |
 | FR-006 (aforo ≥ reservas al mover) | T009c, T010 |

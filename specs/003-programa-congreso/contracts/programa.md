@@ -1,7 +1,7 @@
 # Contrato: router `programa` (spec-003)
 
 Concreta las filas `programa.*` de [000-core/contracts/trpc-api.md](../../000-core/contracts/trpc-api.md) y añade `sesiones` (vista del organizador).
-Horario de entrada: `{ dia: "AAAA-MM-DD", horaInicio: "HH:mm", horaFin: "HH:mm" }` en la zona del congreso (clarify P2).
+Horario de entrada: `{ dia: "AAAA-MM-DD", horaInicio: "HH:mm", horaFin: "HH:mm" }` en la zona del congreso (clarify P2), inicio y fin el mismo día (clarify P3). **Reflejado en el contrato compartido** de 000-core (analyze C1).
 
 | Procedimiento | Tipo | Acceso | Entrada | Salida |
 |---------------|------|--------|---------|--------|
