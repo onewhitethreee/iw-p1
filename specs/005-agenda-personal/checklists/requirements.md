@@ -34,5 +34,5 @@
 ## Notes
 
 - Validación: iteración 1 superada, sin marcadores [NEEDS CLARIFICATION]; los puntos dudosos se resolvieron con los acuerdos A1–A10 y se registraron como supuestos.
-- Candidato a clarify: qué hacer si el organizador mueve una sesión y provoca un solape en agendas existentes (ahora: aviso).
+- Clarify 2026-11-03: P1 se conservan ambas sesiones con aviso de solape.
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`
