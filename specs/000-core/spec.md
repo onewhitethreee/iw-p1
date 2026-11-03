@@ -15,6 +15,12 @@
 > (Constitución, principio V). Las únicas capacidades propias son el acceso con cuenta y los roles, que todas
 > las historias necesitan.
 
+## Clarifications
+
+### Session 2026-11-03
+
+- Q: ¿Las fechas límite (cierre del plazo de envío y límite de inscripción temprana) se expresan como día completo en la zona del congreso o como instante exacto? → A: Día completo en la zona horaria del congreso: «hasta el día D» incluye hasta las 23:59:59 (hora del congreso) del día D.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Acceder con mi cuenta y mis roles (Priority: P1)
@@ -54,6 +60,7 @@ en curso, finalizado), que sirve de punto de entrada a las historias.
 - Un usuario sin ningún rol operativo (solo cuenta) solo ve las páginas públicas.
 - Si se retira un rol a un usuario con la sesión abierta, la siguiente operación protegida se rechaza.
 - Fechas y horas se muestran siempre en la zona horaria del congreso (Europe/Madrid por defecto).
+- Una inscripción creada a las 23:30 (hora del congreso) del día límite temprano paga la tarifa temprana; a las 00:00 del día siguiente, la general. Un ponente que envía a las 23:59 del día de cierre es aceptado; a las 00:00 del día siguiente, rechazado.
 
 ## Requirements *(mandatory)*
 
@@ -88,7 +95,8 @@ en curso, finalizado), que sirve de punto de entrada a las historias.
 
 **Congresos**
 
-- **FR-005**: Cada congreso MUST tener: nombre, identificador legible para la URL (slug), descripción, sede, zona horaria, fecha y hora de inicio y fin, apertura y cierre del plazo de envío de propuestas, y fecha límite de inscripción temprana.
+- **FR-005**: Cada congreso MUST tener: nombre, identificador legible para la URL (slug), descripción, sede, zona horaria, fecha y hora de inicio y fin, **día** de apertura y **día** de cierre del plazo de envío de propuestas, y **día** límite de inscripción temprana.
+- **FR-005a**: Los días límite se interpretan como días completos en la zona horaria del congreso: el plazo de envío está abierto desde las 00:00:00 del día de apertura hasta las 23:59:59 del día de cierre, y la tarifa temprana se aplica hasta las 23:59:59 del día límite (hora del congreso). Las pantallas muestran solo el día («hasta el 4 de octubre»).
 - **FR-006**: Todas las entidades de negocio (áreas, propuestas, salas, sesiones, tarifas, inscripciones…) MUST pertenecer a un congreso (acuerdo A10).
 - **FR-007**: La fase de un congreso MUST deducirse de sus fechas: *llamada abierta* (dentro del plazo de envío), *en preparación*, *en curso* (entre inicio y fin) y *finalizado* (después del fin).
 
@@ -100,7 +108,7 @@ en curso, finalizado), que sirve de punto de entrada a las historias.
 - **FR-013** (anonimato, spec-002): Nada de lo que ve un evaluador (pantallas ni respuestas del servidor) MUST incluir el nombre, el correo ni el identificador del autor.
 - **FR-014** (A7, spec-003/005): Dos intervalos `[inicio, fin)` se solapan si `inicioA < finB` y `inicioB < finA`.
 - **FR-015** (A6, spec-005/006/008): El aforo de una sesión es el aforo de su sala. Las agendas que incluyen una sesión no pueden superar su aforo; las asistencias registradas en una sesión tampoco.
-- **FR-016** (A4, spec-004): La tarifa aplicable se determina por tipo de asistente y por la fecha de creación de la inscripción frente a la fecha límite temprana; el importe queda fijado en la inscripción.
+- **FR-016** (A4, spec-004): La tarifa aplicable se determina por tipo de asistente y por el momento de creación de la inscripción: temprana si es anterior o igual a las 23:59:59 del día límite temprano en la zona del congreso (FR-005a); el importe queda fijado en la inscripción.
 - **FR-017** (A5, spec-004): Estados de la inscripción: `PENDIENTE_PAGO` → `CONFIRMADA`; un asistente tiene como máximo una inscripción por congreso.
 - **FR-018** (spec-005/006/007): Solo una inscripción `CONFIRMADA` tiene acreditación QR, agenda y derecho a certificado.
 - **FR-019** (spec-007): Umbral de certificado: asistencias a sesiones de la agenda / sesiones de la agenda ≥ 80 %, con el congreso finalizado.
