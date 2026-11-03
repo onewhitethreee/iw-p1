@@ -9,8 +9,8 @@ describe("congreso.listar / porSlug (000-core US2)", () => {
     const ahora = new Date();
     const d = (n: number) => new Date(ahora.getTime() + n * DIA);
     await crearCongreso(ahora, { slug: "abierto", inicio: d(30), fin: d(32) });
-    await crearCongreso(ahora, { slug: "en-curso", envioAbre: d(-60), envioCierra: d(-30), inicio: d(-1), fin: d(1) });
-    await crearCongreso(ahora, { slug: "finalizado", envioAbre: d(-90), envioCierra: d(-60), inicio: d(-10), fin: d(-9) });
+    await crearCongreso(ahora, { slug: "en-curso", envioAbre: d(-60), envioCierra: d(-30), limiteTemprana: d(-20), inicio: d(-1), fin: d(1) });
+    await crearCongreso(ahora, { slug: "finalizado", envioAbre: d(-90), envioCierra: d(-60), limiteTemprana: d(-50), inicio: d(-10), fin: d(-9) });
     const api = await crearCaller(null, ahora);
     const lista = await api.congreso.listar();
     expect(Object.fromEntries(lista.map((c) => [c.slug, c.fase]))).toEqual({
