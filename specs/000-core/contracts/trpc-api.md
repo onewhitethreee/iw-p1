@@ -25,6 +25,7 @@ Leyenda de acceso: **P** público · **A** cualquier usuario con sesión · rol 
 | `propuesta.mias` | query | PONENTE | `{congresoId?}` | Propuestas del autor con su estado. |
 
 ## evaluacion (spec-002)
+| `evaluacion.miembrosComite` | query | ORGANIZADOR | — | `[{id, nombre}]` de usuarios con rol COMITE (para elegir evaluador). Añadido por spec-002 (analyze X1 de spec-003). |
 | `evaluacion.asignar` | mutation | ORGANIZADOR | `{propuestaId, evaluadorId}` | `CONFLICT` si el evaluador es el autor, ya estaba asignado o la propuesta está decidida. |
 | `evaluacion.misAsignaciones` | query | COMITE | `{congresoId}` | Lista **sin** datos de autor. |
 | `evaluacion.detalle` | query | COMITE | `{asignacionId}` | Título, resumen y área; **sin** datos de autor. `FORBIDDEN` si no es su asignación. |
