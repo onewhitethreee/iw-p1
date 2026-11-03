@@ -1,0 +1,43 @@
+--- spec-antes-clarify-1.md	2026-11-03 16:31:04.367724756 +0000
++++ ../spec.md	2026-11-03 16:31:27.154723905 +0000
+@@ -12,6 +12,13 @@
+ 
+ **Input**: User description: "HU-07 · Como asistente, quiero descargar un certificado de asistencia desde mi área personal para justificar mis horas de formación."
+ 
++## Clarifications
++
++### Session 2026-11-03
++
++- Q: ¿Quién puede ver y descargar el certificado de una inscripción? → A: Solo el titular de la inscripción confirmada, sea cual sea su rol (asistente o ponente inscrito). Nadie más, tampoco el organizador.
++- Q: ¿Cómo se muestra un porcentaje que no es entero (p. ej. 2 de 3 sesiones)? → A: Truncado a entero hacia abajo («66 %»), para no mostrar nunca «80 %» a quien no llega; la decisión de disponibilidad usa la comparación exacta.
++
+ ## User Scenarios & Testing *(mandatory)*
+ 
+ ### User Story 1 - Descargar el certificado si he asistido al 80 % (Priority: P1)
+@@ -30,12 +37,12 @@
+ 3. **Given** el mismo asistente del caso 2, **When** pide el PDF con una petición directa a la URL de descarga, **Then** el servidor lo rechaza con el mismo motivo.
+ 4. **Given** un congreso que aún no ha finalizado, **When** el asistente abre «Certificado», **Then** ve «Disponible cuando termine el congreso (fecha)» y su porcentaje provisional.
+ 5. **Given** un asistente con la agenda vacía, **When** abre «Certificado», **Then** ve «No disponible: tu agenda no tiene sesiones».
+-6. **Given** un usuario que intenta descargar el certificado de otra persona, **When** hace la petición, **Then** el sistema lo rechaza.
++6. **Given** un usuario (incluido un organizador) que intenta descargar el certificado de otra persona, **When** hace la petición, **Then** el sistema lo rechaza (Clarifications P1).
+ 7. **Given** un usuario sin inscripción confirmada en el congreso, **When** abre «Certificado», **Then** ve que no tiene inscripción confirmada.
+ 
+ ### Edge Cases
+ 
+-- Umbral exacto: 80,0 % se acepta; 79,9 % no (comparación sin redondeo: `asistidas × 100 ≥ 80 × total`).
++- Umbral exacto: 80,0 % se acepta; 79,9 % no (comparación sin redondeo: `asistidas × 100 ≥ 80 × total`). El porcentaje se muestra truncado a entero (Clarifications P2): 2 de 3 → «66 %».
+ - Asistencias a sesiones fuera de la agenda no cuentan ni en el numerador ni en el denominador.
+ - Las horas de formación son la suma de la duración de las sesiones de la agenda a las que asistió (p. ej. «6 h 30 min»).
+ - El certificado se puede descargar varias veces; siempre refleja los datos actuales.
+@@ -47,9 +54,9 @@
+ 
+ - **FR-001**: El certificado MUST estar disponible solo cuando el congreso ha finalizado (`ahora ≥ fin`).
+ - **FR-002**: El sistema MUST calcular el porcentaje como sesiones de la agenda con asistencia registrada / sesiones de la agenda, y exigir ≥ 80 %.
+-- **FR-003**: El área personal MUST mostrar el porcentaje, el número de sesiones asistidas y el total, y, si no está disponible, el motivo.
++- **FR-003**: El área personal MUST mostrar el porcentaje (entero truncado hacia abajo, Clarifications P2), el número de sesiones asistidas y el total, y, si no está disponible, el motivo.
+ - **FR-004**: El certificado MUST ser un PDF descargable con: nombre del asistente, congreso, fechas y sede, lista de sesiones asistidas y total de horas de formación.
+-- **FR-005**: La descarga MUST volver a comprobar las condiciones en el servidor y solo permitirla al propietario de la inscripción confirmada.
++- **FR-005**: La descarga MUST volver a comprobar las condiciones en el servidor y solo permitirla al titular de la inscripción confirmada, con independencia de su rol; ningún otro usuario (tampoco el organizador) puede obtenerla (Clarifications P1).
+ - **FR-006**: Sin inscripción confirmada o con la agenda vacía, el certificado MUST no estar disponible y explicar el motivo.
+ 
+ ### Key Entities
