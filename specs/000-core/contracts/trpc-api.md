@@ -47,10 +47,11 @@ Leyenda de acceso: **P** público · **A** cualquier usuario con sesión · rol 
 | `inscripcion.mias` | query | ASISTENTE | — | Inscripciones con estado y, si está confirmada, el QR. |
 
 ## agenda (spec-005)
+| `agenda.congresos` | query | ASISTENTE | — | Congresos con inscripción confirmada (punto de entrada). Añadido por spec-005. |
 | `agenda.sesiones` | query | ASISTENTE | `{congresoId}` | Sesiones publicadas con plazas libres y si están en su agenda. |
 | `agenda.anadir` | mutation | ASISTENTE | `{sesionId}` | `FORBIDDEN` sin inscripción confirmada; `CONFLICT` si se solapa o el aforo está completo. |
 | `agenda.quitar` | mutation | ASISTENTE | `{sesionId}` | `CONFLICT` si la sesión ya ha empezado. |
-| `agenda.mia` | query | ASISTENTE | `{congresoId}` | Agenda ordenada por hora. |
+| `agenda.mia` | query | ASISTENTE | `{congresoId}` | Agenda ordenada por hora; cada entrada indica con qué otras se solapa por cambios del programa (spec-005 clarify P1). |
 
 ## acreditacion (spec-006)
 | `acreditacion.sesionesDeHoy` | query | ACREDITACION | `{congresoId}` | Sesiones para elegir la puerta. |
