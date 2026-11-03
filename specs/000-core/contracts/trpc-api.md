@@ -57,8 +57,9 @@ Leyenda de acceso: **P** público · **A** cualquier usuario con sesión · rol 
 | `acreditacion.escanear` | mutation | ACREDITACION | `{sesionId, codigo}` | Devuelve `{resultado: ADMITIDO\|YA_REGISTRADO\|RECHAZADO, motivo, ocupacion}`. Rechaza QR desconocido, inscripción no confirmada, de otro congreso o aforo completo. |
 
 ## certificado (spec-007)
-| `certificado.estado` | query | ASISTENTE | `{congresoId}` | `{disponible, motivo, porcentaje, asistidas, total, horas}` |
-| `GET /api/certificado/[congresoId]` | route handler | ASISTENTE (propietario) | — | PDF; `403` con motivo si no cumple las condiciones. |
+| `certificado.congresos` | query | A | — | Congresos en los que el usuario tiene inscripción `CONFIRMADA`: `[{id, slug, nombre, fin, finalizado}]`. Añadido por spec-007. |
+| `certificado.estado` | query | A (titular, spec-007 P1) | `{congresoId}` | `{estado: DISPONIBLE\|NO_FINALIZADO\|AGENDA_VACIA\|BAJO_UMBRAL\|SIN_INSCRIPCION, disponible, motivo, porcentaje (entero truncado, P2), asistidas, total, horas, sesiones[]}`. Siempre calcula sobre la inscripción del propio usuario. Concretado por spec-007. |
+| `GET /api/certificado/[congresoId]` | route handler | A (titular) | — | PDF (`application/pdf`, adjunto `certificado-<slug>.pdf`); `401` sin sesión; `403` con el motivo en texto si no cumple las condiciones. Cualquier rol (spec-007 P1). |
 
 ## panel (spec-008)
 | `panel.resumen` | query | ORGANIZADOR | `{congresoId}` | Inscripciones (confirmadas/pendientes), ingresos y desglose por tipo de asistente y tarifa; ocupación (reservas y asistencias) de cada sesión frente a su aforo; momento del cálculo. Se consulta cada 5 s. |
