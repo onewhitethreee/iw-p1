@@ -10,4 +10,4 @@ Seed: `jornadas-pediatria-2027` (límite temprano futuro → precio temprano), `
 | 4 | US2-1 aprobado | Pagar con 4111 1111 1111 1111 | «Confirmada» y QR visible |
 | 5 | US1-3 duplicada | Volver a inscribirse en el mismo congreso | «Ya tienes una inscripción…» |
 | 6 | US2-4 ajena | Integración: pagar la inscripción de otro | FORBIDDEN |
-| 7 | US1-6 manipulada | Integración: enviar `importeCent` | Ignorado; importe del servidor |
+| 7 | US1-7 manipulada | Integración: enviar `importeCent` | Ignorado; importe del servidor |

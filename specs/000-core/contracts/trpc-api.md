@@ -41,7 +41,7 @@ Leyenda de acceso: **P** público · **A** cualquier usuario con sesión · rol 
 | `programa.publico` | query | P | `{slug}` | Solo si está `PUBLICADO`. |
 
 ## inscripcion (spec-004)
-| `inscripcion.presupuesto` | query | P | `{congresoId, tipoAsistente}` | Tarifa vigente hoy (temprana o general) e importe. |
+| `inscripcion.presupuesto` | query | P | `{congresoId}` | Tarifa vigente hoy (temprana o general) e importe de cada tipo de asistente. Concretado por spec-004 (analyze C1). |
 | `inscripcion.crear` | mutation | ASISTENTE | `{congresoId, tipoAsistente}` | Crea `PENDIENTE_PAGO` con el importe fijado. `CONFLICT` si ya tiene inscripción o el congreso ha finalizado. |
 | `inscripcion.pagar` | mutation | ASISTENTE (propietario) | `{inscripcionId, tarjeta}` | Pago simulado. Aprobado → `CONFIRMADA` + código de acreditación. Rechazado → sigue pendiente. `CONFLICT` si ya está confirmada. |
 | `inscripcion.mias` | query | ASISTENTE | — | Inscripciones con estado y, si está confirmada, el QR. |
