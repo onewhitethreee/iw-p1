@@ -25,4 +25,10 @@
 - En el seed una inscripción pendiente no tiene código (se genera al confirmar, 000-core); el escenario 5 del quickstart se comprueba solo por integración, donde la regla se mantiene en el servidor como defensa.
 - La cámara se activa con «Escanear con la cámara» (no se pide permiso al abrir la página); el campo manual está siempre visible (US1-7). Tras cada lectura se ignoran las siguientes durante 2 s.
 
-**Regresión**: dominio 34/34 · integración 38/38 (000-core 22 + spec-006 16) · e2e 11/11 (000-core 7 + spec-006 4) · lint y typecheck sin errores · `next build` correcto.
+## Iteración 2 (converge T010)
+
+| # | Escenario | Cómo se comprobó | Esperado | Observado | Resultado |
+|---|-----------|------------------|----------|-----------|-----------|
+| 11 | Edge «Sin conexión» | e2e: `/api/trpc` cortado con `page.route` | «Sin conexión: no se puede validar…» (no «Failed to fetch»); «Ocupación sin actualizar» hasta que vuelve la red | Igual | ✔ |
+
+**Regresión**: dominio 34/34 · integración 38/38 (000-core 22 + spec-006 16) · e2e 12/12 (000-core 7 + spec-006 5) · lint y typecheck sin errores · `next build` correcto.

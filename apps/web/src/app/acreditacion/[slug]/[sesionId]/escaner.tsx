@@ -12,6 +12,12 @@ import { useTRPC } from "~/trpc/react";
 type Ocupacion = { asistencias: number; aforo: number };
 type Respuesta = { resultado: "ADMITIDO" | "YA_REGISTRADO" | "RECHAZADO"; motivo: string; asistente: string | null };
 
+/** Sin respuesta del servidor (red caída): el cliente no recibe un error de tRPC con datos (Edge Cases «Sin conexión»). */
+const SIN_CONEXION = "Sin conexión: no se puede validar. Comprueba la red y vuelve a intentarlo.";
+function mensajeError(e: { message: string; data?: unknown }) {
+  return e.data ? e.message : SIN_CONEXION;
+}
+
 /** Tras una lectura de la cámara se ignoran las siguientes durante 2 s (plan R5). */
 const PAUSA_MS = 2_000;
 
@@ -33,7 +39,7 @@ export function Escaner({ sesionId, inicial }: { sesionId: string; inicial: Ocup
 
   // US2: la ocupación se refresca cada 3 s para ver también lo que entra por otras puertas (R4)
   const opcionesOcupacion = trpc.acreditacion.ocupacion.queryOptions({ sesionId });
-  const ocupacion = useQuery({ ...opcionesOcupacion, initialData: inicial, refetchInterval: 3_000 });
+  const ocupacion = useQuery({ ...opcionesOcupacion, initialData: inicial, refetchInterval: 3_000, retry: false });
 
   const escanear = useMutation(
     trpc.acreditacion.escanear.mutationOptions({
@@ -96,6 +102,7 @@ export function Escaner({ sesionId, inicial }: { sesionId: string; inicial: Ocup
           {asistencias} / {aforo}
         </p>
         <p className="text-sm text-muted-foreground">quedan {Math.max(aforo - asistencias, 0)}</p>
+        {ocupacion.isRefetchError && <p className="text-sm font-medium text-destructive">Ocupación sin actualizar</p>}
       </div>
 
       {respuesta && estilo && (
@@ -110,7 +117,7 @@ export function Escaner({ sesionId, inicial }: { sesionId: string; inicial: Ocup
       )}
       {escanear.error && (
         <p role="alert" className="text-sm text-destructive">
-          {escanear.error.message}
+          {mensajeError(escanear.error)}
         </p>
       )}
 
