@@ -27,7 +27,7 @@ y envía la propuesta. El sistema la registra en estado `ENVIADA`.
 
 1. **Given** un congreso con el plazo de envío abierto y un ponente con sesión iniciada, **When** envía una propuesta con título, resumen y un área del congreso, **Then** el sistema la guarda en estado `ENVIADA`, muestra una confirmación y la propuesta aparece en «Mis propuestas».
 2. **Given** un congreso cuyo plazo de envío ya ha cerrado, **When** un ponente intenta enviar una propuesta (desde el formulario o con una petición directa al servidor), **Then** el sistema la rechaza con el mensaje «El plazo de envío de propuestas de este congreso está cerrado» y no guarda nada.
-3. **Given** un congreso cuyo plazo aún no ha abierto, **When** un ponente intenta enviar una propuesta, **Then** el sistema la rechaza indicando la fecha de apertura.
+3. **Given** un congreso cuyo plazo aún no ha abierto, **When** un ponente intenta enviar una propuesta, **Then** el sistema la rechaza indicando el día de apertura.
 4. **Given** un formulario con el resumen demasiado corto o sin área, **When** el ponente lo envía, **Then** el sistema indica qué campo no es válido y no guarda la propuesta.
 5. **Given** un área temática que pertenece a otro congreso, **When** se envía la propuesta con ella (petición manipulada), **Then** el sistema la rechaza como área no válida.
 6. **Given** un usuario sin el rol ponente (p. ej. un asistente) o sin sesión, **When** intenta enviar una propuesta, **Then** el sistema la rechaza (sin sesión, le pide iniciarla).
@@ -51,7 +51,7 @@ El ponente ve la lista de sus propuestas con congreso, título, área, fecha de 
 
 ### Edge Cases
 
-- Envío justo en el instante de cierre: cuenta la hora del servidor; a partir de `envioCierra` (incluido) se rechaza.
+- Último día del plazo (000-core FR-005a, clarify P1): el plazo incluye el día de cierre completo en la zona del congreso; un envío a las 23:59 del día de cierre se acepta y uno a las 00:00 del día siguiente se rechaza. Cuenta la hora del servidor.
 - Dos envíos idénticos seguidos por doble clic: el botón se desactiva mientras se envía; si aun así llegan dos, se guardan como dos propuestas (no hay regla de unicidad en la narrativa).
 - Un ponente puede enviar varias propuestas al mismo congreso.
 - Una vez enviada, la propuesta no se puede editar ni retirar en la versión 1 (ver Assumptions).
@@ -61,7 +61,7 @@ El ponente ve la lista de sus propuestas con congreso, título, área, fecha de 
 ### Functional Requirements
 
 - **FR-001**: El sistema MUST permitir a un usuario con rol `PONENTE` enviar una propuesta indicando congreso, título (5–200 caracteres), resumen (100–3000 caracteres) y área temática.
-- **FR-002**: El sistema MUST aceptar el envío solo si la hora del servidor está en `[envioAbre, envioCierra)` del congreso; fuera de ese intervalo MUST rechazarlo con un mensaje que explique el motivo.
+- **FR-002**: El sistema MUST aceptar el envío solo desde las 00:00 del día de apertura hasta las 23:59:59 del día de cierre, en la zona horaria del congreso (000-core FR-005a); fuera de ese periodo MUST rechazarlo con un mensaje que explique el motivo.
 - **FR-003**: El sistema MUST comprobar que el área temática pertenece al congreso elegido.
 - **FR-004**: El sistema MUST registrar como autor al usuario que envía, la fecha de envío y el estado `ENVIADA`.
 - **FR-005**: El sistema MUST mostrar al ponente solo sus propias propuestas, con su estado actual.

@@ -58,7 +58,9 @@ en curso, finalizado), que sirve de punto de entrada a las historias.
 
 **Acceptance Scenarios**:
 
-1. **Given** dos congresos en los datos de ejemplo, **When** un visitante abre la portada, **Then** ve ambos con nombre, fechas, sede y fase actual.
+1. **Given** tres congresos en los datos de ejemplo, **When** un visitante sin sesión abre la portada, **Then** ve los tres con nombre, fechas, sede y fase actual, sin que se le pida iniciar sesión.
+2. **Given** una dirección de congreso que no existe (`/congresos/no-existe`), **When** un visitante la abre, **Then** ve la página «Página no encontrada» y no se muestra ningún dato.
+3. **Given** un congreso cuya fecha de fin ya ha pasado, **When** un visitante abre la portada o su ficha, **Then** el congreso aparece con la fase «Finalizado», y uno en el plazo de envío, con «Llamada a comunicaciones abierta».
 
 ### Edge Cases
 

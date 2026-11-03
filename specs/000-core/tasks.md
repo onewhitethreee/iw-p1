@@ -43,7 +43,7 @@ description: "Lista de tareas de la base común (000-core)"
 ### Reglas compartidas (`packages/domain`) — con pruebas primero
 
 - [x] T008 [P] Pruebas de `solapa(a, b)` (intervalos semiabiertos, A7: contiguos no solapan, contenido, idéntico, parcial) en `packages/domain/tests/intervalos.test.ts`
-- [x] T009 [P] Pruebas de `faseCongreso()` (`LLAMADA_ABIERTA`, `EN_PREPARACION`, `EN_CURSO`, `FINALIZADO`, límites incluidos/excluidos) y `plazoEnvioAbierto()` (`[envioAbre, envioCierra)`) en `packages/domain/tests/congreso.test.ts`
+- [x] T009 [P] Pruebas de `faseCongreso()` (`LLAMADA_ABIERTA`, `EN_PREPARACION`, `EN_CURSO`, `FINALIZADO`, límites incluidos/excluidos) y `plazoEnvio()` (`[envioAbre, envioCierra)`) en `packages/domain/tests/congreso.test.ts`
 - [x] T010 [P] Pruebas de transiciones de propuesta (A1: asignar, decidir solo con ≥ 2 evaluaciones, estados finales) en `packages/domain/tests/propuesta.test.ts`
 - [x] T011 [P] Pruebas de `calcularTarifa()` (A4: temprana si `fecha ≤ limiteTemprana`, general si no) en `packages/domain/tests/tarifa.test.ts`
 - [x] T012 [P] Pruebas de `porcentajeAsistencia()`, `cumpleUmbral()` (`asistidas × 100 ≥ 80 × total`, agenda vacía no cumple) y `horasCertificadas()` en `packages/domain/tests/certificado.test.ts`
@@ -82,10 +82,10 @@ description: "Lista de tareas de la base común (000-core)"
 ### Implementation for User Story 1
 
 - [x] T022 [US1] Router `auth` (`registrar`, `yo`, `asignarRol` solo ORGANIZADOR) según [contracts/trpc-api.md](contracts/trpc-api.md) en `apps/web/src/server/api/routers/auth.ts`
-- [x] T023 [P] [US1] Componentes shadcn/ui necesarios (`button`, `input`, `label`, `card`, `badge`, `select`, `table`, `alert`) en `apps/web/src/components/ui/`
-- [x] T024 [US1] Páginas `/registro` y `/entrar` con react-hook-form + zod y mensajes en español en `apps/web/src/app/(auth)/`
+- [x] T023 [P] [US1] Componentes shadcn/ui necesarios (`button`, `input` con `Textarea` y `NativeSelect`, `label`, `card`, `badge`, `table`, `alert`) en `apps/web/src/components/ui/`
+- [x] T024 [US1] Páginas `/registro` y `/entrar` con `useActionState` + acciones de servidor validadas con zod y mensajes en español en `apps/web/src/app/(auth)/`
 - [x] T025 [US1] Cabecera con usuario, roles, enlaces por rol y «Salir» en `apps/web/src/components/cabecera.tsx` y `apps/web/src/app/layout.tsx`
-- [x] T026 [US1] Protección de zonas por rol (`requireRol()` en servidor + página «Acceso denegado») en `apps/web/src/server/guards.ts` y layouts de `apps/web/src/app/{organizador,comite,ponente,acreditacion,area-personal}/layout.tsx` (con página índice provisional)
+- [x] T026 [US1] Protección de zonas por rol (`comprobarRol()` en servidor + página «Acceso denegado») en `apps/web/src/server/guards.tsx` y layouts de `apps/web/src/app/{organizador,comite,ponente,acreditacion,area-personal}/layout.tsx` (con página índice provisional)
 
 **Checkpoint**: US1 funcional y probada.
 
@@ -113,6 +113,25 @@ description: "Lista de tareas de la base común (000-core)"
 
 ---
 
+## Requisitos compartidos que se implementan y verifican en otras specs (analyze C1)
+
+000-core aporta la regla pura (cuando existe) y el modelo de datos; la aplicación en el servidor y su prueba de rechazo directo (SC-001) son tareas de la spec indicada.
+
+| Requisito 000-core | Regla pura (000-core) | Spec que lo aplica y prueba |
+|--------------------|-----------------------|-----------------------------|
+| FR-010 estados de propuesta | T010 `propuesta.ts` | spec-001 (alta `ENVIADA`), spec-002 (asignar/decidir), spec-003 (solo `ACEPTADA`) |
+| FR-011 asignación | — | spec-002 |
+| FR-012 puntuación 1–10 | constantes en `propuesta.ts` | spec-002 |
+| FR-013 anonimato | — | spec-002 |
+| FR-014 solape | T008 `intervalos.ts` | spec-003 (ponente y sala), spec-005 (agenda) |
+| FR-015 aforo | — | spec-005 (reservas), spec-006 (asistencias), spec-008 (ocupación) |
+| FR-016 tarifa | T011 `tarifa.ts`, T033–T034 `fechas.ts` | spec-004 |
+| FR-017 estados de inscripción | — | spec-004 |
+| FR-018 solo confirmada | — | spec-005, spec-006, spec-007 |
+| FR-019 80 % | T012 `certificado.ts` | spec-007 |
+| FR-020 refresco ≤ 5 s | — | spec-008 |
+| SC-001 rechazo directo | T021 (roles) | cada spec incluye pruebas de integración con `createCaller` para sus reglas |
+
 ## Phase 6: Iteración 2 · cambios derivados de `/speckit-clarify` (2026-11-03)
 
 **Purpose**: aplicar las decisiones P1 y P2 de [informes/clarify-1.md](informes/clarify-1.md).
@@ -124,6 +143,8 @@ description: "Lista de tareas de la base común (000-core)"
 - [ ] T037 [US1] Procedimiento `auth.anadirRolPropio` en `apps/web/src/server/api/routers/auth.ts` (FR-003a)
 - [ ] T038 [US1] Botón «Quiero ser también ponente» / «Quiero ser también asistente» en `apps/web/src/components/cabecera.tsx` mediante una acción de servidor en `apps/web/src/server/acciones-auth.ts`, y prueba e2e en `apps/web/tests/e2e/core.spec.ts` (US1 escenario 5)
 - [ ] T039 Mostrar en la ficha del congreso los plazos como días («hasta el 4 de septiembre») usando el día local de `envioCierra − 1 ms` en `apps/web/src/app/congresos/[slug]/page.tsx` (FR-005a)
+- [ ] T040 [US2] Página 404 en español («Página no encontrada» + enlace a la portada) en `apps/web/src/app/not-found.tsx` (analyze D1, US2 escenario 2)
+- [ ] T041 [P] [US2] Pruebas e2e de US2 escenarios 2 y 3 (slug inexistente → «Página no encontrada»; fases «Finalizado» y «Llamada a comunicaciones abierta» en la ficha) en `apps/web/tests/e2e/core.spec.ts`
 
 ## Notas de implementación (iteración 1, 2026-11-03)
 

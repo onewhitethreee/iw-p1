@@ -91,6 +91,8 @@ apps/
     │   │   └── layout.tsx
     │   ├── server/
     │   │   ├── auth.ts               # Auth.js
+│   │   ├── guards.tsx            # comprobarRol() + «Acceso denegado»
+│   │   ├── usuarios.ts           # cargarUsuario() (roles desde la BD)
     │   │   ├── db.ts                 # PrismaClient
     │   │   └── api/
     │   │       ├── trpc.ts           # contexto, publicProcedure, protectedProcedure, roleProcedure

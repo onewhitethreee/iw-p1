@@ -18,7 +18,7 @@ Leyenda de acceso: **P** público · **A** cualquier usuario con sesión · rol 
 
 ## congreso (000-core)
 | `congreso.listar` | query | P | — | Congresos con fase calculada. |
-| `congreso.porSlug` | query | P | `{slug}` | Datos públicos, áreas y tarifas. |
+| `congreso.porSlug` | query | P | `{slug}` | Datos públicos, áreas, tarifas y salas (nombre y aforo). `NOT_FOUND` si no existe. |
 
 ## propuesta (spec-001)
 | `propuesta.enviar` | mutation | PONENTE | `{congresoId, areaId, titulo, resumen}` | `CONFLICT` si el plazo está cerrado o no ha abierto; `BAD_REQUEST` si el área no es del congreso. |
