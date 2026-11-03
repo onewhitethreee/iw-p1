@@ -1,0 +1,32 @@
+--- specs/006-acceso-qr/informes/spec-antes-clarify-1.md	2026-11-03 15:36:14.474000192 +0000
++++ specs/006-acceso-qr/spec.md	2026-11-03 15:36:32.477200342 +0000
+@@ -12,6 +12,13 @@
+ 
+ **Input**: User description: "HU-06 · Como personal de acreditación, quiero escanear el QR del asistente a la entrada de la sala para controlar el aforo y registrar la asistencia real."
+ 
++## Clarifications
++
++### Session 2026-11-03
++
++- Q: ¿Para entrar en una sala, la sesión tiene que estar en la agenda del asistente? → A: No; se admite a cualquier asistente con inscripción confirmada en el congreso mientras quede aforo. La asistencia a sesiones fuera de la agenda no cuenta para el certificado (HU-07).
++- Q: ¿Desde cuándo y hasta cuándo se puede escanear la entrada de una sesión? → A: Desde 30 minutos antes del inicio hasta el fin de la sesión.
++
+ ## User Scenarios & Testing *(mandatory)*
+ 
+ ### User Story 1 - Escanear y admitir o rechazar la entrada (Priority: P1)
+@@ -67,6 +74,8 @@
+ - **FR-006**: Cada rechazo MUST mostrar un motivo comprensible.
+ - **FR-007**: La pantalla MUST mostrar la ocupación actual de la sesión frente a su aforo.
+ - **FR-008**: El control de aforo MUST ser correcto con escaneos simultáneos.
++- **FR-009**: La entrada MUST no depender de que la sesión esté en la agenda del asistente (Clarifications P1).
++- **FR-010**: Fuera de la ventana de acceso el escaneo MUST rechazarse con «La sesión aún no está abierta (se abre a las HH:mm)» o «La sesión ya ha terminado» (Clarifications P2).
+ 
+ ### Key Entities
+ 
+@@ -84,4 +93,5 @@
+ 
+ - El personal usa un móvil con cámara y navegador; no hay lectores dedicados.
+ - No se registra la salida de la sala; la ocupación es el número de personas que han entrado (asistencias).
+-- La ventana de acceso de 30 minutos antes del inicio es un supuesto del grupo.
++- **Decisión (Clarifications P2)**: ventana de acceso desde 30 minutos antes del inicio hasta el fin.
++- **Decisión (Clarifications P1)**: no se exige que la sesión esté en la agenda.

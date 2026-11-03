@@ -1,0 +1,42 @@
+--- specs/003-programa-congreso/informes/spec-antes-clarify-2.md	2026-11-03 15:09:05.622305856 +0000
++++ specs/003-programa-congreso/spec.md	2026-11-03 15:09:05.640887499 +0000
+@@ -18,6 +18,7 @@
+ 
+ - Q: ¿Qué puede cambiar el organizador en sesiones que ya han empezado o en congresos ya terminados? → A: Con el congreso finalizado el programa queda bloqueado (no se programa, mueve ni quita nada). Una sesión que ya ha empezado solo puede cambiar de sala; no se puede cambiar su horario ni quitarla.
+ - Q: ¿En qué zona horaria introduce el organizador la hora de inicio y fin de una sesión? → A: En la zona horaria del congreso, la misma en la que se muestran.
++- Q: ¿Se permiten sesiones que empiezan un día y terminan al siguiente (cruzan la medianoche)? → A: No; inicio y fin deben caer en el mismo día del calendario del congreso (sesión originada por el hallazgo A1 de `/speckit-analyze`).
+ 
+ ## User Scenarios & Testing *(mandatory)*
+ 
+@@ -81,7 +82,7 @@
+ ### Edge Cases
+ 
+ - Un ponente con varias ponencias aceptadas: la regla de solapamiento se aplica entre todas ellas.
+-- Sesión que cruza la medianoche: se permite si está dentro de las fechas del congreso.
++- Sesión que cruzaría la medianoche: no se permite; inicio y fin deben estar en el mismo día del congreso, y una hora de fin anterior o igual a la de inicio se rechaza (Clarifications P3).
+ - Dos organizadores programando a la vez la misma sala: el segundo recibe el rechazo por solapamiento (bloqueo en el servidor, R4).
+ - Publicar un programa vacío está permitido (muestra «Sin sesiones todavía»).
+ - Las horas que introduce el organizador se interpretan en la zona horaria del congreso (Clarifications P2): «10:00» en un congreso de Madrid en verano se guarda como 08:00 UTC.
+@@ -92,18 +93,18 @@
+ 
+ - **FR-001**: Solo el `ORGANIZADOR` MUST poder programar, mover, quitar sesiones y publicar el programa.
+ - **FR-002**: Solo una propuesta `ACEPTADA` MUST poder programarse, y como máximo en una sesión.
+-- **FR-003**: Una sesión MUST tener sala del mismo congreso e intervalo `inicio < fin` dentro de las fechas del congreso.
++- **FR-003**: Una sesión MUST tener sala del mismo congreso e intervalo `inicio < fin` dentro de las fechas del congreso, con inicio y fin en el mismo día (Clarifications P3).
+ - **FR-004**: El sistema MUST rechazar cualquier alta o cambio que haga coincidir dos sesiones del mismo ponente (A7).
+ - **FR-005**: El sistema MUST rechazar cualquier alta o cambio que haga coincidir dos sesiones en la misma sala (A7).
+ - **FR-006**: Al mover una sesión, el aforo de la nueva sala MUST ser ≥ número de reservas de esa sesión en agendas.
+ - **FR-007**: No MUST poder quitarse una sesión con reservas o asistencias.
+ - **FR-008**: Los mensajes de rechazo MUST identificar la sesión con la que se produce el conflicto.
+-- **FR-012**: Con el congreso finalizado, el sistema MUST rechazar programar, mover y quitar sesiones (Clarifications P1).
+-- **FR-013**: Una sesión cuyo inicio ya ha pasado MUST poder cambiar solo de sala; cambiar su horario o quitarla MUST rechazarse (Clarifications P1).
+-- **FR-014**: Las horas de inicio y fin MUST introducirse y mostrarse en la zona horaria del congreso (Clarifications P2).
+ - **FR-009**: El programa publicado MUST ser accesible sin sesión, renderizado en el servidor, con título, descripción, URL canónica, Open Graph, datos estructurados de evento por congreso y por sesión, e incluido en `sitemap.xml`; `robots.txt` MUST permitir su indexación.
+ - **FR-010**: Mientras el programa esté en borrador, la página pública MUST no mostrar sesiones.
+ - **FR-011**: Todas las reglas MUST validarse en el servidor.
++- **FR-012**: Con el congreso finalizado, el sistema MUST rechazar programar, mover y quitar sesiones (Clarifications P1).
++- **FR-013**: Una sesión cuyo inicio ya ha pasado MUST poder cambiar solo de sala; cambiar su horario o quitarla MUST rechazarse (Clarifications P1).
++- **FR-014**: Las horas de inicio y fin MUST introducirse y mostrarse en la zona horaria del congreso (Clarifications P2).
+ 
+ ### Key Entities
+ 

@@ -1,7 +1,9 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { TRPCError } from "@trpc/server";
 import { ETIQUETA_TIPO_ASISTENTE, euros, fecha } from "@congresalia/domain";
+import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { FaseBadge } from "~/components/fase-badge";
@@ -33,6 +35,16 @@ export default async function CongresoPage({ params }: { params: Promise<{ slug:
           {fecha(c.inicio, z)} – {fecha(c.fin, z)} · {c.sede}
         </p>
         <p className="max-w-3xl">{c.descripcion}</p>
+        <div className="flex flex-wrap gap-2">
+          <Button asChild variant="outline" className="w-fit">
+            <Link href={`/congresos/${c.slug}/programa`}>Ver programa</Link>
+          </Button>
+          {c.fase !== "FINALIZADO" && (
+            <Button asChild className="w-fit">
+              <Link href={`/congresos/${c.slug}/inscripcion`}>Inscribirme</Link>
+            </Button>
+          )}
+        </div>
       </header>
       <div className="grid gap-4 md:grid-cols-2">
         <Card>

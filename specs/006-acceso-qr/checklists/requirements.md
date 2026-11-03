@@ -34,5 +34,5 @@
 ## Notes
 
 - Validación: iteración 1 superada, sin marcadores [NEEDS CLARIFICATION]; los puntos dudosos se resolvieron con los acuerdos A1–A10 y se registraron como supuestos.
-- Candidato a clarify: exigir o no que la sesión esté en la agenda para entrar (ahora: no se exige) y la ventana de acceso de 30 min.
+- Clarify 2026-11-03: P1 no se exige agenda, P2 ventana de 30 min antes hasta el fin.
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`

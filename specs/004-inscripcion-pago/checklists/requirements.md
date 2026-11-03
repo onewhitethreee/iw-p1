@@ -34,5 +34,5 @@
 ## Notes
 
 - Validación: iteración 1 superada, sin marcadores [NEEDS CLARIFICATION]; los puntos dudosos se resolvieron con los acuerdos A1–A10 y se registraron como supuestos.
-- Pago simulado (A5). Candidato a clarify: caducidad de inscripciones pendientes.
+- Pago simulado (A5). Clarify 2026-11-03: P1 inmutable, P2 se admite durante el congreso, P3 pasarela con 16 dígitos.
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`

@@ -12,6 +12,13 @@
 
 **Input**: User description: "HU-02 · Como miembro del comité científico, quiero evaluar las propuestas que tengo asignadas con una puntuación y comentarios para seleccionar las mejores ponencias."
 
+## Clarifications
+
+### Session 2026-11-03
+
+- Q: Si un evaluador asignado no evalúa, ¿puede el organizador quitarle la asignación? → A: No; las asignaciones no se quitan. El organizador puede asignar más evaluadores y decidir en cuanto haya al menos 2 evaluaciones.
+- Q: ¿La decisión del organizador está sujeta a una nota mínima? → A: No; decide libremente viendo la puntuación media y el número de evaluaciones.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Evaluar una propuesta asignada sin conocer al autor (Priority: P1)
@@ -66,6 +73,7 @@ El organizador ve, por propuesta, el número de evaluaciones y la puntuación me
 2. **Given** una propuesta con menos de 2 evaluaciones, **When** el organizador intenta aceptarla o rechazarla (también con una petición directa), **Then** el sistema lo rechaza indicando «Se necesitan al menos 2 evaluaciones (tiene N)».
 3. **Given** una propuesta ya decidida, **When** el organizador intenta decidir otra vez, **Then** el sistema lo rechaza.
 4. **Given** la lista del organizador, **When** la abre, **Then** ve por propuesta: título, área, autor, número de evaluaciones, media y estado, y puede ordenar por media.
+5. **Given** una propuesta con 2 evaluaciones y media 4,5, **When** el organizador la acepta, **Then** se acepta: no hay nota mínima (Clarifications P2).
 
 ### Edge Cases
 
@@ -73,6 +81,8 @@ El organizador ve, por propuesta, el número de evaluaciones y la puntuación me
 - Un usuario con roles ponente y comité solo ve, como evaluador, las propuestas asignadas (nunca las suyas).
 - Un evaluador no ve las puntuaciones ni los comentarios de otros evaluadores; solo la suya.
 - Si se asignan más de dos evaluadores, la decisión puede tomarse cuando haya al menos dos evaluaciones, aunque falten otras.
+- Si un evaluador guarda su evaluación justo cuando el organizador decide, prevalece el orden real: si la decisión llega antes, la evaluación se rechaza («La propuesta ya está decidida»); nunca se modifica una evaluación después de la decisión (analyze U1).
+- Un evaluador asignado que no evalúa no bloquea la propuesta: el organizador asigna otro; las asignaciones no se quitan (Clarifications P1).
 
 ## Requirements *(mandatory)*
 
@@ -87,6 +97,8 @@ El organizador ve, por propuesta, el número de evaluaciones y la puntuación me
 - **FR-007**: El organizador MUST poder aceptar o rechazar una propuesta solo si tiene al menos 2 evaluaciones; la decisión es definitiva.
 - **FR-008**: El organizador MUST ver por propuesta el número de evaluaciones y la puntuación media.
 - **FR-009**: Todas las reglas anteriores MUST validarse en el servidor.
+- **FR-010**: Las asignaciones MUST ser permanentes: no existe operación para quitarlas (Clarifications P1).
+- **FR-011**: La decisión MUST depender solo de la voluntad del organizador y del mínimo de 2 evaluaciones; no hay nota mínima ni decisión automática (Clarifications P2).
 
 ### Key Entities
 

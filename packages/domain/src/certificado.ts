@@ -3,10 +3,13 @@ import type { Intervalo } from "./intervalos";
 /** Porcentaje mínimo de asistencia sobre la agenda para obtener el certificado. */
 export const UMBRAL_CERTIFICADO = 80;
 
-/** Porcentaje (para mostrar), redondeado a 1 decimal. Agenda vacía → 0. */
+/**
+ * Porcentaje para mostrar, truncado a entero hacia abajo (spec-007 clarify P2): nunca enseña «80 %»
+ * a quien no llega. La disponibilidad se decide con `cumpleUmbral()`. Agenda vacía → 0.
+ */
 export function porcentajeAsistencia(asistidas: number, total: number): number {
   if (total === 0) return 0;
-  return Math.round((asistidas * 1000) / total) / 10;
+  return Math.floor((asistidas * 100) / total);
 }
 
 /** Comparación exacta, sin redondeo: asistidas × 100 ≥ 80 × total. Agenda vacía no cumple. */

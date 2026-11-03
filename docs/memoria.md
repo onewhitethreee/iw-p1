@@ -21,14 +21,14 @@ Congresalia es una aplicación web para organizar congresos científicos y profe
 - los **asistentes**, que se inscriben, pagan, construyen su agenda y descargan su certificado;
 - el **personal de acreditación**, que controla con un QR el acceso a cada sala.
 
-El proyecto se ha desarrollado entero con Spec Kit. Hay una especificación común (`000-core`) y ocho especificaciones, una por historia de usuario. Cada una ha pasado el ciclo *specify → clarify → plan → tasks → analyze → implement → converge*, y todos los informes se guardan en el repositorio como evidencia. **Resultado**: las 8 historias están implementadas y convergidas, cada una en su rama. Las reglas de negocio se validan en el servidor y están cubiertas por unas 250 pruebas automáticas (unitarias, de integración y e2e), todas en verde. Quedan abiertas solo 4 mediciones de tiempo con usuarios reales y la integración de las ramas en `main`.
+El proyecto se ha desarrollado entero con Spec Kit. Hay una especificación común (`000-core`) y ocho especificaciones, una por historia de usuario. Cada una ha pasado el ciclo *specify → clarify → plan → tasks → analyze → implement → converge*, y todos los informes se guardan en el repositorio como evidencia. **Resultado**: las 8 historias están implementadas, convergidas e **integradas en `main`** con un merge de las 8 ramas. Las reglas de negocio se validan en el servidor y están cubiertas por 251 pruebas automáticas (42 unitarias, 163 de integración y 46 e2e), todas en verde sobre la aplicación integrada. Quedan abiertas solo 4 mediciones de tiempo con usuarios reales.
 
 ## URL del repositorio en GitHub
 
 **<https://github.com/onewhitethreee/iw-p1>**
 
-- `main`: base común (`specs/000-core`, esquema de datos, autenticación, roles, datos de ejemplo) y documentación.
-- `spec-001` … `spec-008`: una rama por historia de usuario, con su especificación, sus informes y su código.
+- `main`: aplicación completa e integrada (base común `specs/000-core` y las 8 historias), con la documentación.
+- `spec-001` … `spec-008`: una rama por historia de usuario, con su especificación, sus informes y su código; todas se integraron en `main` con un único commit de merge.
 
 ---
 
@@ -420,7 +420,7 @@ Las pruebas se escriben **antes que el código** en cada `/speckit-implement`: p
 
 ### 5.2 Resultados
 
-Resultado de la regresión completa de cada rama, tal como queda en su `informes/verificacion.md`:
+Resultado de la regresión completa de cada rama antes de integrarla, tal como queda en su `informes/verificacion.md`, y de `main` con todo integrado:
 
 | Rama | Dominio | Integración (base + spec) | E2E (base + spec) | Lint / tipos / build |
 |------|---------|---------------------------|-------------------|----------------------|
@@ -433,8 +433,9 @@ Resultado de la regresión completa de cada rama, tal como queda en su `informes
 | spec-006 | 34/34 | 38/38 (22 + 16) | 12/12 (7 + 5) | ✔ |
 | spec-007 | 35/35 | 36/36 (22 + 14) | 11/11 (7 + 4) | ✔ |
 | spec-008 | 37/37 | 38/38 (22 + 16) | 12/12 (7 + 5) | ✔ |
+| **main integrada** | **42/42** | **163/163** | **46/46** | ✔ |
 
-En total hay unas **42 pruebas unitarias distintas, 163 de integración y 45 e2e**, todas en verde. Algunas mediciones destacadas:
+Con todo integrado en `main` se ejecutan **42 pruebas unitarias, 163 de integración y 46 e2e** (las 45 de las ramas más la de T011 de spec-005), todas en verde. Algunas mediciones destacadas:
 
 - **Escaneo** (spec-006): menos de 1 s en todas las ejecuciones.
 - **Concurrencia**: 1 admitido de 10 escaneos simultáneos (spec-006) y 1 reserva de 20 peticiones por la última plaza (spec-005).
@@ -451,6 +452,8 @@ Cada spec tiene un `quickstart.md` con los escenarios que se pueden comprobar en
 | spec-002 T020 | Evaluar en menos de 2 min |
 | spec-003 T022 | Programar una ponencia en menos de 1 min |
 | spec-004 T013 | Inscribirse y pagar en menos de 3 min |
+
+Tras integrar las ramas se comprobó, sobre la aplicación completa, lo que dependía de varias historias: el programa público (spec-003) muestra la sala nueva de una sesión cambiada desde el panel (spec-008), y el área personal enlaza a la agenda (spec-005) y al certificado (spec-007) desde las inscripciones confirmadas (spec-004).
 
 La revisión cruzada que pide el enunciado se ha sustituido, por ser un grupo de una persona, por una **autorrevisión diferida**. Se apoya en la lista de calidad `checklists/requirements.md` (17/17 en todas las specs) y en dos pasadas de `/speckit-analyze` por spec.
 
@@ -493,7 +496,7 @@ pnpm lint && pnpm typecheck
 
 Producción: `pnpm build && pnpm start`, con las mismas variables apuntando a una PostgreSQL gestionada y `pnpm --filter web db:deploy` para aplicar las migraciones.
 
-Mientras las ramas no estén integradas, cada historia se prueba con `git checkout spec-00X` y los mismos comandos.
+Las ramas `spec-00X` conservan el estado de cada historia antes de integrarla; `main` contiene la aplicación completa.
 
 ### 6.2 Manual de usuario breve
 
@@ -528,14 +531,20 @@ Hay tres congresos de ejemplo:
 Resumen de hallazgos y su tratamiento:
 - **Hallazgos de analyze** (todos cerrados): 4 CRITICAL, 4 HIGH, 11 MEDIUM y 23 LOW. Los CRITICAL fueron contratos no reflejados en 000-core y un caso de error que faltaba; los HIGH dieron lugar a nuevas sesiones de clarify o a correcciones de la spec.
 - **Tareas de convergencia**: 12 en total.
-  - **8 de código o documentación**: 7 ya implementadas (3 en 000-core, T042–T044; spec-003 T021, que documenta en el plan dos protecciones SEO; spec-006 T010; spec-007 T011; spec-008 T014) y 1 que se hará al integrar en `main` (spec-005 T011).
+  - **8 de código o documentación**: todas implementadas (3 en 000-core, T042–T044; spec-003 T021, que documenta en el plan dos protecciones SEO; spec-006 T010; spec-007 T011; spec-008 T014; y spec-005 T011, el enlace «Mi agenda», hecho al integrar en `main` con su prueba e2e).
   - **4 de medición humana**, pendientes.
 
 ### 7.2 Ramas, issues y PR
 
 - **Ramas**: `main` y una por spec (`spec-001` … `spec-008`), todas creadas desde `main`. Las dependencias entre ramas se anotan en el `tasks.md` de cada spec; por ejemplo, el enlace «Mi agenda» se hace al integrar. Para que cada historia se pudiera probar sola, en dos casos se copió sin cambios código de otra rama (`fechas.ts` de spec-003 en spec-005; el `global-setup` de los e2e de spec-002).
 - **Issues**: no se han creado. El backlog vive en el `tasks.md` de cada spec, con identificadores, trazabilidad y estado. El comando `speckit-taskstoissues` aparece como obsoleto en Spec Kit 1.2.4 y no se usó.
-- **Pull requests**: todavía no se han abierto. La integración de las ramas en `main` está pendiente (ver Conclusiones) y se hará mediante una PR por rama, en el orden de las dependencias.
+- **Pull requests**: no se han usado. La integración se hizo con un **merge directo en `main`**: primero se fusionaron las 8 ramas en orden (001 → 008) en una rama de ensayo para resolver los conflictos y pasar todas las pruebas, y después se llevó el resultado a `main` en un único commit de merge que tiene como padres `main` y las 8 ramas `spec-*`. Los conflictos fueron los previstos:
+  - `root.ts`, donde cada rama registra su router: se conservan todos;
+  - los índices de `organizador/`, `area-personal/` y la ficha del congreso: se combinan los enlaces de cada spec (propuestas, programa, panel; inscripción y programa; QR, «Mi agenda» y certificado);
+  - el contrato y el plan de 000-core: se combinan las filas de cada spec;
+  - `package.json` y `pnpm-lock.yaml`: se suman `qrcode`, `html5-qrcode` y `pdf-lib` y se regenera el lockfile.
+  
+  En la integración se completó además la tarea T011 de spec-005.
 
 ### 7.3 Historial de commits
 
@@ -553,7 +562,7 @@ Hay unos **77 commits**, todos del 3 de noviembre de 2026:
 | `spec-007` | 7 |
 | `spec-008` | 9 |
 
-Cada commit corresponde a un paso del ciclo: `clarify`, `plan`, `tasks`, `analyze 1/2`, `implementar`, `converge-1/2`. Los commits los firma Yangfeng Liu, con dos excepciones: el commit inicial del enunciado (cuenta `onewhite`) y un commit de spec-008 que salió con la identidad por defecto de la herramienta. El trabajo se hizo con asistencia de IA (Claude Code), que ejecutó los comandos de Spec Kit; el integrante tomó las decisiones de alcance y revisó los artefactos.
+Cada commit corresponde a un paso del ciclo: `clarify`, `plan`, `tasks`, `analyze 1/2`, `implementar`, `converge-1/2`. Los commits son de Yangfeng Liu (el inicial, del enunciado, con su cuenta `onewhite`). El trabajo se hizo con asistencia de IA (Claude Code), que ejecutó los comandos de Spec Kit; el integrante tomó las decisiones de alcance y revisó los artefactos.
 
 ```mermaid
 gitGraph
@@ -591,6 +600,7 @@ gitGraph
 
 ### 8.1 Qué se consiguió
 
+- Las **8 historias integradas en `main`** con un merge de las 8 ramas, y la batería completa de pruebas en verde sobre la aplicación conjunta.
 - Las **8 historias de usuario implementadas**, cada una con su spec, su plan, sus tareas trazadas y sus pruebas. Cada spec terminó con converge en estado *converged*, salvo las mediciones humanas.
 - **Reglas de negocio en el servidor**, comprobadas con pruebas que llaman directamente a la API: anonimato, plazos, mínimo de 2 evaluaciones, solapes, aforo con concurrencia, pago confirmado, 80 % de asistencia y permisos por rol.
 - **Un único modelo de datos** para las 8 specs, sin migraciones adicionales, gracias a 000-core y al principio V.
@@ -611,17 +621,16 @@ gitGraph
 
 ### 8.3 Trabajo futuro
 
-1. **Integrar las ramas en `main`** con una PR por spec, resolviendo los conflictos esperados (contrato de 000-core, índices de `organizador/` y `area-personal/`, `root.ts`). Después, hacer T011 de spec-005 y comprobar en pantalla el programa público tras un cambio de sala.
-2. **Hacer las 4 mediciones humanas** (T015, T020, T022, T013) y registrarlas.
-3. Revisar en conjunto, tras la integración, los bloqueos entre `programa` y `panel` hacia la misma sala.
-4. Fuera del alcance de la versión 1 y solo si entran en una spec:
+1. **Hacer las 4 mediciones humanas** (T015, T020, T022, T013) y registrarlas.
+2. Unificar los bloqueos de `programa` (spec-003) y `panel` (spec-008) cuando ambos escriben en la misma sala, para que un alta de sesión y un cambio de sala simultáneos se serialicen también entre sí.
+3. Fuera del alcance de la versión 1 y solo si entran en una spec:
    - gestión de congresos desde la interfaz;
    - pasarela de pago real;
    - envío del certificado por correo y código de verificación;
    - exportación del panel;
    - notificaciones al ponente;
    - modo sin conexión en la puerta.
-5. Despliegue en un servicio gestionado (por ejemplo, Vercel con PostgreSQL gestionado) con integración continua que ejecute lint, tipos y pruebas.
+4. Despliegue en un servicio gestionado (por ejemplo, Vercel con PostgreSQL gestionado) con integración continua que ejecute lint, tipos y pruebas.
 
 ---
 

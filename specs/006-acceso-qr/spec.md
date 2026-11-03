@@ -12,6 +12,14 @@
 
 **Input**: User description: "HU-06 · Como personal de acreditación, quiero escanear el QR del asistente a la entrada de la sala para controlar el aforo y registrar la asistencia real."
 
+## Clarifications
+
+### Session 2026-11-03
+
+- Q: ¿Para entrar en una sala, la sesión tiene que estar en la agenda del asistente? → A: No; se admite a cualquier asistente con inscripción confirmada en el congreso mientras quede aforo. La asistencia a sesiones fuera de la agenda no cuenta para el certificado (HU-07).
+- Q: ¿Desde cuándo y hasta cuándo se puede escanear la entrada de una sesión? → A: Desde 30 minutos antes del inicio hasta el fin de la sesión.
+- Q: (sesión 2, por el hallazgo H1 de analyze) Si la sala tiene reservas, ¿puede quien no reservó ocupar esas plazas? → A: No. Quien tiene la sesión en su agenda tiene la plaza garantizada; quien no la reservó solo entra si quedan plazas sin reservar: aforo − reservas − asistentes que entraron sin reserva > 0.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Escanear y admitir o rechazar la entrada (Priority: P1)
@@ -52,7 +60,7 @@ En la pantalla del escáner se ve siempre la ocupación actual de la sesión ele
 
 - Dos puertas de la misma sala escanean a la vez con una sola plaza libre: solo una entrada se admite (bloqueo en el servidor, R4).
 - Escanear para una sesión que ya ha terminado: se rechaza («La sesión ya ha terminado»). Se permite escanear desde 30 minutos antes del inicio.
-- Un asistente que entra en una sesión que no está en su agenda: se admite si hay aforo (la narrativa controla el aforo de la sala, no la agenda); la asistencia cuenta para el panel pero no suma al certificado (HU-07 solo cuenta las sesiones de la agenda).
+- Un asistente que entra en una sesión que no está en su agenda: se admite si quedan plazas sin reservar (Clarifications P3) (la narrativa controla el aforo de la sala, no la agenda); la asistencia cuenta para el panel pero no suma al certificado (HU-07 solo cuenta las sesiones de la agenda).
 - Sin conexión a la red: fuera de alcance; el escáner indica que no puede validar.
 
 ## Requirements *(mandatory)*
@@ -61,12 +69,14 @@ En la pantalla del escáner se ve siempre la ocupación actual de la sesión ele
 
 - **FR-001**: Solo usuarios con rol `ACREDITACION` MUST poder registrar asistencias.
 - **FR-002**: El personal MUST elegir congreso y sesión antes de escanear; el escáner MUST aceptar también la entrada manual del código.
-- **FR-003**: El sistema MUST admitir la entrada solo si el código existe, la inscripción está `CONFIRMADA`, es del mismo congreso, la sesión está en su ventana de acceso (desde 30 min antes del inicio hasta el fin) y quedan plazas (asistencias < aforo de la sala).
+- **FR-003**: El sistema MUST admitir la entrada solo si el código existe, la inscripción está `CONFIRMADA`, es del mismo congreso, la sesión está en su ventana de acceso (desde 30 min antes del inicio hasta el fin) y quedan plazas (asistencias < aforo de la sala). Para quien no tiene la sesión en su agenda se aplica además FR-009 (plazas sin reservar).
 - **FR-004**: Cada entrada admitida MUST registrar una asistencia (inscripción, sesión, momento, personal que escanea).
 - **FR-005**: Un segundo escaneo del mismo asistente en la misma sesión MUST responder «Ya registrado» sin crear otra asistencia ni consumir aforo.
 - **FR-006**: Cada rechazo MUST mostrar un motivo comprensible.
 - **FR-007**: La pantalla MUST mostrar la ocupación actual de la sesión frente a su aforo.
 - **FR-008**: El control de aforo MUST ser correcto con escaneos simultáneos.
+- **FR-009**: La entrada MUST no depender de que la sesión esté en la agenda del asistente (Clarifications P1), pero quien no la reservó MUST entrar solo si quedan plazas sin reservar (aforo − reservas − asistentes sin reserva > 0); quien la reservó MUST entrar siempre que no se haya registrado ya (Clarifications P3). Motivo de rechazo: «No quedan plazas sin reservar».
+- **FR-010**: Fuera de la ventana de acceso el escaneo MUST rechazarse con «La sesión aún no está abierta (se abre a las HH:mm)» o «La sesión ya ha terminado» (Clarifications P2).
 
 ### Key Entities
 
@@ -84,4 +94,5 @@ En la pantalla del escáner se ve siempre la ocupación actual de la sesión ele
 
 - El personal usa un móvil con cámara y navegador; no hay lectores dedicados.
 - No se registra la salida de la sala; la ocupación es el número de personas que han entrado (asistencias).
-- La ventana de acceso de 30 minutos antes del inicio es un supuesto del grupo.
+- **Decisión (Clarifications P2)**: ventana de acceso desde 30 minutos antes del inicio hasta el fin.
+- **Decisión (Clarifications P1)**: no se exige que la sesión esté en la agenda.
