@@ -68,6 +68,22 @@ test.describe.serial("spec-008 · panel en tiempo real (HU-08)", () => {
     await expect(fila.getByTestId("sala")).toContainText("Auditorio (200)");
   });
 
+  test("Edge «conexión falla» (converge T014): conserva las cifras, avisa y mensajes en español", async ({ page }) => {
+    await entrar(page, "organizador@congresalia.es");
+    await abrirPanel(page);
+    const confirmadas = await page.getByTestId("confirmadas").textContent();
+    await page.route("**/api/trpc/**", (r) => r.abort("internetdisconnected"));
+    await expect(page.getByTestId("actualizado")).toContainText("Sin actualizar desde", { timeout: 7_000 });
+    await expect(page.getByTestId("confirmadas")).toHaveText(confirmadas!);
+    await sesion(page, "Gamificación con recursos abiertos").getByRole("button", { name: "Cambiar de sala" }).click();
+    await expect(page.getByRole("alert").filter({ hasText: "Sin conexión" })).toHaveText(
+      "Sin conexión: no se puede completar la acción. Comprueba la red y vuelve a intentarlo.",
+    );
+    await expect(page.getByText("Failed to fetch")).toHaveCount(0);
+    await page.unroute("**/api/trpc/**");
+    await expect(page.getByTestId("actualizado")).toContainText("Actualizado a las", { timeout: 7_000 });
+  });
+
   test("US1-3: un asistente no puede abrir el panel", async ({ page }) => {
     await entrar(page, "asistente1@congresalia.es");
     await page.goto("/organizador/panel");
