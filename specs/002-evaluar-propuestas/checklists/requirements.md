@@ -34,5 +34,5 @@
 ## Notes
 
 - Validación: iteración 1 superada, sin marcadores [NEEDS CLARIFICATION]; los puntos dudosos se resolvieron con los acuerdos A1–A10 y se registraron como supuestos.
-- Incluye la asignación y la decisión del organizador, imprescindibles para que la historia tenga sentido (A1, A2). Candidato a clarify: si el ponente debe ver los comentarios.
+- Incluye la asignación y la decisión del organizador, imprescindibles para que la historia tenga sentido (A1, A2). Clarify 2026-11-03: P1 asignaciones permanentes, P2 decisión libre sin nota mínima. (El ponente no ve comentarios: decidido en spec-001 P3.)
 - Items marked incomplete require spec updates before `/speckit-clarify` or `/speckit-plan`
