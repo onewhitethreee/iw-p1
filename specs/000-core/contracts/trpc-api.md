@@ -54,7 +54,7 @@ Leyenda de acceso: **P** público · **A** cualquier usuario con sesión · rol 
 
 ## acreditacion (spec-006)
 | `acreditacion.sesiones` | query | ACREDITACION | `{congresoId}` | Sesiones para elegir la puerta, con asistencias, aforo y si está abierta (ventana `[inicio − 30 min, fin)`). Concretado por spec-006. |
-| `acreditacion.escanear` | mutation | ACREDITACION | `{sesionId, codigo}` | Devuelve `{resultado: ADMITIDO\|YA_REGISTRADO\|RECHAZADO, motivo, asistente, ocupacion}`. Rechaza QR desconocido, inscripción no confirmada, de otro congreso, fuera de la ventana o aforo completo. No exige agenda (spec-006 P1). |
+| `acreditacion.escanear` | mutation | ACREDITACION | `{sesionId, codigo}` | Devuelve `{resultado: ADMITIDO\|YA_REGISTRADO\|RECHAZADO, motivo, asistente, ocupacion}`. Rechaza QR desconocido, inscripción no confirmada, de otro congreso, fuera de la ventana o aforo completo; quien no reservó solo entra si quedan plazas sin reservar («No quedan plazas sin reservar», spec-006 P3). No exige agenda (spec-006 P1). |
 | `acreditacion.ocupacion` | query | ACREDITACION | `{sesionId}` | `{asistencias, aforo}` para refrescar la puerta. Añadido por spec-006. |
 
 ## certificado (spec-007)

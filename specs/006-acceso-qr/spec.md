@@ -69,7 +69,7 @@ En la pantalla del escáner se ve siempre la ocupación actual de la sesión ele
 
 - **FR-001**: Solo usuarios con rol `ACREDITACION` MUST poder registrar asistencias.
 - **FR-002**: El personal MUST elegir congreso y sesión antes de escanear; el escáner MUST aceptar también la entrada manual del código.
-- **FR-003**: El sistema MUST admitir la entrada solo si el código existe, la inscripción está `CONFIRMADA`, es del mismo congreso, la sesión está en su ventana de acceso (desde 30 min antes del inicio hasta el fin) y quedan plazas (asistencias < aforo de la sala).
+- **FR-003**: El sistema MUST admitir la entrada solo si el código existe, la inscripción está `CONFIRMADA`, es del mismo congreso, la sesión está en su ventana de acceso (desde 30 min antes del inicio hasta el fin) y quedan plazas (asistencias < aforo de la sala). Para quien no tiene la sesión en su agenda se aplica además FR-009 (plazas sin reservar).
 - **FR-004**: Cada entrada admitida MUST registrar una asistencia (inscripción, sesión, momento, personal que escanea).
 - **FR-005**: Un segundo escaneo del mismo asistente en la misma sesión MUST responder «Ya registrado» sin crear otra asistencia ni consumir aforo.
 - **FR-006**: Cada rechazo MUST mostrar un motivo comprensible.
