@@ -23,9 +23,9 @@ description: "Lista de tareas de spec-004 (HU-04 Inscribirse y pagar la entrada)
 
 **Independent Test**: estudiante antes del día límite → 90,00 €; después → 120,00 €.
 
-- [ ] T004 [P] [US1] Prueba de integración `apps/web/tests/integration/004/inscribir.test.ts`: (a) US1-1 23:59 del día límite → `TEMPRANA` 9000 y estado `PENDIENTE_PAGO`; (b) US1-2 00:00 del día siguiente → `GENERAL` 12000; (c) US1-3 segunda inscripción en el mismo congreso → `CONFLICT` «Ya tienes una inscripción en este congreso»; (d) US1-4 congreso finalizado → `CONFLICT`; en curso → aceptada (P2); (e) US1-5 sin sesión → `UNAUTHORIZED`; solo PONENTE → `FORBIDDEN`; (f) US1-6 un `importeCent` enviado se ignora; (g) `presupuesto` público devuelve los 3 tipos con la tarifa vigente; (h) FR-011/P1: el router solo expone `presupuesto`, `crear`, `pagar`, `mias` (sin cambiar ni cancelar)
+- [ ] T004 [P] [US1] Prueba de integración `apps/web/tests/integration/004/inscribir.test.ts`: (a) US1-1 23:59 del día límite → `TEMPRANA` 9000 y estado `PENDIENTE_PAGO`; (b) US1-2 00:00 del día siguiente → `GENERAL` 12000; (c) US1-3 segunda inscripción en el mismo congreso → `CONFLICT` «Ya tienes una inscripción en este congreso»; (d) US1-4 congreso finalizado → `CONFLICT`; en curso → aceptada (P2); (e) US1-5 sin sesión → `UNAUTHORIZED`; US1-6 solo PONENTE → `FORBIDDEN` (tras añadirse el rol asistente, 000-core FR-003a, se acepta); (f) US1-7 un `importeCent` enviado se ignora; (g) `presupuesto` público devuelve los 3 tipos con la tarifa vigente; (h) FR-011/P1: el router solo expone `presupuesto`, `crear`, `pagar`, `mias` (sin cambiar ni cancelar)
 - [ ] T005 [US1] Implementar `presupuesto` (público) y `crear` (`roleProcedure("ASISTENTE")`, `calcularTarifa` con `ctx.ahora()`, `P2002` → `CONFLICT`, congreso finalizado → `CONFLICT`) en `apps/web/src/server/api/routers/inscripcion.ts` — FR-001…FR-005, FR-011, FR-012
-- [ ] T006 [US1] Página `apps/web/src/app/congresos/[slug]/inscripcion/page.tsx` + `formulario.tsx`: tabla de precios vigentes (temprano hasta el {día}), selector de tipo y botón «Inscribirme»; sin sesión → enlaces a entrar/registrarse con `desde`; con sesión sin rol asistente → botón «Añadirme como asistente» (000-core FR-003a); ya inscrito → enlace a «Área personal»; al crear → `/area-personal/pago/{id}`. Botón «Inscribirme» en `apps/web/src/app/congresos/[slug]/page.tsx` — US1-1…US1-6
+- [ ] T006 [US1] Página `apps/web/src/app/congresos/[slug]/inscripcion/page.tsx` + `formulario.tsx`: tabla de precios vigentes (temprano hasta el {día}), selector de tipo y botón «Inscribirme»; sin sesión → enlaces a entrar/registrarse con `desde`; con sesión sin rol asistente → botón «Añadirme como asistente» (000-core FR-003a); ya inscrito → enlace a «Área personal»; al crear → `/area-personal/pago/{id}`. Botón «Inscribirme» en `apps/web/src/app/congresos/[slug]/page.tsx` — US1-1…US1-7
 
 ## Phase 4: User Story 2 - Pagar y obtener la acreditación (P1)
 
@@ -38,7 +38,7 @@ description: "Lista de tareas de spec-004 (HU-04 Inscribirse y pagar la entrada)
 
 ## Phase 5: Polish
 
-- [ ] T011 E2E `apps/web/tests/e2e/004-inscripcion.spec.ts`: `asistente5` se inscribe en Jornadas de Pediatría como estudiante (90,00 €, US1-1), paga con la tarjeta de rechazo (sigue «Pendiente de pago», US2-2) y con 4111… (confirmada y `img[alt="Código QR de acreditación"]` visible, US2-1); intento de reinscribirse lleva al área personal (US1-3); `ponente1` ve «Añadirme como asistente» (US1-5/FR-003a); visitante sin sesión ve los enlaces para entrar
+- [ ] T011 E2E `apps/web/tests/e2e/004-inscripcion.spec.ts`: `asistente5` se inscribe en Jornadas de Pediatría como estudiante (90,00 €, US1-1), paga con la tarjeta de rechazo (sigue «Pendiente de pago», US2-2) y con 4111… (confirmada y `img[alt="Código QR de acreditación"]` visible, US2-1); intento de reinscribirse lleva al área personal (US1-3); `ponente1` ve «Añadirme como asistente» (US1-6/FR-003a); visitante sin sesión ve los enlaces para entrar
 - [ ] T012 Regresión completa y resultados en este fichero; recorrer [quickstart.md](quickstart.md) y registrar lo observado en `specs/004-inscripcion-pago/informes/verificacion.md` (SC-001 medición humana pendiente si no la hace el responsable)
 
 ## Dependencies & Execution Order
@@ -68,5 +68,5 @@ Tras T003:  T004 (inscribir.test) ∥ T007 (pagar.test)
 | FR-011 (inmutable, P1) | T004h |
 | FR-012 (en curso, P2) | T004d |
 | FR-013 (pasarela, P3) | T002, T007e/f |
-| US1-1…6 / US2-1…5 | T004–T011 |
+| US1-1…7 / US2-1…5 | T004–T011 |
 | SC-001 / SC-002 / SC-003 | T012 / T007a,g / T004a,b |
