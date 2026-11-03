@@ -71,4 +71,14 @@ describe("descarga del certificado (respuestaCertificado, US1)", () => {
     expect((await respuestaCertificado(yo, e.c.id, DESPUES)).status).toBe(200);
     expect((await respuestaCertificado(yo, e.c.id, DESPUES)).status).toBe(200);
   });
+
+  it("converge T011: nombre y título con caracteres fuera de WinAnsi → 200 y PDF válido", async () => {
+    const e = await escenario();
+    await db.propuesta.updateMany({ where: { congresoId: e.c.id, titulo: "Sesión 1" }, data: { titulo: "Ratio ≥ 1:1 en el aula" } });
+    const { u } = await asistente(e, { asistidas: 4, nombre: "刘洋峰 Łukasz" });
+    const res = await respuestaCertificado(await usuario(u.id), e.c.id, DESPUES);
+    expect(res.status).toBe(200);
+    const pdf = await PDFDocument.load(new Uint8Array(await res.arrayBuffer()));
+    expect(pdf.getSubject()).toContain("Lukasz");
+  });
 });

@@ -36,7 +36,7 @@ description: "Lista de tareas de spec-007 (HU-07 Descargar el certificado de asi
 
 ## Resultados (T010)
 
-Dominio 35/35 · integración 35/35 (spec-007: 13) · e2e 11/11 (spec-007: 4) · lint, typecheck y build sin errores. Detalle en [informes/verificacion.md](informes/verificacion.md).
+Dominio 35/35 · integración 36/36 (spec-007: 14, incluida T011) · e2e 11/11 (spec-007: 4) · lint, typecheck y build sin errores. Detalle en [informes/verificacion.md](informes/verificacion.md).
 
 ## Dependencies & Execution Order
 
@@ -63,3 +63,7 @@ Una sola historia (MVP = US1 completa): primero la regla de dominio (T002), desp
 | Clarify P1 / P2 | T004g, T005d / T002, T004f |
 | US1-1…US1-7 | T004–T009 |
 | SC-001 / SC-002 / SC-003 | T004, T009 / T005a, T010 / T004a |
+
+## Phase 5: Convergence
+
+- [X] T011 Garantizar que el PDF se genera con cualquier nombre o título: en `apps/web/src/server/pdf-certificado.ts` sanear el texto antes de dibujarlo (caracteres no representables en WinAnsi → letra base sin diacrítico o «?»), con prueba en `apps/web/tests/integration/007/descarga.test.ts` para un titular «刘洋峰 Łukasz» y un título con «≥» (200 y PDF válido) per FR-004 / US1-1 (partial)
