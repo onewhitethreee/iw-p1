@@ -88,6 +88,7 @@ apps/
     │   │   ├── api/trpc/[trpc]/      # Adaptador tRPC
     │   │   ├── api/certificado/[congresoId]/  # PDF → spec-007
     │   │   ├── sitemap.ts, robots.ts # SEO → spec-003
+    │   │   ├── not-found.tsx         # 404 en español — analyze D1
     │   │   └── layout.tsx
     │   ├── server/
     │   │   ├── auth.ts               # Auth.js
@@ -112,7 +113,8 @@ packages/
     │   ├── propuesta.ts              # transiciones de estado — A1
     │   ├── tarifa.ts                 # calcularTarifa() — A4
     │   ├── certificado.ts            # porcentajeAsistencia(), horasCertificadas() — 80 %
-    │   └── formato.ts                # euros(), fecha() en es-ES
+    │   ├── formato.ts                # euros(), fecha() en es-ES
+    │   └── fechas.ts                 # inicioDeDia(), finDeDia() — clarify P1
     └── tests/                        # Vitest
 docker-compose.yml                    # postgres:16
 pnpm-workspace.yaml
