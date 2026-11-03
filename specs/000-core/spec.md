@@ -20,6 +20,7 @@
 ### Session 2026-11-03
 
 - Q: ¿Las fechas límite (cierre del plazo de envío y límite de inscripción temprana) se expresan como día completo en la zona del congreso o como instante exacto? → A: Día completo en la zona horaria del congreso: «hasta el día D» incluye hasta las 23:59:59 (hora del congreso) del día D.
+- Q: ¿Cómo obtiene un usuario con cuenta el otro rol público (ponente o asistente)? → A: El propio usuario puede añadirse el rol ponente o asistente desde su cuenta con un clic; los roles organizador, comité y acreditación solo los asigna un organizador.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -39,6 +40,8 @@ intentar entrar en una zona de otro rol y comprobar el rechazo.
 2. **Given** un correo ya registrado, **When** alguien intenta registrarse con él, **Then** el sistema lo rechaza indicando que el correo ya existe.
 3. **Given** un usuario con solo el rol asistente, **When** intenta abrir una zona o ejecutar una operación de organizador, **Then** el sistema la rechaza (también si la petición se hace sin pasar por la interfaz).
 4. **Given** un usuario con roles ponente y comité, **When** inicia sesión, **Then** puede usar las zonas de ambos roles.
+5. **Given** un usuario con solo el rol asistente, **When** pulsa «Quiero ser también ponente» en su cuenta, **Then** obtiene el rol ponente sin crear otra cuenta y conserva el de asistente.
+6. **Given** un usuario sin rol organizador, **When** intenta añadirse a sí mismo el rol comité, organizador o acreditación (también con una petición directa), **Then** el sistema lo rechaza y sus roles no cambian.
 
 ---
 
@@ -91,6 +94,7 @@ en curso, finalizado), que sirve de punto de entrada a las historias.
 - **FR-001**: El sistema MUST permitir registrarse con nombre, correo (único) y contraseña (mínimo 8 caracteres), eligiendo el rol ponente o asistente.
 - **FR-002**: El sistema MUST reconocer los roles `ORGANIZADOR`, `COMITE`, `PONENTE`, `ASISTENTE` y `ACREDITACION`; una cuenta puede tener varios.
 - **FR-003**: Los roles `ORGANIZADOR`, `COMITE` y `ACREDITACION` MUST asignarlos solo un organizador (o venir de los datos de ejemplo).
+- **FR-003a**: Un usuario con sesión MUST poder añadirse a sí mismo el rol `PONENTE` o `ASISTENTE` que le falte, sin crear otra cuenta; nunca otro rol.
 - **FR-004**: Toda operación protegida MUST comprobar el rol en el servidor, no solo en la interfaz (Constitución IV).
 
 **Congresos**
