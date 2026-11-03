@@ -23,7 +23,7 @@ description: "Lista de tareas de spec-001 (HU-01 Enviar propuesta de ponencia)"
 
 **Purpose**: no hay infraestructura nueva; se reutiliza la de 000-core.
 
-- [ ] T001 Comprobar que la base de 000-core está en marcha en la rama `spec-001` (`pnpm test` en verde y `pnpm db:seed` con el congreso `jornadas-pediatria-2027` en llamada abierta)
+- [x] T001 Comprobar que la base de 000-core está en marcha en la rama `spec-001` (`pnpm test` en verde y `pnpm db:seed` con el congreso `jornadas-pediatria-2027` en llamada abierta)
 
 ---
 
@@ -31,8 +31,8 @@ description: "Lista de tareas de spec-001 (HU-01 Enviar propuesta de ponencia)"
 
 **Purpose**: esquema de validación compartido y registro del router (bloquea US1 y US2).
 
-- [ ] T002 Crear `propuestaSchema` (zod) en `apps/web/src/lib/esquemas/propuesta.ts` con: `congresoId` string no vacío; `areaId` string no vacío («Elige un área temática»); `titulo` recortado de **5–200 caracteres** («El título debe tener entre 5 y 200 caracteres»); `resumen` recortado de **100–3000 caracteres** («El resumen debe tener entre 100 y 3000 caracteres») — FR-001, contracts/propuesta.md
-- [ ] T003 Crear el router vacío `propuestaRouter` en `apps/web/src/server/api/routers/propuesta.ts` y registrarlo como `propuesta` en `apps/web/src/server/api/root.ts`
+- [x] T002 Crear `propuestaSchema` (zod) en `apps/web/src/lib/esquemas/propuesta.ts` con: `congresoId` string no vacío; `areaId` string no vacío («Elige un área temática»); `titulo` recortado de **5–200 caracteres** («El título debe tener entre 5 y 200 caracteres»); `resumen` recortado de **100–3000 caracteres** («El resumen debe tener entre 100 y 3000 caracteres») — FR-001, contracts/propuesta.md
+- [x] T003 Crear el router vacío `propuestaRouter` en `apps/web/src/server/api/routers/propuesta.ts` y registrarlo como `propuesta` en `apps/web/src/server/api/root.ts`
 
 **Checkpoint**: router registrado; ya se pueden escribir las pruebas.
 
@@ -46,14 +46,14 @@ description: "Lista de tareas de spec-001 (HU-01 Enviar propuesta de ponencia)"
 
 ### Tests for User Story 1 ⚠️ (deben fallar antes de implementar)
 
-- [ ] T004 [P] [US1] Prueba de integración `propuesta.enviar` en `apps/web/tests/integration/001/enviar.test.ts`: (a) US1-1 crea la propuesta con `estado ENVIADA`, `autorId` = usuario de la sesión y `enviadaEn` = `ahora`; (b) FR-002/FR-005a con `ahora` = 23:59 del día de cierre (hora del congreso) → aceptada, y con `ahora` = 00:00 del día siguiente → `CONFLICT` «El plazo de envío de propuestas de este congreso está cerrado» sin guardar nada (US1-2); (c) antes del día de apertura → `CONFLICT` con «se abre el» (US1-3); (d) US1-4 resumen de 99 caracteres o título de 4 → `BAD_REQUEST` sin guardar; (e) US1-5 área de otro congreso → `BAD_REQUEST` «El área temática no pertenece a este congreso»; (f) US1-6 usuario solo ASISTENTE → `FORBIDDEN`, sin sesión → `UNAUTHORIZED`; (g) congreso inexistente → `NOT_FOUND`; (h) FR-009/clarify P2: un ponente con 3 propuestas envía una cuarta → aceptada; (i) FR-008/clarify P1: el router `propuesta` no expone `editar` ni `retirar`; (j) la entrada ignora un `autorId` ajeno (el autor es siempre el usuario de la sesión)
+- [x] T004 [P] [US1] Prueba de integración `propuesta.enviar` en `apps/web/tests/integration/001/enviar.test.ts`: (a) US1-1 crea la propuesta con `estado ENVIADA`, `autorId` = usuario de la sesión y `enviadaEn` = `ahora`; (b) FR-002/FR-005a con `ahora` = 23:59 del día de cierre (hora del congreso) → aceptada, y con `ahora` = 00:00 del día siguiente → `CONFLICT` «El plazo de envío de propuestas de este congreso está cerrado» sin guardar nada (US1-2); (c) antes del día de apertura → `CONFLICT` con «se abre el» (US1-3); (d) US1-4 resumen de 99 caracteres o título de 4 → `BAD_REQUEST` sin guardar; (e) US1-5 área de otro congreso → `BAD_REQUEST` «El área temática no pertenece a este congreso»; (f) US1-6 usuario solo ASISTENTE → `FORBIDDEN`, sin sesión → `UNAUTHORIZED`; (g) congreso inexistente → `NOT_FOUND`; (h) FR-009/clarify P2: un ponente con 3 propuestas envía una cuarta → aceptada; (i) FR-008/clarify P1: el router `propuesta` no expone `editar` ni `retirar`; (j) la entrada ignora un `autorId` ajeno (el autor es siempre el usuario de la sesión)
 
 ### Implementation for User Story 1
 
-- [ ] T005 [US1] Implementar `propuesta.enviar` (`roleProcedure("PONENTE")`) en `apps/web/src/server/api/routers/propuesta.ts`: congreso por id (`NOT_FOUND`), `plazoEnvio(congreso, ctx.ahora())` de `@congresalia/domain` con mensajes de contracts/propuesta.md (`NO_ABIERTO` cita `fecha(envioAbre, zonaHoraria)`), área perteneciente al congreso, `create` con `autorId: ctx.usuario.id`, `estado: "ENVIADA"`, `enviadaEn: ctx.ahora()`; devuelve `{ id, estado }` — FR-001…FR-006
-- [ ] T006 [US1] Página `/ponente/enviar` (Server Component) en `apps/web/src/app/ponente/enviar/page.tsx`: obtiene `congreso.listar`, filtra `fase === "LLAMADA_ABIERTA"`, carga las áreas de cada uno con `congreso.porSlug` y muestra el día de cierre como «hasta el {día}» (`fecha(envioCierra − 1 ms)`); si no hay ninguno, mensaje «Ahora mismo no hay ningún congreso con la llamada a comunicaciones abierta» — FR-007
-- [ ] T007 [US1] Formulario cliente en `apps/web/src/app/ponente/enviar/formulario.tsx` con react-hook-form + `zodResolver(propuestaSchema)`: selector de congreso, selector de área dependiente del congreso, título, resumen con contador «N / 3000 (mínimo 100)», errores por campo y error del servidor en `Alert`; botón desactivado y «Enviando…» mientras la mutación está pendiente (Edge Case doble clic); al terminar, `router.push("/ponente?enviada=1")` — US1-1, US1-4
-- [ ] T008 [US1] Prueba e2e en `apps/web/tests/e2e/001-enviar-propuesta.spec.ts`: `ponente1` envía una propuesta válida y ve «Propuesta enviada» y la propuesta con estado «Enviada» (US1-1); resumen corto muestra el error del campo (US1-4); `asistente1` en `/ponente/enviar` ve «Acceso denegado» y un visitante sin sesión es llevado a `/entrar?desde=%2Fponente%2Fenviar` (US1-6)
+- [x] T005 [US1] Implementar `propuesta.enviar` (`roleProcedure("PONENTE")`) en `apps/web/src/server/api/routers/propuesta.ts`: congreso por id (`NOT_FOUND`), `plazoEnvio(congreso, ctx.ahora())` de `@congresalia/domain` con mensajes de contracts/propuesta.md (`NO_ABIERTO` cita `fecha(envioAbre, zonaHoraria)`), área perteneciente al congreso, `create` con `autorId: ctx.usuario.id`, `estado: "ENVIADA"`, `enviadaEn: ctx.ahora()`; devuelve `{ id, estado }` — FR-001…FR-006
+- [x] T006 [US1] Página `/ponente/enviar` (Server Component) en `apps/web/src/app/ponente/enviar/page.tsx`: obtiene `congreso.listar`, filtra `fase === "LLAMADA_ABIERTA"`, carga las áreas de cada uno con `congreso.porSlug` y muestra el día de cierre como «hasta el {día}» (`fecha(envioCierra − 1 ms)`); si no hay ninguno, mensaje «Ahora mismo no hay ningún congreso con la llamada a comunicaciones abierta» — FR-007
+- [x] T007 [US1] Formulario cliente en `apps/web/src/app/ponente/enviar/formulario.tsx` con react-hook-form + `zodResolver(propuestaSchema)`: selector de congreso, selector de área dependiente del congreso, título, resumen con contador «N / 3000 (mínimo 100)», errores por campo y error del servidor en `Alert`; botón desactivado y «Enviando…» mientras la mutación está pendiente (Edge Case doble clic); al terminar, `router.push("/ponente?enviada=1")` — US1-1, US1-4
+- [x] T008 [US1] Prueba e2e en `apps/web/tests/e2e/001-enviar-propuesta.spec.ts`: `ponente1` envía una propuesta válida y ve «Propuesta enviada» y la propuesta con estado «Enviada» (US1-1); resumen corto muestra el error del campo (US1-4); `asistente1` en `/ponente/enviar` ve «Acceso denegado» y un visitante sin sesión es llevado a `/entrar?desde=%2Fponente%2Fenviar` (US1-6)
 
 **Checkpoint**: US1 funcional y probada.
 
@@ -67,13 +67,13 @@ description: "Lista de tareas de spec-001 (HU-01 Enviar propuesta de ponencia)"
 
 ### Tests for User Story 2 ⚠️
 
-- [ ] T009 [P] [US2] Prueba de integración `propuesta.mias` en `apps/web/tests/integration/001/mias.test.ts`: (a) US2-1 devuelve solo las del autor ordenadas por `enviadaEn` descendente; (b) US2-2 no devuelve propuestas de otro ponente; (c) FR-010/clarify P3: cada elemento tiene **exactamente** las claves `id, titulo, resumen, estado, enviadaEn, area, congreso` (sin asignaciones, evaluaciones, puntuaciones ni evaluadores) aunque la propuesta tenga evaluaciones; (d) filtro opcional `congresoId`; (e) sin rol PONENTE → `FORBIDDEN`
+- [x] T009 [P] [US2] Prueba de integración `propuesta.mias` en `apps/web/tests/integration/001/mias.test.ts`: (a) US2-1 devuelve solo las del autor ordenadas por `enviadaEn` descendente; (b) US2-2 no devuelve propuestas de otro ponente; (c) FR-010/clarify P3: cada elemento tiene **exactamente** las claves `id, titulo, resumen, estado, enviadaEn, area, congreso` (sin asignaciones, evaluaciones, puntuaciones ni evaluadores) aunque la propuesta tenga evaluaciones; (d) filtro opcional `congresoId`; (e) sin rol PONENTE → `FORBIDDEN`
 
 ### Implementation for User Story 2
 
-- [ ] T010 [US2] Implementar `propuesta.mias` (`roleProcedure("PONENTE")`, entrada `{ congresoId?: string }`) con `select` explícito de los campos de FR-010 y `orderBy: { enviadaEn: "desc" }` en `apps/web/src/server/api/routers/propuesta.ts` — FR-005, FR-010
-- [ ] T011 [US2] Sustituir la página provisional `apps/web/src/app/ponente/page.tsx` por «Mis propuestas»: aviso «Propuesta enviada» si `?enviada=1`, botón «Enviar propuesta», tabla con congreso, título, área, fecha de envío (zona del congreso) y estado con `Badge` (`ETIQUETA_ESTADO_PROPUESTA`); estado vacío «Todavía no has enviado ninguna propuesta» — US2-1, US2-5
-- [ ] T012 [US2] Ampliar la prueba e2e `apps/web/tests/e2e/001-enviar-propuesta.spec.ts`: `ponente1` ve propuestas en los estados «Enviada», «En evaluación», «Aceptada» y «Rechazada» y ninguna de `ponente2` (título «Cuidados centrados en el desarrollo en la UCI neonatal» no aparece); un ponente recién registrado ve «Todavía no has enviado ninguna propuesta» — US2-1, US2-2, US2-5
+- [x] T010 [US2] Implementar `propuesta.mias` (`roleProcedure("PONENTE")`, entrada `{ congresoId?: string }`) con `select` explícito de los campos de FR-010 y `orderBy: { enviadaEn: "desc" }` en `apps/web/src/server/api/routers/propuesta.ts` — FR-005, FR-010
+- [x] T011 [US2] Sustituir la página provisional `apps/web/src/app/ponente/page.tsx` por «Mis propuestas»: aviso «Propuesta enviada» si `?enviada=1`, botón «Enviar propuesta», tabla con congreso, título, área, fecha de envío (zona del congreso) y estado con `Badge` (`ETIQUETA_ESTADO_PROPUESTA`); estado vacío «Todavía no has enviado ninguna propuesta» — US2-1, US2-5
+- [x] T012 [US2] Ampliar la prueba e2e `apps/web/tests/e2e/001-enviar-propuesta.spec.ts`: `ponente1` ve propuestas en los estados «Enviada», «En evaluación», «Aceptada» y «Rechazada» y ninguna de `ponente2` (título «Cuidados centrados en el desarrollo en la UCI neonatal» no aparece); un ponente recién registrado ve «Todavía no has enviado ninguna propuesta» — US2-1, US2-2, US2-5
 
 **Checkpoint**: US1 y US2 funcionales.
 
@@ -81,10 +81,26 @@ description: "Lista de tareas de spec-001 (HU-01 Enviar propuesta de ponencia)"
 
 ## Phase 5: Polish & Cross-Cutting Concerns
 
-- [ ] T013 Ejecutar la regresión completa (`pnpm test`, `pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm test:e2e`) y registrar los resultados en este fichero
-- [ ] T014 Recorrer [quickstart.md](quickstart.md) y anotar el resultado observado de cada escenario en `specs/001-enviar-propuesta/informes/verificacion.md`, incluida la medición manual del tiempo para completar el formulario (SC-001 < 3 min)
+- [x] T013 Ejecutar la regresión completa (`pnpm test`, `pnpm lint`, `pnpm typecheck`, `pnpm build`, `pnpm test:e2e`) y registrar los resultados en este fichero
+- [x] T014 Recorrer [quickstart.md](quickstart.md) y anotar el resultado observado de cada escenario en `specs/001-enviar-propuesta/informes/verificacion.md`, incluida la medición manual del tiempo para completar el formulario (SC-001 < 3 min)
 
 ---
+
+## Notas de implementación (iteración 1, 2026-11-03)
+
+- **T005/T010**: `propuesta.mias` se escribió en el mismo fichero que `enviar`, antes de T009; por tanto la prueba T009 no llegó a fallar antes de existir el código (desviación del orden TDD, documentada).
+- **T004 (i)**: la primera versión comprobaba `api.propuesta.editar === undefined`, pero el *caller* de tRPC es un proxy que devuelve una función para cualquier nombre; se cambió a inspeccionar `appRouter._def.procedures`.
+- **T008/T012**: 3 fallos en la primera ejecución, todos de la prueba: `selectOption` no admite expresiones regulares (se añadió `elegir()`), y el cambio de usuario sin borrar cookies continuaba antes de que terminara el nuevo inicio de sesión. Corregido; la aplicación no cambió.
+- **SC-001**: medición humana pendiente (ver `informes/verificacion.md`).
+
+### Resultados
+
+| Comprobación | Resultado |
+|--------------|-----------|
+| Integración `tests/integration/001` | 14/14 ✔ (total apps/web 36/36) |
+| E2E `tests/e2e/001-enviar-propuesta.spec.ts` | 5/5 ✔ (total 12/12) |
+| `packages/domain` | 34/34 ✔ |
+| lint · typecheck · build | sin errores |
 
 ## Dependencies & Execution Order
 
