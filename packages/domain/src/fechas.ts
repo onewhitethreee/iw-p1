@@ -50,3 +50,20 @@ export function finDeDia(dia: string, zona: string): Date {
 export function diaLocal(d: Date, zona: string): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: zona, year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
 }
+
+const RE_FECHA_HORA = /^(\d{4}-\d{2}-\d{2})T([01]\d|2[0-3]):([0-5]\d)$/;
+
+/**
+ * Instante UTC de una fecha y hora locales «AAAA-MM-DDTHH:mm» en la zona indicada
+ * (spec-003 clarify P2: las horas del programa se introducen en la zona del congreso).
+ */
+export function instanteLocal(fechaHora: string, zona: string): Date {
+  const m = RE_FECHA_HORA.exec(fechaHora);
+  if (!m) throw new Error(`Fecha y hora no válidas: ${fechaHora} (formato AAAA-MM-DDTHH:mm)`);
+  const [, dia, hh, mm] = m as unknown as [string, string, string, string];
+  const local = Date.UTC(Number(dia.slice(0, 4)), Number(dia.slice(5, 7)) - 1, Number(dia.slice(8, 10)), Number(hh), Number(mm));
+  // Dos pasadas, igual que inicioDeDia, para acertar también en los días de cambio de hora
+  let t = local - desfase(local, zona);
+  t = local - desfase(t, zona);
+  return new Date(t);
+}
