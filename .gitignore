@@ -8,3 +8,9 @@ dist/
 coverage/
 playwright-report/
 test-results/
+.env.test
+*.tsbuildinfo
+next-env.d.ts
+.pnpm-store/
+apps/web/playwright-report/
+apps/web/test-results/

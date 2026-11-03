@@ -1,0 +1,285 @@
+// Traducción literal de specs/000-core/data-model.md (fuente única de verdad, Constitución V).
+// Importes en céntimos (Int); fechas en UTC (timestamptz).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Rol {
+  ORGANIZADOR
+  COMITE
+  PONENTE
+  ASISTENTE
+  ACREDITACION
+}
+
+enum EstadoPropuesta {
+  ENVIADA
+  EN_EVALUACION
+  ACEPTADA
+  RECHAZADA
+}
+
+enum TipoAsistente {
+  PROFESIONAL
+  SOCIO
+  ESTUDIANTE
+}
+
+enum TarifaAplicada {
+  TEMPRANA
+  GENERAL
+}
+
+enum EstadoInscripcion {
+  PENDIENTE_PAGO
+  CONFIRMADA
+}
+
+enum ResultadoPago {
+  APROBADO
+  RECHAZADO
+}
+
+enum EstadoPrograma {
+  BORRADOR
+  PUBLICADO
+}
+
+model Usuario {
+  id           String   @id @default(cuid())
+  nombre       String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now()) @db.Timestamptz
+  updatedAt    DateTime @updatedAt @db.Timestamptz
+
+  roles          UsuarioRol[]
+  propuestas     Propuesta[]   @relation("AutorPropuesta")
+  asignaciones   Asignacion[]  @relation("EvaluadorAsignacion")
+  inscripciones  Inscripcion[]
+  asistenciasReg Asistencia[]  @relation("RegistradaPor")
+}
+
+model UsuarioRol {
+  usuarioId String
+  rol       Rol
+  createdAt DateTime @default(now()) @db.Timestamptz
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  @@id([usuarioId, rol])
+}
+
+model Congreso {
+  id             String         @id @default(cuid())
+  slug           String         @unique
+  nombre         String
+  descripcion    String
+  sede           String
+  zonaHoraria    String         @default("Europe/Madrid")
+  inicio         DateTime       @db.Timestamptz
+  fin            DateTime       @db.Timestamptz
+  envioAbre      DateTime       @db.Timestamptz
+  envioCierra    DateTime       @db.Timestamptz
+  limiteTemprana DateTime       @db.Timestamptz
+  estadoPrograma EstadoPrograma @default(BORRADOR)
+  publicadoEn    DateTime?      @db.Timestamptz
+  createdAt      DateTime       @default(now()) @db.Timestamptz
+  updatedAt      DateTime       @updatedAt @db.Timestamptz
+
+  areas         AreaTematica[]
+  salas         Sala[]
+  tarifas       Tarifa[]
+  propuestas    Propuesta[]
+  sesiones      Sesion[]
+  inscripciones Inscripcion[]
+}
+
+model AreaTematica {
+  id         String   @id @default(cuid())
+  congresoId String
+  nombre     String
+  createdAt  DateTime @default(now()) @db.Timestamptz
+  updatedAt  DateTime @updatedAt @db.Timestamptz
+
+  congreso   Congreso    @relation(fields: [congresoId], references: [id], onDelete: Cascade)
+  propuestas Propuesta[]
+
+  @@unique([congresoId, nombre])
+}
+
+model Propuesta {
+  id         String          @id @default(cuid())
+  congresoId String
+  areaId     String
+  autorId    String
+  titulo     String
+  resumen    String
+  estado     EstadoPropuesta @default(ENVIADA)
+  enviadaEn  DateTime        @default(now()) @db.Timestamptz
+  decididaEn DateTime?       @db.Timestamptz
+  createdAt  DateTime        @default(now()) @db.Timestamptz
+  updatedAt  DateTime        @updatedAt @db.Timestamptz
+
+  congreso     Congreso     @relation(fields: [congresoId], references: [id], onDelete: Cascade)
+  area         AreaTematica @relation(fields: [areaId], references: [id])
+  autor        Usuario      @relation("AutorPropuesta", fields: [autorId], references: [id])
+  asignaciones Asignacion[]
+  sesion       Sesion?
+
+  @@index([congresoId, estado])
+  @@index([autorId])
+}
+
+model Asignacion {
+  id          String   @id @default(cuid())
+  propuestaId String
+  evaluadorId String
+  asignadaEn  DateTime @default(now()) @db.Timestamptz
+  createdAt   DateTime @default(now()) @db.Timestamptz
+  updatedAt   DateTime @updatedAt @db.Timestamptz
+
+  propuesta  Propuesta   @relation(fields: [propuestaId], references: [id], onDelete: Cascade)
+  evaluador  Usuario     @relation("EvaluadorAsignacion", fields: [evaluadorId], references: [id])
+  evaluacion Evaluacion?
+
+  @@unique([propuestaId, evaluadorId])
+  @@index([evaluadorId])
+}
+
+model Evaluacion {
+  id           String   @id @default(cuid())
+  asignacionId String   @unique
+  puntuacion   Int
+  comentarios  String
+  evaluadaEn   DateTime @default(now()) @db.Timestamptz
+  createdAt    DateTime @default(now()) @db.Timestamptz
+  updatedAt    DateTime @updatedAt @db.Timestamptz
+
+  asignacion Asignacion @relation(fields: [asignacionId], references: [id], onDelete: Cascade)
+}
+
+model Sala {
+  id         String   @id @default(cuid())
+  congresoId String
+  nombre     String
+  aforo      Int
+  createdAt  DateTime @default(now()) @db.Timestamptz
+  updatedAt  DateTime @updatedAt @db.Timestamptz
+
+  congreso Congreso @relation(fields: [congresoId], references: [id], onDelete: Cascade)
+  sesiones Sesion[]
+
+  @@unique([congresoId, nombre])
+}
+
+model Sesion {
+  id          String   @id @default(cuid())
+  congresoId  String
+  propuestaId String   @unique
+  salaId      String
+  inicio      DateTime @db.Timestamptz
+  fin         DateTime @db.Timestamptz
+  createdAt   DateTime @default(now()) @db.Timestamptz
+  updatedAt   DateTime @updatedAt @db.Timestamptz
+
+  congreso    Congreso        @relation(fields: [congresoId], references: [id], onDelete: Cascade)
+  propuesta   Propuesta       @relation(fields: [propuestaId], references: [id])
+  sala        Sala            @relation(fields: [salaId], references: [id])
+  agendas     EntradaAgenda[]
+  asistencias Asistencia[]
+
+  @@index([congresoId, inicio])
+  @@index([salaId, inicio])
+}
+
+model Tarifa {
+  id                  String        @id @default(cuid())
+  congresoId          String
+  tipoAsistente       TipoAsistente
+  importeTempranoCent Int
+  importeGeneralCent  Int
+  createdAt           DateTime      @default(now()) @db.Timestamptz
+  updatedAt           DateTime      @updatedAt @db.Timestamptz
+
+  congreso Congreso @relation(fields: [congresoId], references: [id], onDelete: Cascade)
+
+  @@unique([congresoId, tipoAsistente])
+}
+
+model Inscripcion {
+  id                 String            @id @default(cuid())
+  congresoId         String
+  usuarioId          String
+  tipoAsistente      TipoAsistente
+  tarifaAplicada     TarifaAplicada
+  importeCent        Int
+  estado             EstadoInscripcion @default(PENDIENTE_PAGO)
+  codigoAcreditacion String?           @unique
+  creadaEn           DateTime          @default(now()) @db.Timestamptz
+  confirmadaEn       DateTime?         @db.Timestamptz
+  createdAt          DateTime          @default(now()) @db.Timestamptz
+  updatedAt          DateTime          @updatedAt @db.Timestamptz
+
+  congreso    Congreso        @relation(fields: [congresoId], references: [id], onDelete: Cascade)
+  usuario     Usuario         @relation(fields: [usuarioId], references: [id])
+  pagos       Pago[]
+  agenda      EntradaAgenda[]
+  asistencias Asistencia[]
+
+  @@unique([congresoId, usuarioId])
+  @@index([congresoId, estado])
+}
+
+model Pago {
+  id            String        @id @default(cuid())
+  inscripcionId String
+  importeCent   Int
+  resultado     ResultadoPago
+  referencia    String
+  fecha         DateTime      @default(now()) @db.Timestamptz
+  createdAt     DateTime      @default(now()) @db.Timestamptz
+  updatedAt     DateTime      @updatedAt @db.Timestamptz
+
+  inscripcion Inscripcion @relation(fields: [inscripcionId], references: [id], onDelete: Cascade)
+
+  @@index([inscripcionId])
+}
+
+model EntradaAgenda {
+  id            String   @id @default(cuid())
+  inscripcionId String
+  sesionId      String
+  anadidaEn     DateTime @default(now()) @db.Timestamptz
+  createdAt     DateTime @default(now()) @db.Timestamptz
+  updatedAt     DateTime @updatedAt @db.Timestamptz
+
+  inscripcion Inscripcion @relation(fields: [inscripcionId], references: [id], onDelete: Cascade)
+  sesion      Sesion      @relation(fields: [sesionId], references: [id])
+
+  @@unique([inscripcionId, sesionId])
+  @@index([sesionId])
+}
+
+model Asistencia {
+  id              String   @id @default(cuid())
+  inscripcionId   String
+  sesionId        String
+  registradaEn    DateTime @default(now()) @db.Timestamptz
+  registradaPorId String
+  createdAt       DateTime @default(now()) @db.Timestamptz
+  updatedAt       DateTime @updatedAt @db.Timestamptz
+
+  inscripcion   Inscripcion @relation(fields: [inscripcionId], references: [id], onDelete: Cascade)
+  sesion        Sesion      @relation(fields: [sesionId], references: [id])
+  registradaPor Usuario     @relation("RegistradaPor", fields: [registradaPorId], references: [id])
+
+  @@unique([inscripcionId, sesionId])
+  @@index([sesionId])
+}
