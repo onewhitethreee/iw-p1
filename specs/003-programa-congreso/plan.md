@@ -95,7 +95,7 @@ apps/web/tests/
 4. **Estados** (clarify P1): `ahora ≥ congreso.fin` → todo bloqueado; `sesion.inicio ≤ ahora` → `mover` solo admite `salaId` y `quitar` se rechaza.
 5. **Aforo al mover** (FR-006): reservas = `count(EntradaAgenda)` de la sesión ≤ `sala.aforo` destino.
 6. **Público dinámico** (R4): `export const dynamic = "force-dynamic"` en las páginas públicas → los cambios se ven en la siguiente visita (US3-4) y el HTML siempre se genera en el servidor (SC-003).
-7. **SEO** (R5): `generateMetadata` (title, description, canonical, Open Graph), JSON-LD `Event` con `subEvent` por sesión y `location`; `sitemap.ts` con congresos publicados y sus sesiones; `robots.ts` permite todo salvo `/organizador`, `/comite`, `/ponente`, `/area-personal`, `/acreditacion`, `/api`.
+7. **SEO** (R5): `generateMetadata` (title, description, canonical, Open Graph), JSON-LD `Event` con `subEvent` por sesión y `location`; `sitemap.ts` con congresos publicados y sus sesiones; `robots.ts` permite todo salvo `/organizador`, `/comite`, `/ponente`, `/area-personal`, `/acreditacion`, `/api`, `/entrar` y `/registro` (formularios sin valor para buscadores). Mientras el programa está en borrador, su página pública lleva `noindex` para que no se indexe una página sin sesiones; al publicarse pasa a `index`. *(Añadido tras converge F2.)*
 
 ## Complexity Tracking
 
