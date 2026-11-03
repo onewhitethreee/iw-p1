@@ -10,7 +10,7 @@ Requisitos: base de 000-core en marcha (`pnpm db:migrate && pnpm db:seed && pnpm
 | 4 | US1-2 plazo cerrado | Prueba de integración con `ahora` = 00:00 del día siguiente al cierre | `CONFLICT` «…está cerrado» |
 | 5 | FR-005a último día | Prueba con `ahora` = 23:59 del día de cierre | Se acepta |
 | 6 | US2-1/2 | `ponente1` ve sus propuestas (4 estados) y ninguna de `ponente2` | Lista solo propia, más reciente primero |
-| 7b | US2-5 vacío | Registrar un ponente nuevo → «Mis propuestas» | «Todavía no has enviado ninguna propuesta» |
-| 7 | US2-3 privacidad | Respuesta de `propuesta.mias` | Sin puntuaciones, comentarios ni evaluadores |
+| 7 | US2-5 vacío | Registrar un ponente nuevo → «Mis propuestas» | «Todavía no has enviado ninguna propuesta» |
+| 8 | US2-3 privacidad | Respuesta de `propuesta.mias` | Sin puntuaciones, comentarios ni evaluadores |
 
 Comandos: `pnpm test` (integración `tests/integration/001`) · `pnpm build && pnpm test:e2e` (`tests/e2e/001-enviar-propuesta.spec.ts`).

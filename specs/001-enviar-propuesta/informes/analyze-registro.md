@@ -8,3 +8,4 @@ Responsable: Yangfeng Liu · Revisor: autorrevisión diferida · Inicial: [analy
 | T1 | Edge Cases | MEDIUM | «clarify P1» ambiguo | «clarify de 000-core P1» | Yangfeng Liu | Cerrado |
 | C1 | US1-6 | LOW | e2e sin caso anónimo | Añadido a T008 | Yangfeng Liu | Cerrado |
 | C2 | SC-001 | LOW | sin tarea | Medición manual en T014 | Yangfeng Liu | Cerrado (justificado: tiempo de usuario, no automatizable con sentido) |
+| N1 | quickstart (analyze-2) | LOW | Numeración 7b/7 | Renumerado | Yangfeng Liu | Cerrado |
