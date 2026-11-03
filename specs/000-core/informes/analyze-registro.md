@@ -15,3 +15,4 @@ Responsable: Yangfeng Liu · Revisor: autorrevisión diferida · Informe inicial
 | U1 | SC-004 | LOW | Sin tarea de medición | Se acepta verificación manual: el registro e2e (T031) tarda < 2 s | Yangfeng Liu | Aceptado (justificado) |
 | U2 | quickstart | LOW | Usuarios `demoNN@`, `ponente3–8@` sin documentar | Documentados | Yangfeng Liu | Cerrado |
 | K1 | Constitución VII | LOW | `congreso123` en `seed.ts` | **Falso positivo**: es la credencial pública de demostración, documentada en quickstart; los secretos reales (`AUTH_SECRET`, `DATABASE_URL`) están en `.env`, fuera del repositorio | Yangfeng Liu | Descartado (justificado) |
+| N1 | plan.md (analyze-2) | LOW | Árbol sin `fechas.ts`/`not-found.tsx`; react-hook-form como dependencia de 000-core | Plan actualizado | Yangfeng Liu | Cerrado |
