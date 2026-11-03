@@ -4,7 +4,7 @@
 
 | Entidad | Uso |
 |---------|-----|
-| `Sesion` | Se crea/mueve/quita. `propuestaId` único (una sesión por ponencia), `salaId`, `inicio < fin` dentro de `[congreso.inicio, congreso.fin]` |
+| `Sesion` | Se crea/mueve/quita. `propuestaId` único (una sesión por ponencia), `salaId`, `inicio < fin`, mismo día del congreso (clarify P3), dentro de `[congreso.inicio, congreso.fin]` |
 | `Propuesta` | Solo `ACEPTADA` se programa; su `autor` es el ponente de la sesión |
 | `Sala` | `aforo` determina el aforo de la sesión (A6) |
 | `Congreso` | `estadoPrograma` (`BORRADOR → PUBLICADO`), `publicadoEn`, `zonaHoraria`, `inicio`/`fin` |
