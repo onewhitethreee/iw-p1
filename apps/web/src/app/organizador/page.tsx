@@ -1,17 +1,37 @@
+import type { Metadata } from "next";
+import Link from "next/link";
+import { fecha } from "@congresalia/domain";
+import { Button } from "~/components/ui/button";
+import { Card, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
+import { FaseBadge } from "~/components/fase-badge";
 import { api } from "~/trpc/server";
 
-// Página índice provisional: cada spec (001–008) añade aquí su funcionalidad.
-export default async function Page() {
+export const metadata: Metadata = { title: "Organización" };
+
+/** Punto de entrada del organizador por congreso (spec-003: «Programa»). */
+export default async function OrganizadorPage() {
   const congresos = await (await api()).congreso.listar();
   return (
-    <div className="grid gap-2">
+    <div className="grid gap-6">
       <h1 className="text-2xl font-semibold">Organización</h1>
-      <p className="text-muted-foreground">Elige un congreso. Las funcionalidades de esta zona se añaden en las specs 001–008.</p>
-      <ul className="list-inside list-disc">
+      <div className="grid gap-4 md:grid-cols-2">
         {congresos.map((c) => (
-          <li key={c.id}>{c.nombre}</li>
+          <Card key={c.id}>
+            <CardHeader>
+              <FaseBadge fase={c.fase} />
+              <CardTitle>{c.nombre}</CardTitle>
+              <CardDescription>
+                {fecha(c.inicio, c.zonaHoraria)} – {fecha(c.fin, c.zonaHoraria)}
+              </CardDescription>
+              <div className="mt-2 flex flex-wrap gap-2">
+                <Button asChild size="sm" variant="outline">
+                  <Link href={`/organizador/${c.slug}/programa`}>Programa</Link>
+                </Button>
+              </div>
+            </CardHeader>
+          </Card>
         ))}
-      </ul>
+      </div>
     </div>
   );
 }
