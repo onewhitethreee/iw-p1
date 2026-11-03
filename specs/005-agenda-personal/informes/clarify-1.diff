@@ -1,0 +1,31 @@
+--- specs/005-agenda-personal/informes/spec-antes-clarify-1.md	2026-11-03 15:28:22.358633788 +0000
++++ specs/005-agenda-personal/spec.md	2026-11-03 15:28:41.821532418 +0000
+@@ -12,6 +12,12 @@
+ 
+ **Input**: User description: "HU-05 · Como asistente inscrito, quiero añadir a mi agenda las sesiones a las que quiero ir para organizar mi congreso."
+ 
++## Clarifications
++
++### Session 2026-11-03
++
++- Q: Si el organizador mueve una sesión y ahora se solapa con otra que el asistente ya tenía en su agenda, ¿qué pasa con la agenda? → A: La agenda conserva ambas sesiones y el asistente ve, en las dos, el aviso «Se solapa con «…»» para que decida cuál quitar; la regla de solape se aplica al añadir.
++
+ ## User Scenarios & Testing *(mandatory)*
+ 
+ ### User Story 1 - Añadir sesiones a mi agenda respetando solapes y aforo (Priority: P1)
+@@ -48,6 +54,7 @@
+ 1. **Given** una agenda con varias sesiones, **When** el asistente la abre, **Then** las ve ordenadas por día y hora, con sala y horario en la zona horaria del congreso.
+ 2. **Given** una sesión futura en la agenda, **When** el asistente la quita, **Then** desaparece de su agenda y la sesión recupera una plaza libre.
+ 3. **Given** una sesión que ya ha empezado o terminado, **When** intenta quitarla, **Then** el sistema lo rechaza (afectaría al cálculo del certificado, HU-07).
++4. **Given** dos sesiones de la agenda que han pasado a solaparse porque el organizador movió una, **When** el asistente abre su agenda, **Then** ambas muestran el aviso «Se solapa con «…»» y puede quitar una de ellas (Clarifications P1).
+ 
+ ### Edge Cases
+ 
+@@ -68,6 +75,7 @@
+ - **FR-006**: El asistente MUST poder quitar sesiones que no han empezado; al quitarlas se libera la plaza.
+ - **FR-007**: La lista de sesiones MUST mostrar las plazas libres y marcar las completas y las que ya están en la agenda.
+ - **FR-008**: Todas las reglas MUST validarse en el servidor.
++- **FR-009**: La agenda MUST marcar con un aviso las sesiones que se solapan entre sí por cambios posteriores del programa, sin quitarlas (Clarifications P1).
+ 
+ ### Key Entities
+ 
