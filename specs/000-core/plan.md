@@ -18,7 +18,7 @@ entorno local con `docker-compose`. Decisiones razonadas en [research.md](resear
 
 **Language/Version**: TypeScript 5.x sobre Node.js 22 LTS
 
-**Primary Dependencies**: Next.js 15 (App Router, React 19) · tRPC v11 + TanStack Query v5 · Prisma 6 · Auth.js v5 (Credentials) · zod · shadcn/ui + Tailwind CSS v4 · react-hook-form · qrcode / html5-qrcode · pdf-lib · bcryptjs
+**Primary Dependencies**: Next.js 15 (App Router, React 19) · tRPC v11 + TanStack Query v5 · Prisma 6 · Auth.js v5 (Credentials) · zod · shadcn/ui + Tailwind CSS v4 · react-hook-form (solo formularios largos, desde spec-001) · qrcode / html5-qrcode · pdf-lib · bcryptjs
 
 **Storage**: PostgreSQL 16 (contenedor `docker-compose` en local)
 
