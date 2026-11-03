@@ -82,3 +82,7 @@ Tras T003:  T004 (inscribir.test) ∥ T007 (pagar.test)
 | FR-013 (pasarela, P3) | T002, T007e/f |
 | US1-1…7 / US2-1…5 | T004–T011 |
 | SC-001 / SC-002 / SC-003 | T012 / T007a,g / T004a,b |
+
+## Phase 6: Convergence
+
+- [ ] T013 Medir con una persona real el tiempo desde abrir `/congresos/[slug]/inscripcion` hasta ver el QR en el área personal (objetivo < 3 min) y registrarlo en `specs/004-inscripcion-pago/informes/verificacion.md` per SC-001 (partial)
