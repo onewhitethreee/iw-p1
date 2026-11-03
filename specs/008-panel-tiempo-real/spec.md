@@ -63,7 +63,7 @@ Desde una sesión llena del panel, el organizador ve las salas libres en ese hor
 
 **Why this priority**: es el ejemplo de decisión que da la narrativa; reutiliza la regla de mover de HU-03.
 
-**Independent Test**: con la sesión de «Aula 3» (aforo 2) completa, mover a «Auditorio» (libre a esa hora) y ver el nuevo aforo en el panel.
+**Independent Test**: con los datos de ejemplo, mover «Competencia digital docente» (Aula 3, aforo 2, mañana) a «Auditorio» (libre a esa hora) y ver el nuevo aforo en el panel; en «Rúbricas compartidas…» (completa) la lista de salas libres sale vacía porque las demás salas están ocupadas a esa hora (analyze I1).
 
 **Acceptance Scenarios**:
 

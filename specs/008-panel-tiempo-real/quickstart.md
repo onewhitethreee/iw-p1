@@ -10,6 +10,7 @@ Seed `congreso-innovacion-educativa-2026` (en curso): 40 inscripciones (35 confi
 | 4 | US1-4 | Panel de un congreso sin inscripciones (Pediatría) | Ceros |
 | 5 | US2-1/2-3 | Ver «Rúbricas compartidas…» y marcar «Solo completas o casi completas» | «Completa» (100 %); el filtro la deja visible y oculta las demás no llenas |
 | 6 | US2-2 | Admitir una entrada en otra sesión (spec-006 o insertando una asistencia) | Asistencias +1 en ≤ 5 s |
+| 7a | US3-1 | «Rúbricas compartidas…» → Cambiar de sala | «No hay salas libres en ese horario con aforo suficiente» |
 | 7 | US3-1/3-2 | «Competencia digital docente» → Cambiar de sala | Lista sin Sala Magna (ocupada) ni Aula 3 (actual); elegir Auditorio → aforo 200 en el panel |
 | 8 | US3-3 | Integración: otra sesión ocupa la sala entre la lista y la confirmación | `CONFLICT` por solape; la sesión no cambia |
 | 9 | US3-4 | Sesión terminada / congreso finalizado | Sin botón; `CONFLICT` |
