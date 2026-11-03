@@ -25,12 +25,13 @@ precio que le corresponde según la fecha (temprano o general) y crea la inscrip
 
 **Acceptance Scenarios**:
 
-1. **Given** un congreso con tarifas y la fecha actual anterior o igual a la fecha límite temprana, **When** un asistente elige «Estudiante», **Then** ve el precio temprano de estudiante y, al confirmar, se crea la inscripción `PENDIENTE_PAGO` con ese importe.
-2. **Given** la fecha actual posterior a la fecha límite temprana, **When** elige un tipo, **Then** se aplica el precio general.
+1. **Given** un congreso con tarifas y el momento actual anterior o igual a las 23:59:59 del día límite temprano (hora del congreso), **When** un asistente elige «Estudiante», **Then** ve el precio temprano de estudiante y, al confirmar, se crea la inscripción `PENDIENTE_PAGO` con ese importe.
+2. **Given** el día siguiente al día límite temprano (desde las 00:00, hora del congreso), **When** elige un tipo, **Then** se aplica el precio general.
 3. **Given** un asistente que ya tiene una inscripción (pendiente o confirmada) en ese congreso, **When** intenta inscribirse otra vez, **Then** el sistema lo rechaza y le lleva a su inscripción existente.
 4. **Given** un congreso finalizado, **When** alguien intenta inscribirse, **Then** el sistema lo rechaza.
 5. **Given** un visitante sin sesión, **When** pulsa «Inscribirme», **Then** se le pide iniciar sesión o registrarse como asistente y vuelve después a la inscripción.
-6. **Given** una petición manipulada con un importe distinto, **When** llega al servidor, **Then** se ignora: el importe lo calcula siempre el servidor.
+6. **Given** un usuario con sesión que solo tiene el rol ponente, **When** pulsa «Inscribirme», **Then** se le ofrece añadirse el rol asistente (000-core FR-003a) y, tras aceptarlo, continúa con la inscripción; sin aceptarlo, el servidor rechaza la inscripción.
+7. **Given** una petición manipulada con un importe distinto, **When** llega al servidor, **Then** se ignora: el importe lo calcula siempre el servidor.
 
 ---
 
@@ -63,7 +64,7 @@ y obtiene su acreditación con código QR en el área personal.
 ### Functional Requirements
 
 - **FR-001**: El sistema MUST mostrar, para cada tipo de asistente, el precio vigente (temprano o general) antes de inscribirse.
-- **FR-002**: El sistema MUST calcular en el servidor el importe según tipo de asistente y si la fecha de creación es ≤ `limiteTemprana`, y fijarlo en la inscripción (A4).
+- **FR-002**: El sistema MUST calcular en el servidor el importe según tipo de asistente y si la inscripción se crea como muy tarde a las 23:59:59 del día límite temprano en la zona del congreso (000-core FR-005a/FR-016), y fijarlo en la inscripción (A4).
 - **FR-003**: Un usuario MUST tener como máximo una inscripción por congreso.
 - **FR-004**: Solo usuarios con rol `ASISTENTE` MUST poder inscribirse; no se admiten inscripciones en congresos finalizados.
 - **FR-005**: La inscripción MUST nacer `PENDIENTE_PAGO` y pasar a `CONFIRMADA` solo con un pago aprobado.

@@ -27,6 +27,8 @@ Contraseña de todos: `congreso123`
 | `ponente.comite@congresalia.es` | PONENTE, COMITE (para probar que no evalúa su propia propuesta) |
 | `asistente1@congresalia.es` … `asistente5@congresalia.es` | ASISTENTE |
 | `acreditacion@congresalia.es` | ACREDITACION |
+| `ponente3@` … `ponente8@congresalia.es` | PONENTE (autores de las sesiones de ejemplo) |
+| `demo01@` … `demo36@congresalia.es` | ASISTENTE (inscripciones de volumen para el panel, HU-08) |
 
 Congresos:
 - `jornadas-pediatria-2027`: llamada a comunicaciones abierta, propuestas en todos los estados (HU-01, HU-02, HU-03).

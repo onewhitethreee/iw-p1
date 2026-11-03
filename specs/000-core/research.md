@@ -48,7 +48,7 @@ Cada decisión resuelve una incógnita del *Technical Context* de [plan.md](plan
 - **Motivo**: la Constitución pide pruebas de reglas y de recorridos; `createCaller` demuestra que las reglas se aplican aunque se salte la interfaz (SC-001).
 
 ## R11. UI
-- **Decisión**: shadcn/ui sobre Tailwind CSS v4; formularios con `react-hook-form` + `zod` (el mismo esquema zod valida en cliente y servidor).
+- **Decisión**: shadcn/ui sobre Tailwind CSS v4; formularios cortos con `useActionState` + acciones de servidor validadas con `zod`; `react-hook-form` + `zod` solo en formularios largos con validación en cliente. *(Revisado tras analyze I3: la versión inicial imponía react-hook-form en todos.)*
 
 ## R12. Pago simulado (acuerdo A5)
 - **Decisión**: pantalla de «pasarela» propia con dos botones de resultado (aprobar / rechazar). Una tarjeta de prueba `4000 0000 0000 0002` provoca el rechazo para poder demostrar el caso de error. No se guarda ningún dato de tarjeta.
