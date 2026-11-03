@@ -76,3 +76,7 @@ Tras T002:  T003 (anadir.test) ∥ T006 (quitar.test)
 | FR-009 (aviso de solape, P1) | T006e, T007, T008 |
 | US1-1…7 / US2-1…4 | T003–T009 |
 | SC-001 / SC-002 / SC-003 | T003b,i / T003e / T005 (manual) |
+
+## Phase 6: Convergence
+
+- [ ] T011 Al integrar en `main` (después de spec-004), añadir en `apps/web/src/app/area-personal/page.tsx` un enlace «Mi agenda» a `/area-personal/agenda/{slug}` en cada inscripción confirmada per plan: Structure Decision (partial)
