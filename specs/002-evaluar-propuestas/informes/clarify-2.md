@@ -23,7 +23,7 @@
 
 | # | Pregunta | Respuesta | Justificación | Criterios afectados | Decidido por |
 |---|----------|-----------|---------------|---------------------|--------------|
-| P3 | ¿Debe el sistema impedir asignar una propuesta a un miembro del comité de otra área? | No: se **mantiene** el criterio actual y se hace explícito (FR-012) | La frase «formado por expertos del área» describe al comité en conjunto (el área del congreso: salud, educación), no a cada miembro. La narrativa no pide registrar especialidades, y la asignación ya es manual: quien conoce a los expertos es el organizador. Restringirla exigiría una relación evaluador–área en el modelo de 000-core, sin que la narrativa lo pida (Constitución II). | Assumptions → decisión, FR-012 (nuevo) | Yangfeng Liu (respuesta directa, 2026-11-04) |
+| P3 | ¿Debe el sistema impedir asignar una propuesta a un miembro del comité de otra área? | No: se **mantiene** el criterio actual y se hace explícito (FR-012) | El organizador ya elige personalmente a quién asigna cada propuesta y sabe quién es el experto adecuado; no hace falta que el sistema lo restrinja por área. *(Justificación del responsable.)* | Assumptions → decisión, FR-012 (nuevo) | Yangfeng Liu (respuesta directa, 2026-11-04) |
 
 ## Criterios en formato Dado… Cuando… Entonces…
 
