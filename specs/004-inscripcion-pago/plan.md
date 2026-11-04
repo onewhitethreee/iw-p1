@@ -11,9 +11,9 @@
 El asistente elige su tipo de asistente, ve el precio vigente (temprano o general, A4 y 000-core FR-005a), crea la
 inscripción `PENDIENTE_PAGO` con el importe fijado y la paga en una pasarela simulada (A5, clarify P3); al aprobarse
 pasa a `CONFIRMADA` con un código de acreditación UUID v4 que se muestra como QR. Técnicamente: router tRPC
-`inscripcion` (4 procedimientos) que calcula siempre el importe en el servidor con `calcularTarifa`, bloquea la
+`inscripcion` (5 procedimientos, con `cancelar` de clarify-2 P4) que calcula siempre el importe en el servidor con `calcularTarifa`, bloquea la
 inscripción al pagar (sin pagos dobles) y nunca guarda el número de tarjeta; páginas `/congresos/[slug]/inscripcion`
-y `/area-personal` (+ pago). Sin entidades ni migraciones nuevas.
+y `/area-personal` (+ pago). Sin entidades nuevas; una sola migración añade el valor `CANCELADA` al enum (decisión 8).
 
 ## Technical Context
 
