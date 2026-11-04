@@ -1,4 +1,4 @@
-import { hora } from "@congresalia/domain";
+import { hora, reservaVigente } from "@congresalia/domain";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, roleProcedure } from "~/server/api/trpc";
@@ -44,7 +44,13 @@ export const acreditacionRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const ahora = ctx.ahora();
       return ctx.db.$transaction(async (tx) => {
-        // R3: bloquear la sesión para que dos puertas no cuenten a la vez el mismo aforo
+        const ins = await tx.inscripcion.findUnique({
+          where: { codigoAcreditacion: input.codigo },
+          include: { usuario: { select: { nombre: true } } },
+        });
+        // R3 (revisada): orden inscripción → sesión, el mismo que agenda.anadir (spec-005 R1), para no interbloquearse.
+        // La inscripción serializa a la misma persona en puertas de sesiones distintas (FR-011); la sesión, el aforo.
+        if (ins) await tx.$queryRaw`SELECT id FROM "Inscripcion" WHERE id = ${ins.id} FOR UPDATE`;
         const bloqueo = await tx.$queryRaw<{ id: string }[]>`SELECT id FROM "Sesion" WHERE id = ${input.sesionId} FOR UPDATE`;
         if (bloqueo.length === 0) throw noEncontrada();
         const sesion = await tx.sesion.findUniqueOrThrow({
@@ -60,10 +66,6 @@ export const acreditacionRouter = createTRPCRouter({
         });
 
         // 1. El código existe
-        const ins = await tx.inscripcion.findUnique({
-          where: { codigoAcreditacion: input.codigo },
-          include: { usuario: { select: { nombre: true } } },
-        });
         if (!ins) return responder("RECHAZADO", "Acreditación no válida");
         // 2. Es del mismo congreso
         if (ins.congresoId !== sesion.congresoId) return responder("RECHAZADO", "Acreditación de otro congreso");
@@ -78,12 +80,19 @@ export const acreditacionRouter = createTRPCRouter({
         // 5. Ya registrado: no consume aforo
         const previa = await tx.asistencia.findUnique({ where: { inscripcionId_sesionId: { inscripcionId: ins.id, sesionId: sesion.id } } });
         if (previa) return responder("YA_REGISTRADO", "Ya registrado en esta sesión", ins.usuario.nombre);
+        // 5b. No puede estar a la vez en otra sesión que se solapa (FR-011, clarify-3 P4; regla A7, research R6)
+        const otra = await tx.asistencia.findFirst({
+          where: { inscripcionId: ins.id, sesion: { id: { not: sesion.id }, inicio: { lt: sesion.fin }, fin: { gt: sesion.inicio } } },
+          select: { sesion: { select: { propuesta: { select: { titulo: true } } } } },
+        });
+        if (otra) return responder("RECHAZADO", `Ya registrado en «${otra.sesion.propuesta.titulo}» a esta hora`);
         // 6. Aforo de la sala (FR-003)
         const asistencias = await tx.asistencia.count({ where: { sesionId: sesion.id } });
         if (asistencias >= aforo) return responder("RECHAZADO", "Aforo completo");
-        // 7. Quien no reservó solo ocupa plazas sin reservar (FR-009, clarify P3)
+        // 7. Quien no reservó solo ocupa plazas sin reservar (FR-009, clarify P3), mientras las reservas siguen vigentes
+        //    (hasta inicio + 10 min, spec-005 FR-010); después basta el aforo del paso 6
         const reservada = await tx.entradaAgenda.findUnique({ where: { inscripcionId_sesionId: { inscripcionId: ins.id, sesionId: sesion.id } } });
-        if (!reservada) {
+        if (!reservada && reservaVigente(sesion.inicio, ahora)) {
           const reservas = await tx.entradaAgenda.count({ where: { sesionId: sesion.id } });
           const sinReserva = await tx.asistencia.count({
             where: { sesionId: sesion.id, inscripcion: { agenda: { none: { sesionId: sesion.id } } } },

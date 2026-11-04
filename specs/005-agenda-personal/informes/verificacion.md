@@ -17,3 +17,12 @@
 **SC-003 (un clic)**: botón «Añadir» por sesión en la sección «Programa» de la agenda (comprobado en e2e).
 
 **Regresión**: dominio 38/38 · integración 37/37 (000-core 22 + spec-005 15) · e2e 10/10 (000-core 7 + spec-005 3) · lint y typecheck sin errores.
+
+## Iteración tras clarify-2 (T012, FR-010) · 2026-11-05
+
+| # | Escenario | Entrada | Esperado | Observado **antes** | Observado **después** | Resultado |
+|---|-----------|---------|----------|---------------------|-----------------------|-----------|
+| 12 | FR-010 regla | `reservaVigente(inicio, ahora)` con ahora = −30 min, 0, +9:59,999, +10:00, +45 min | vigente, vigente, vigente, **no**, no | ✘ la función no existía (`expected undefined to be 10`) | Igual que lo esperado | ✔ |
+
+`pnpm exec vitest run tests/ocupacion.test.ts` (dominio): antes 1 failed | 3 passed; después 4/4. Dominio completo 43/43. US1-8 en la puerta: ver spec-006 T011 (#7).
+

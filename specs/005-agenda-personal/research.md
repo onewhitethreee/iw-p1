@@ -7,3 +7,5 @@
 - **R3 Aviso de solapes** — Decisión: cálculo al leer. Alternativa: marcar en BD al mover la sesión (acopla spec-003 con spec-005).
 - **R4 Quitar** — Decisión: rechazar si la sesión empezó (afectaría a HU-07).
 - **R5 Contrato** — Decisión: añadir `agenda.congresos` (punto de entrada) y documentar el aviso en `agenda.mia` en el contrato de 000-core (lección de los hallazgos C1 de spec-003 y spec-004).
+
+- **R6 Vigencia de la reserva (clarify-2 P2, 2026-11-05)** — Decisión: función pura en `packages/domain` con el margen de 10 min como constante; la comparte la puerta (spec-006). Motivo: la regla es de negocio (Constitución IV), se prueba en el límite sin base de datos, y spec-006 la importa en vez de repetir el número. Alternativa descartada: un campo `liberadaEn` en `EntradaAgenda` escrito por un proceso programado; añade estado y un cron que la spec no pide, cuando la vigencia se puede calcular a partir de `inicio` y `ahora`.

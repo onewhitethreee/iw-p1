@@ -37,6 +37,7 @@ Sin entidades ni migraciones nuevas.
 ## Project Structure
 
 ```text
+packages/domain/src/ocupacion.ts             # + reservaVigente / MARGEN_RESERVA_MIN (decisión 7)
 apps/web/src/
 ├── server/api/routers/agenda.ts             # congresos, sesiones, anadir, quitar, mia
 ├── server/api/root.ts                       # registra `agenda`
@@ -56,4 +57,5 @@ apps/web/tests/
 3. **Aviso de solapes** (R3, clarify P1): `mia` calcula para cada entrada los títulos con los que se solapa (pares con `solapa`).
 4. **Quitar** (R4): solo entradas propias de sesiones no empezadas; borra la fila y libera la plaza.
 5. **Plazas libres** (R5): `sala.aforo − count(EntradaAgenda)`; nunca negativo en pantalla.
+7. **Vigencia de la reserva** (R6, FR-010, clarify-2 P2): una regla pura `reservaVigente(inicio, ahora)` (`ahora < inicio + 10 min`) en `packages/domain/src/ocupacion.ts`, junto al resto de reglas de aforo, con la constante `MARGEN_RESERVA_MIN = 10`. La agenda **no cambia**: la entrada sigue en la agenda (y cuenta para HU-07) y las plazas libres que muestra (decisión 5) siguen siendo `aforo − reservas`, porque antes del inicio, que es cuando se añade, toda reserva está vigente. Quien aplica la regla es la puerta (spec-006 FR-009, tarea T011 de spec-006).
 6. **Dónde se añade** (analyze U1, SC-003): el clic único «Añadir» está en la sección «Programa» de `/area-personal/agenda/[slug]`. La página pública del programa (spec-003) no cambia: es pública y no conoce al usuario.

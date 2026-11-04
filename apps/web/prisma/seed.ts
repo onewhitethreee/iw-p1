@@ -338,8 +338,10 @@ async function main() {
   // Agendas: Aula 3 (aforo 2) completa con asistente1 y asistente2
   for (const s of [sAhoraAud, sAula3, sProx1, sProx3, sManana]) await db.entradaAgenda.create({ data: { inscripcionId: i1.id, sesionId: s.id } });
   for (const s of [sAula3, sProx1]) await db.entradaAgenda.create({ data: { inscripcionId: i2.id, sesionId: s.id } });
-  // Asistencias: Aula 3 ya llena en la puerta; Auditorio con asistente1
-  for (const [insc, s] of [[i1, sAula3], [i2, sAula3], [i1, sAhoraAud]] as const) {
+  // Asistencias: Aula 3 ya llena en la puerta; Auditorio con un asistente de relleno (asistente1 ya está en Aula 3
+  // a esa hora y no puede estar en dos sesiones solapadas: spec-006 FR-011, converge-2 F2)
+  const d1 = await db.inscripcion.findFirstOrThrow({ where: { congresoId: edu.id, usuario: { email: "demo01@congresalia.es" } } });
+  for (const [insc, s] of [[i1, sAula3], [i2, sAula3], [d1, sAhoraAud]] as const) {
     await db.asistencia.create({ data: { inscripcionId: insc.id, sesionId: s.id, registradaPorId: acreditacion.id, registradaEn: t(-10) } });
   }
 

@@ -32,3 +32,28 @@
 | 11 | Edge «Sin conexión» | e2e: `/api/trpc` cortado con `page.route` | «Sin conexión: no se puede validar…» (no «Failed to fetch»); «Ocupación sin actualizar» hasta que vuelve la red | Igual | ✔ |
 
 **Regresión**: dominio 34/34 · integración 38/38 (000-core 22 + spec-006 16) · e2e 12/12 (000-core 7 + spec-006 5) · lint y typecheck sin errores · `next build` correcto.
+
+## Iteración tras clarify-3 (T011–T012, FR-009 matizada y FR-011) · 2026-11-05
+
+Rama `spec-006-clarify-2`. Las pruebas (k)–(n) y el cambio de (h2) se escribieron **antes** del código y se ejecutaron sobre el código anterior.
+
+| # | Escenario | Entrada | Esperado | Observado **antes** | Observado **después** | Resultado |
+|---|-----------|---------|----------|---------------------|-----------------------|-----------|
+| 12 | FR-009 matizada / (k) | aforo 2, 2 reservas sin presentarse; sin reserva a +9 y +10 min; quien reservó a +11 y +12 | +9 «No quedan plazas sin reservar»; +10 admitido; +11 admitido; +12 «Aforo completo»; 2 reservas siguen en la agenda | ✘ a +10 seguía «No quedan plazas sin reservar» | Igual que lo esperado | ✔ |
+| 13 | US1-8 / FR-011 / (l) | admitido en «grande» (0–60) → «pequeña» (0–60) → sesión contigua (60–120) a +55 | «Ya registrado en «En sala grande» a esta hora», 0/1; la contigua se admite | ✘ admitido en las dos | Igual que lo esperado | ✔ |
+| 14 | FR-011 concurrente / (m) ×5 | mismo código a la vez en «grande» y «doble» | 1 admitido + 1 rechazado; 1 asistencia | ✘ 2 asistencias | Igual que lo esperado | ✔ |
+| 15 | analyze-3 A3 / (n) ×5 | `agenda.anadir` ∥ `escanear` de la misma persona y sesión a −20 min | Las dos terminan | ✘ **`40P01 deadlock detected`**: el defecto **ya existía** en `main`. `escanear` bloqueaba la sesión y, al insertar la `Asistencia`, la clave ajena pedía un bloqueo `KEY SHARE` sobre la `Inscripcion` que `anadir` ya tenía; `anadir` esperaba la sesión | Las dos terminan (orden inscripción → sesión) | ✔ |
+
+Comando del «antes»: `pnpm exec vitest run tests/integration/006` → **4 failed | 16 passed**. Después: **20/20**.
+
+**Regresión**: dominio 43/43 · integración **182/182** · lint, typecheck y `next build` ✔ · e2e **44 passed, 1 failed, 3 sin ejecutar**. El fallo es `006-acceso.spec.ts` US1-2: escanea en «Rúbricas compartidas…» a `asistente3`, que la prueba anterior acaba de admitir en «Aprendizaje basado en proyectos…», a la misma hora. Ahora responde «Ya registrado en … a esta hora», que es lo que pide FR-011. Se trata en converge-2 (F1), junto con el seed (F2).
+
+### Iteración 3 (converge-2 → T013) · 2026-11-05
+
+| # | Escenario | Esperado | Observado antes | Observado después | Resultado |
+|---|-----------|----------|-----------------|-------------------|-----------|
+| 16 | e2e US1-2 «Aforo completo» con `demo02` | «Rechazado · Aforo completo», 2 / 2 | ✘ con `asistente3`: «Ya registrado en … a esta hora» | Igual que lo esperado | ✔ |
+| 17 | Seed sin asistencias solapadas | Auditorio 1/200 (`demo01`), Aula 3 2/2 | ✘ `asistente1` en dos sesiones a la vez | Igual que lo esperado; e2e US1-1 sigue viendo «1 / 200» | ✔ |
+
+**Regresión final**: dominio 43/43 · integración 182/182 · e2e **48/48** · lint y typecheck ✔.
+

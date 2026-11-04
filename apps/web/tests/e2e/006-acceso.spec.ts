@@ -53,7 +53,8 @@ test.describe.serial("spec-006 · control de acceso con QR (HU-06)", () => {
   });
 
   test("US1-2: «Rúbricas compartidas…» está llena → «Aforo completo»", async ({ page }) => {
-    const codigo = await codigoDe("asistente3@congresalia.es");
+    // demo02: confirmado y sin ninguna asistencia. asistente3 ya está en «Aprendizaje…» a esta hora (FR-011, converge-2 F1)
+    const codigo = await codigoDe("demo02@congresalia.es");
     await entrar(page, "acreditacion@congresalia.es");
     await abrirPuerta(page, "Rúbricas compartidas entre departamentos");
     await expect(page.getByTestId("ocupacion")).toHaveText("2 / 2");
