@@ -80,7 +80,7 @@ Tras T002:  T003 (anadir.test) ∥ T006 (quitar.test)
 
 ## Phase 6: Convergence
 
-- [ ] T011 Al integrar en `main` (después de spec-004), añadir en `apps/web/src/app/area-personal/page.tsx` un enlace «Mi agenda» a `/area-personal/agenda/{slug}` en cada inscripción confirmada per plan: Structure Decision (partial)
+- [X] T011 Al integrar en `main` (después de spec-004), añadir en `apps/web/src/app/area-personal/page.tsx` un enlace «Mi agenda» a `/area-personal/agenda/{slug}` en cada inscripción confirmada per plan: Structure Decision (partial)
 
 ## Clarify sobre la versión funcional (2026-11-04) · pendiente de plan y analyze
 
@@ -90,4 +90,4 @@ Tareas que salen de `informes/clarify-2.md`. Se implementan después de revisar 
 
 ## Convergencia tras clarify-2 (converge-2, 2026-11-05)
 
-- [ ] T013 Marcar T011 como hecha, con la evidencia: enlace «Mi agenda» en `apps/web/src/app/area-personal/page.tsx` y e2e «T011 (integración)» de `apps/web/tests/e2e/005-agenda.spec.ts` (converge-2 F1)
+- [X] T013 Marcar T011 como hecha, con la evidencia: enlace «Mi agenda» en `apps/web/src/app/area-personal/page.tsx` y e2e «T011 (integración)» de `apps/web/tests/e2e/005-agenda.spec.ts` (converge-2 F1)
