@@ -144,3 +144,9 @@ Tras T003:  T004 (enviar.test.ts)  ∥  T009 (mias.test.ts)
 ## Phase 6: Convergence
 
 - [ ] T015 Medir con una persona real (el responsable u otra) el tiempo desde abrir `/ponente/enviar` hasta ver «Propuesta enviada» con una propuesta válida y registrar el resultado (objetivo < 3 min) en `specs/001-enviar-propuesta/informes/verificacion.md` per SC-001 (partial) · **2026-11-04**: estimación KLM registrada en `verificacion.md` ([informe](../000-core/informes/estimacion-klm.md)); sigue abierta hasta la medición real
+
+## Clarify sobre la versión funcional (2026-11-04) · pendiente de plan y analyze
+
+Tareas que salen de `informes/clarify-2.md`. Se implementan después de revisar `plan.md` y de `/speckit-analyze`.
+
+- [ ] T016 Rechazar propuestas duplicadas (FR-011, Clarifications P4): en `apps/web/src/server/api/routers/propuesta.ts` comprobar dentro de la transacción (con bloqueo, para envíos simultáneos) que el autor no tiene en ese congreso otra propuesta con el mismo título normalizado → `CONFLICT` con el mensaje de FR-011. Prueba primero en `apps/web/tests/integration/001/enviar.test.ts`: duplicado rechazado, mayúsculas/espacios, dos envíos con `Promise.all` → 1 guardada, mismo título en otro congreso aceptado (issue #5)
