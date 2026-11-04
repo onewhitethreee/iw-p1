@@ -23,7 +23,7 @@
 
 | # | Pregunta | Respuesta | Justificación | Criterios afectados | Decidido por |
 |---|----------|-----------|---------------|---------------------|--------------|
-| P4 | ¿Qué hace el sistema si el mismo ponente envía al mismo congreso una propuesta con el mismo título que otra suya? | La rechaza; se compara el título sin mayúsculas ni espacios extremos | Al revisar US1-1 sobre la versión funcional, `propuesta.enviar` no tiene ninguna regla de unicidad: un doble clic o un reintento de red crea dos propuestas iguales, y el comité tendría que asignarlas y evaluarlas dos veces. La narrativa quiere «seleccionar las mejores ponencias», no evaluar copias. No limita el número de propuestas distintas (se mantiene P2). | FR-009, FR-011 (nuevo), US1-7 (nuevo), Edge Cases | Yangfeng Liu (respuesta directa, 2026-11-04) |
+| P4 | ¿Qué hace el sistema si el mismo ponente envía al mismo congreso una propuesta con el mismo título que otra suya? | La rechaza; se compara el título sin mayúsculas ni espacios extremos | Para evitar que el comité haga el mismo trabajo dos veces: si se guardan dos propuestas iguales, habría que asignarlas y evaluarlas por duplicado. *(Justificación del responsable.)* | FR-009, FR-011 (nuevo), US1-7 (nuevo), Edge Cases | Yangfeng Liu (respuesta directa, 2026-11-04) |
 
 ## Criterios en formato Dado… Cuando… Entonces…
 
