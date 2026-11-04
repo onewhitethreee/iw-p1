@@ -1,0 +1,315 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Congresalia · Demo</title>
+<meta name="description" content="Demo en vídeo de las 8 historias de usuario de Congresalia (SI-19) y todos sus escenarios.">
+<style>
+  :root {
+    --fondo: #f5f7fb; --panel: #ffffff; --texto: #0f172a; --suave: #5b6478; --borde: #e3e8f0;
+    --acento: #0b6bcb; --acento-suave: #e6f1fc; --acento-texto: #ffffff; --activo: #fff7e6; --activo-borde: #f59e0b;
+    --sombra: 0 1px 2px rgba(15,23,42,.06), 0 6px 20px rgba(15,23,42,.06);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --fondo: #0b1120; --panel: #121a2b; --texto: #e5e9f2; --suave: #9aa5b8; --borde: #24304a;
+      --acento: #4da3ff; --acento-suave: #13253f; --acento-texto: #06101f; --activo: #2a2212; --activo-borde: #f59e0b;
+      --sombra: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
+    }
+  }
+  :root[data-theme="dark"] {
+    --fondo: #0b1120; --panel: #121a2b; --texto: #e5e9f2; --suave: #9aa5b8; --borde: #24304a;
+    --acento: #4da3ff; --acento-suave: #13253f; --acento-texto: #06101f; --activo: #2a2212; --activo-borde: #f59e0b;
+    --sombra: 0 1px 2px rgba(0,0,0,.3), 0 6px 20px rgba(0,0,0,.25);
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--fondo); color: var(--texto); font: 15px/1.5 "Segoe UI", system-ui, -apple-system, sans-serif; }
+  a { color: var(--acento); }
+  header { max-width: 1400px; margin: 0 auto; padding: 22px 16px 10px; display: flex; flex-wrap: wrap; align-items: end; gap: 10px 24px; }
+  header h1 { margin: 0; font-size: 24px; letter-spacing: -.01em; }
+  header p { margin: 2px 0 0; color: var(--suave); }
+  .cifras { margin-left: auto; display: flex; gap: 8px; flex-wrap: wrap; }
+  .cifra { background: var(--panel); border: 1px solid var(--borde); border-radius: 10px; padding: 6px 12px; font-size: 13px; color: var(--suave); }
+  .cifra b { color: var(--texto); font-size: 16px; margin-right: 4px; font-variant-numeric: tabular-nums; }
+  main { max-width: 1400px; margin: 0 auto; padding: 8px 16px 40px; display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: 18px; align-items: start; }
+  @media (max-width: 1000px) { main { grid-template-columns: minmax(0, 1fr); } }
+  main > * { min-width: 0; }
+  .barra label { white-space: nowrap; }
+  .tarjeta { background: var(--panel); border: 1px solid var(--borde); border-radius: 14px; box-shadow: var(--sombra); }
+  .reproductor { overflow: hidden; }
+  video { display: block; width: 100%; aspect-ratio: 16 / 9; background: #000; }
+  .barra { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--borde); }
+  .ahora { flex: 1 1 300px; min-width: 0; display: flex; gap: 8px; align-items: center; }
+  .ahora .t { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 600; }
+  .chip { display: inline-block; font-size: 12px; font-weight: 700; border-radius: 999px; padding: 2px 8px; background: var(--acento); color: var(--acento-texto); white-space: nowrap; }
+  .chip.gris { background: var(--acento-suave); color: var(--acento); }
+  button, select, input { font: inherit; color: inherit; }
+  .boton { border: 1px solid var(--borde); background: var(--panel); border-radius: 8px; padding: 5px 10px; cursor: pointer; }
+  .boton:hover { border-color: var(--acento); }
+  .boton:focus-visible, .modo button:focus-visible, .historia:focus-visible, .escena:focus-visible { outline: 2px solid var(--acento); outline-offset: 2px; }
+  select.boton { padding: 5px 6px; }
+  .ficha { margin-top: 18px; padding: 18px 20px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 4px 20px; }
+  .ficha h2 { margin: 0; font-size: 20px; }
+  .ficha .rol { color: var(--suave); font-size: 13px; text-transform: uppercase; letter-spacing: .05em; }
+  .ficha .como { margin: 8px 0 6px; font-size: 16px; grid-column: 1 / -1; }
+  .ficha ul { margin: 4px 0 0; padding-left: 20px; grid-column: 1 / -1; color: var(--suave); }
+  .ficha .spec { align-self: start; font-size: 13px; }
+  aside { position: sticky; top: 12px; max-height: calc(100vh - 24px); display: flex; flex-direction: column; overflow: hidden; }
+  @media (max-width: 1000px) { aside { position: static; max-height: none; } }
+  .cab-lista { padding: 12px; border-bottom: 1px solid var(--borde); display: grid; gap: 10px; }
+  .modo { display: grid; grid-template-columns: 1fr 1fr; background: var(--fondo); border: 1px solid var(--borde); border-radius: 10px; padding: 3px; }
+  .modo button { border: 0; background: transparent; padding: 6px; border-radius: 8px; cursor: pointer; color: var(--suave); font-weight: 600; }
+  .modo button[aria-pressed="true"] { background: var(--panel); color: var(--texto); box-shadow: var(--sombra); }
+  .buscar { width: 100%; border: 1px solid var(--borde); background: var(--fondo); border-radius: 8px; padding: 7px 10px; }
+  .lista { overflow-y: auto; padding: 6px; }
+  .historia { width: 100%; display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 10px; align-items: center; text-align: left; border: 1px solid transparent; background: transparent; border-radius: 10px; padding: 6px; cursor: pointer; }
+  .historia:hover { background: var(--fondo); }
+  .historia.actual { background: var(--acento-suave); border-color: var(--acento); }
+  .historia img { width: 96px; aspect-ratio: 16/9; object-fit: cover; border-radius: 6px; border: 1px solid var(--borde); background: #000; }
+  .historia .tit { font-weight: 600; line-height: 1.25; }
+  .historia .meta { font-size: 12px; color: var(--suave); }
+  .escenas { list-style: none; margin: 2px 0 8px 12px; padding: 0 0 0 10px; border-left: 2px solid var(--borde); }
+  .escena { width: 100%; display: grid; grid-template-columns: 46px auto minmax(0, 1fr); gap: 8px; align-items: baseline; text-align: left; border: 0; border-radius: 8px; background: transparent; padding: 5px 6px; cursor: pointer; font-size: 13.5px; }
+  .escena:hover { background: var(--fondo); }
+  .escena.activa { background: var(--activo); box-shadow: inset 3px 0 0 var(--activo-borde); }
+  .escena .tiempo { color: var(--suave); font-variant-numeric: tabular-nums; font-size: 12px; }
+  .escena .id { font-weight: 700; font-size: 11.5px; color: var(--acento); white-space: nowrap; }
+  .vacio { padding: 16px; color: var(--suave); }
+  footer { max-width: 1400px; margin: 0 auto; padding: 0 16px 30px; color: var(--suave); font-size: 13px; }
+  footer code { background: var(--panel); border: 1px solid var(--borde); border-radius: 6px; padding: 1px 6px; }
+  .aviso { margin: 16px; padding: 14px 16px; border-radius: 10px; background: var(--activo); border: 1px solid var(--activo-borde); }
+  .tema { margin-left: 4px; }
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Congresalia · Demo de las historias de usuario</h1>
+    <p>SI-19 Gestión de Eventos y Congresos · cada escenario de aceptación, grabado sobre la aplicación real</p>
+  </div>
+  <div class="cifras" id="cifras"></div>
+</header>
+
+<main>
+  <section>
+    <div class="tarjeta reproductor">
+      <video id="video" controls preload="metadata" playsinline></video>
+      <div class="barra">
+        <div class="ahora" aria-live="polite"><span class="chip" id="ahora-hu">—</span><span class="chip gris" id="ahora-esc">—</span><span class="t" id="ahora-tit"></span></div>
+        <button class="boton" id="anterior" title="Escenario anterior (P)">◀ Anterior</button>
+        <button class="boton" id="siguiente" title="Escenario siguiente (N)">Siguiente ▶</button>
+        <label>Velocidad
+          <select class="boton" id="velocidad">
+            <option value="0.75">0,75×</option><option value="1" selected>1×</option><option value="1.25">1,25×</option><option value="1.5">1,5×</option><option value="2">2×</option>
+          </select>
+        </label>
+        <button class="boton tema" id="tema" title="Cambiar tema claro/oscuro" aria-label="Cambiar tema">◐</button>
+      </div>
+    </div>
+    <article class="tarjeta ficha" id="ficha"></article>
+  </section>
+
+  <aside class="tarjeta">
+    <div class="cab-lista">
+      <div class="modo" role="group" aria-label="Qué reproducir">
+        <button id="modo-completo" aria-pressed="true">Vídeo completo</button>
+        <button id="modo-historia" aria-pressed="false">Por historia</button>
+      </div>
+      <input class="buscar" id="buscar" type="search" placeholder="Buscar escenario (p. ej. «aforo», «US2-3»)…" aria-label="Buscar escenario">
+    </div>
+    <div class="lista" id="lista"></div>
+  </aside>
+</main>
+
+<footer>
+  Atajos: <b>N</b> siguiente escenario · <b>P</b> anterior · <b>espacio</b> pausa. Se puede enlazar un escenario: <code>index.html#hu03/US1-2</code>.
+  Para volver a grabar: arrancar la app y ejecutar <code>pnpm exec tsx demo/grabar.ts</code> y <code>pnpm exec tsx demo/montar.ts</code> en <code>apps/web</code> (ver <code>demo/LEEME.md</code>).
+</footer>
+
+<script src="datos.js"></script>
+<script>
+(() => {
+  const D = window.DEMO;
+  const $ = (id) => document.getElementById(id);
+  const video = $("video");
+  const guardar = (k, v) => { try { localStorage.setItem("congresalia-demo-" + k, JSON.stringify(v)); } catch {} };
+  const leer = (k, def) => { try { const v = localStorage.getItem("congresalia-demo-" + k); return v === null ? def : JSON.parse(v); } catch { return def; } };
+  const mmss = (s) => { s = Math.max(0, Math.floor(s)); const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), x = String(s % 60).padStart(2, "0"); return h ? `${h}:${String(m).padStart(2, "0")}:${x}` : `${m}:${x}`; };
+  const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+
+  // Tema
+  const tema = leer("tema", null);
+  if (tema) document.documentElement.dataset.theme = tema;
+  $("tema").onclick = () => {
+    const oscuro = document.documentElement.dataset.theme ? document.documentElement.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    document.documentElement.dataset.theme = oscuro ? "light" : "dark";
+    guardar("tema", document.documentElement.dataset.theme);
+  };
+
+  if (!D || !D.historias || !D.historias.length) {
+    $("lista").innerHTML = '<div class="aviso">No se encuentra <code>datos.js</code>. Genera los vídeos con <code>demo/montar.ts</code>.</div>';
+    return;
+  }
+
+  const H = D.historias;
+  const nEsc = H.reduce((n, h) => n + h.capitulos.filter((c) => c.escenario !== "Portada").length, 0);
+  $("cifras").innerHTML = `<span class="cifra"><b>${H.filter((h) => h.id !== "hu00").length}</b>historias</span><span class="cifra"><b>${nEsc}</b>escenarios</span><span class="cifra"><b>${mmss(D.completo.duracion)}</b>de vídeo</span>`;
+
+  // Escenarios en tiempo absoluto (vídeo completo)
+  const todos = [];
+  H.forEach((h) => h.capitulos.forEach((c, i) => todos.push({ h, c, i, abs: h.inicio + c.t })));
+
+  let modo = leer("modo", "completo");
+  let actual = H[0];
+  let filtro = "";
+
+  function cargar(src, t, reproducir) {
+    if (!video.src.endsWith(src)) video.src = src;
+    const ir = () => { video.currentTime = t; if (reproducir) video.play().catch(() => {}); };
+    if (video.readyState >= 1) ir(); else video.addEventListener("loadedmetadata", ir, { once: true });
+  }
+
+  function irA(h, c, reproducir = true) {
+    actual = h;
+    if (modo === "completo") cargar(D.completo.video, h.inicio + (c ? c.t : 0), reproducir);
+    else cargar(h.video, c ? c.t : 0, reproducir);
+    pintarFicha(); pintarLista();
+  }
+
+  function posicion() {
+    if (modo === "completo") {
+      const t = video.currentTime;
+      let e = todos[0];
+      for (const x of todos) if (x.abs <= t + 0.05) e = x;
+      return e;
+    }
+    const caps = actual.capitulos;
+    let i = 0;
+    caps.forEach((c, k) => { if (c.t <= video.currentTime + 0.05) i = k; });
+    return { h: actual, c: caps[i], i };
+  }
+
+  function pintarFicha() {
+    const h = actual;
+    $("ficha").innerHTML = `
+      <div><div class="rol">${esc(h.hu)} · ${esc(h.rol || "")}</div><h2>${esc(h.titulo)}</h2></div>
+      ${h.spec ? `<a class="spec" href="../${esc(h.spec)}">Especificación ↗</a>` : "<span></span>"}
+      <p class="como">${esc(h.como || "")}</p>
+      <ul>${(h.criterios || []).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`;
+  }
+
+  function coincide(h, c) {
+    if (!filtro) return true;
+    return (h.hu + " " + h.titulo + " " + c.escenario + " " + c.titulo).toLowerCase().includes(filtro);
+  }
+
+  function pintarLista() {
+    const p = posicion();
+    let html = "";
+    for (const h of H) {
+      const caps = h.capitulos.map((c, i) => ({ c, i })).filter(({ c }) => coincide(h, c));
+      if (filtro && !caps.length) continue;
+      const abierta = filtro || h === actual;
+      html += `<button class="historia ${h === actual ? "actual" : ""}" data-h="${h.id}">
+          <img src="${esc(h.miniatura)}" alt="" loading="lazy">
+          <span><span class="chip">${esc(h.hu)}</span><div class="tit">${esc(h.titulo)}</div>
+          <div class="meta">${mmss(h.duracion)} · ${h.capitulos.length - 1} escenarios</div></span></button>`;
+      if (abierta) {
+        html += `<ul class="escenas">` + caps.map(({ c, i }) => {
+          const act = p && p.h === h && p.i === i;
+          return `<li><button class="escena ${act ? "activa" : ""}" data-h="${h.id}" data-i="${i}">
+            <span class="tiempo">${mmss(modo === "completo" ? h.inicio + c.t : c.t)}</span><span class="id">${esc(c.escenario)}</span><span>${esc(c.titulo)}</span></button></li>`;
+        }).join("") + `</ul>`;
+      }
+    }
+    $("lista").innerHTML = html || '<div class="vacio">Ningún escenario coincide con la búsqueda.</div>';
+    const activa = $("lista").querySelector(".escena.activa");
+    // Desplaza solo la lista (en escritorio tiene scroll propio), nunca la página
+    const l = $("lista");
+    if (activa && !filtro && l.scrollHeight > l.clientHeight + 1) {
+      const y = activa.getBoundingClientRect().top - l.getBoundingClientRect().top + l.scrollTop;
+      if (y < l.scrollTop || y > l.scrollTop + l.clientHeight - 40) l.scrollTop = y - 60;
+    }
+  }
+
+  function pintarAhora() {
+    const p = posicion();
+    if (!p) return;
+    if (p.h !== actual) { actual = p.h; pintarFicha(); }
+    $("ahora-hu").textContent = p.h.hu;
+    $("ahora-esc").textContent = p.c.escenario;
+    $("ahora-tit").textContent = p.c.titulo;
+    const clave = p.h.id + "/" + p.i;
+    if (clave !== pintarAhora.ultima) { pintarAhora.ultima = clave; pintarLista(); history.replaceState(null, "", "#" + p.h.id + "/" + encodeURIComponent(p.c.escenario)); }
+  }
+
+  $("lista").addEventListener("click", (ev) => {
+    const b = ev.target.closest("button");
+    if (!b) return;
+    const h = H.find((x) => x.id === b.dataset.h);
+    const c = b.dataset.i !== undefined ? h.capitulos[+b.dataset.i] : null;
+    irA(h, c);
+  });
+
+  function saltar(d) {
+    const p = posicion();
+    if (modo === "completo") {
+      const k = todos.findIndex((x) => x.h === p.h && x.i === p.i) + d;
+      if (todos[k]) irA(todos[k].h, todos[k].c);
+    } else {
+      const c = actual.capitulos[p.i + d];
+      if (c) irA(actual, c);
+      else {
+        const k = H.indexOf(actual) + d;
+        if (H[k]) irA(H[k], d > 0 ? null : H[k].capitulos.at(-1));
+      }
+    }
+  }
+  $("anterior").onclick = () => saltar(-1);
+  $("siguiente").onclick = () => saltar(1);
+  video.addEventListener("ended", () => { if (modo === "historia" && H[H.indexOf(actual) + 1]) irA(H[H.indexOf(actual) + 1], null); });
+
+  const vel = leer("velocidad", "1");
+  $("velocidad").value = vel;
+  video.playbackRate = +vel;
+  $("velocidad").onchange = (e) => { video.playbackRate = +e.target.value; guardar("velocidad", e.target.value); };
+  video.addEventListener("loadedmetadata", () => { video.playbackRate = +$("velocidad").value; });
+
+  /** Cambia de modo conservando la historia y el punto exacto en el que se estaba. */
+  function ponerModo(m) {
+    const p = posicion();
+    const tHistoria = Math.max(0, modo === "completo" ? video.currentTime - p.h.inicio : video.currentTime);
+    const seguir = !video.paused;
+    modo = m; guardar("modo", m);
+    $("modo-completo").setAttribute("aria-pressed", m === "completo");
+    $("modo-historia").setAttribute("aria-pressed", m === "historia");
+    actual = p.h;
+    if (m === "completo") cargar(D.completo.video, p.h.inicio + tHistoria, seguir);
+    else cargar(p.h.video, tHistoria, seguir);
+    pintarFicha(); pintarLista();
+  }
+  $("modo-completo").onclick = () => modo !== "completo" && ponerModo("completo");
+  $("modo-historia").onclick = () => modo !== "historia" && ponerModo("historia");
+
+  $("buscar").addEventListener("input", (e) => { filtro = e.target.value.trim().toLowerCase(); pintarLista(); });
+
+  video.addEventListener("timeupdate", pintarAhora);
+  document.addEventListener("keydown", (e) => {
+    if (e.target.matches("input, select, textarea")) return;
+    if (e.key === "n" || e.key === "N") saltar(1);
+    else if (e.key === "p" || e.key === "P") saltar(-1);
+    else if (e.key === " " && e.target === document.body) { e.preventDefault(); video.paused ? video.play() : video.pause(); }
+  });
+
+  // Inicio: #huXX/ESCENARIO o el principio
+  $("modo-completo").setAttribute("aria-pressed", modo === "completo");
+  $("modo-historia").setAttribute("aria-pressed", modo === "historia");
+  const [hid, eid] = decodeURIComponent(location.hash.slice(1)).split("/");
+  const h0 = H.find((h) => h.id === hid) || H[0];
+  const c0 = eid ? h0.capitulos.find((c) => c.escenario === eid) : null;
+  irA(h0, c0, false);
+})();
+</script>
+</body>
+</html>
