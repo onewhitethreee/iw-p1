@@ -16,9 +16,13 @@
 
 ### Session 2026-11-03
 
-- Q: ¿Puede el asistente cambiar el tipo de asistente o cancelar una inscripción pendiente de pago? → A: No en la versión 1; tipo e importe quedan fijados al crear la inscripción.
+- Q: ¿Puede el asistente cambiar el tipo de asistente o cancelar una inscripción pendiente de pago? → A: No en la versión 1; tipo e importe quedan fijados al crear la inscripción. *(La parte de «cancelar» se revisa en la sesión 2026-11-04, P4.)*
 - Q: ¿Se admiten inscripciones durante el congreso? → A: Sí, hasta que el congreso finaliza.
 - Q: ¿Qué datos pide la pasarela simulada y cuándo rechaza el pago? → A: Un número de tarjeta de 16 dígitos (se admiten espacios); solo la tarjeta de prueba 4000 0000 0000 0002 se rechaza; no se guarda el número, solo los 4 últimos dígitos en la referencia del pago.
+
+### Session 2026-11-04 (clarify sobre la versión funcional)
+
+- Q: Si el asistente se equivocó de tipo (p. ej. eligió «Estudiante») y aún no ha pagado, ¿cómo lo corrige? → A: Puede cancelar la inscripción `PENDIENTE_PAGO` e inscribirse de nuevo con otro tipo, al precio vigente ese día. Una inscripción `CONFIRMADA` no se puede cancelar. El tipo de una inscripción sigue sin poder cambiarse.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -58,7 +62,9 @@ y obtiene su acreditación con código QR en el área personal.
 2. **Given** una inscripción `PENDIENTE_PAGO`, **When** el pago se rechaza, **Then** la inscripción sigue pendiente, no tiene QR, se informa del rechazo y puede reintentarlo.
 3. **Given** una inscripción ya `CONFIRMADA`, **When** se intenta pagar de nuevo, **Then** el sistema lo rechaza (no hay pagos dobles).
 4. **Given** una inscripción de otro usuario, **When** alguien intenta pagarla o ver su QR, **Then** el sistema lo rechaza.
-5. **Given** una inscripción pendiente, **When** el asistente abre su área personal, **Then** ve «Pendiente de pago», el importe y el botón «Pagar», pero no el QR.
+5. **Given** una inscripción pendiente, **When** el asistente abre su área personal, **Then** ve «Pendiente de pago», el importe y los botones «Pagar» y «Cancelar inscripción», pero no el QR.
+6. **Given** una inscripción `PENDIENTE_PAGO` como estudiante con un pago rechazado, **When** su titular la cancela y se inscribe de nuevo como profesional, **Then** la primera queda `CANCELADA` con su intento de pago conservado, y la nueva se crea `PENDIENTE_PAGO` con el precio de profesional vigente ese día (Clarifications P4).
+7. **Given** una inscripción `CONFIRMADA` o de otro usuario, **When** alguien intenta cancelarla (también con una petición directa), **Then** el sistema lo rechaza y la inscripción no cambia.
 
 ### Edge Cases
 
@@ -66,7 +72,7 @@ y obtiene su acreditación con código QR en el área personal.
 - Doble clic en «Pagar»: solo se registra un pago aprobado (bloqueo en el servidor).
 - El tipo «socio» no se comprueba contra un registro de socios (supuesto).
 - Un número de tarjeta que no tiene 16 dígitos se rechaza como dato no válido, sin crear ningún pago (Clarifications P3).
-- Una inscripción pendiente no se puede cambiar de tipo ni cancelar; el asistente solo puede pagarla (Clarifications P1).
+- Una inscripción pendiente no se puede cambiar de tipo (Clarifications P1), pero su titular sí puede cancelarla e inscribirse de nuevo (Clarifications P4). Si la nueva inscripción se crea después del día límite temprano, paga el precio general: el importe se fija al crear cada inscripción (A4).
 - El QR se puede ver de nuevo en cualquier momento desde el área personal y se adapta a la pantalla del móvil.
 
 ## Requirements *(mandatory)*
@@ -75,7 +81,7 @@ y obtiene su acreditación con código QR en el área personal.
 
 - **FR-001**: El sistema MUST mostrar, para cada tipo de asistente, el precio vigente (temprano o general) antes de inscribirse.
 - **FR-002**: El sistema MUST calcular en el servidor el importe según tipo de asistente y si la inscripción se crea como muy tarde a las 23:59:59 del día límite temprano en la zona del congreso (000-core FR-005a/FR-016), y fijarlo en la inscripción (A4).
-- **FR-003**: Un usuario MUST tener como máximo una inscripción por congreso.
+- **FR-003**: Un usuario MUST tener como máximo una inscripción no cancelada por congreso.
 - **FR-004**: Solo usuarios con rol `ASISTENTE` MUST poder inscribirse; no se admiten inscripciones en congresos finalizados.
 - **FR-005**: La inscripción MUST nacer `PENDIENTE_PAGO` y pasar a `CONFIRMADA` solo con un pago aprobado.
 - **FR-006**: Al confirmarse, el sistema MUST generar un código de acreditación único y no adivinable y mostrarlo como QR en el área personal.
@@ -83,9 +89,10 @@ y obtiene su acreditación con código QR en el área personal.
 - **FR-008**: El sistema MUST registrar cada intento de pago (importe, resultado, fecha) sin guardar datos de tarjeta.
 - **FR-009**: Solo el propietario MUST poder pagar su inscripción y ver su QR.
 - **FR-010**: Importes en euros con formato español.
-- **FR-011**: El tipo de asistente y el importe MUST ser inmutables una vez creada la inscripción; no hay operación para cambiarlos ni para cancelar (Clarifications P1).
+- **FR-011**: El tipo de asistente y el importe MUST ser inmutables una vez creada la inscripción; no hay operación para cambiarlos (Clarifications P1). Para corregir el tipo se usa FR-014.
 - **FR-012**: Se MUST admitir inscripciones hasta el fin del congreso, también mientras está en curso (Clarifications P2).
 - **FR-013**: La pasarela simulada MUST pedir un número de 16 dígitos; MUST rechazar solo la tarjeta 4000 0000 0000 0002; el pago MUST guardar como referencia «SIM-…-últimos 4 dígitos» y nunca el número completo (Clarifications P3).
+- **FR-014**: El titular MUST poder cancelar una inscripción `PENDIENTE_PAGO`; pasa a `CANCELADA`, conserva sus intentos de pago y deja de contar para FR-003. Una inscripción `CONFIRMADA` MUST NOT poder cancelarse (Clarifications P4).
 
 ### Key Entities
 
@@ -102,6 +109,6 @@ y obtiene su acreditación con código QR en el área personal.
 ## Assumptions
 
 - Pasarela simulada (A5); no se integran pagos reales. La tarjeta `4000 0000 0000 0002` provoca el rechazo.
-- No hay cancelaciones, reembolsos ni facturas en la versión 1.
+- No se cancelan inscripciones confirmadas ni hay reembolsos ni facturas en la versión 1; solo se puede cancelar una inscripción pendiente de pago (FR-014).
 - Las tarifas de cada congreso vienen de los datos de ejemplo (p. ej. profesional 250 € / 300 €, socio 180 € / 220 €, estudiante 90 € / 120 €).
 - La condición de socio o estudiante es declarativa; no se pide justificante.

@@ -86,3 +86,10 @@ Tras T003:  T004 (inscribir.test) ∥ T007 (pagar.test)
 ## Phase 6: Convergence
 
 - [ ] T013 Medir con una persona real el tiempo desde abrir `/congresos/[slug]/inscripcion` hasta ver el QR en el área personal (objetivo < 3 min) y registrarlo en `specs/004-inscripcion-pago/informes/verificacion.md` per SC-001 (partial) · **2026-11-04**: estimación KLM registrada en `verificacion.md` ([informe](../000-core/informes/estimacion-klm.md)); sigue abierta hasta la medición real
+
+## Clarify sobre la versión funcional (2026-11-04) · pendiente de plan y analyze
+
+Tareas que salen de `informes/clarify-2.md`. Se implementan después de revisar `plan.md` y de `/speckit-analyze`.
+
+- [ ] T014 Cancelar una inscripción pendiente (FR-014, Clarifications P4): primero en `specs/000-core/data-model.md` y `prisma/schema.prisma` el estado `CANCELADA` y la unicidad solo para inscripciones no canceladas (índice parcial en la migración); después `inscripcion.cancelar` en `apps/web/src/server/api/routers/inscripcion.ts` (solo el titular, solo `PENDIENTE_PAGO`, con bloqueo frente a un pago simultáneo). Prueba primero en `apps/web/tests/integration/004/`: cancelar y volver a inscribirse; confirmada → rechazo sin cambios; otro usuario → rechazo; cancelar ∥ pagar → solo una gana (issue #6)
+- [ ] T015 Botón «Cancelar inscripción» en el área personal para las inscripciones pendientes (US2-5), con e2e en `apps/web/tests/e2e/004-inscripcion.spec.ts` (US2-6) (issue #6)
