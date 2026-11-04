@@ -60,9 +60,22 @@ T001 → T002 → US1 (T003 → T004 → T005) → US2 (T006 → T007) → T008 
 | FR-008 (concurrencia) | T003i, T004 |
 | FR-009 (sin agenda, P1) | T003h |
 | FR-010 (ventana, P2) | T003g |
+| FR-009 matizada (spec-005 P2) · US1-9 | T011 |
+| FR-011 (sesiones solapadas, clarify-3 P4) · US1-8 | T012 |
 | US1-1…7 / US2-1 | T003–T008 |
 | SC-001 / SC-002 / SC-003 | T009 / T003i / T003c,d |
 
 ## Phase 6: Convergence
 
 - [X] T010 En `apps/web/src/app/acreditacion/[slug]/[sesionId]/escaner.tsx`, ante un fallo de red de `escanear` mostrar «Sin conexión: no se puede validar. Comprueba la red y vuelve a intentarlo.» (no el mensaje técnico del navegador) y, si falla el refresco de `ocupacion`, avisar «Ocupación sin actualizar»; e2e en `apps/web/tests/e2e/006-acceso.spec.ts` cortando `/api/trpc` con `page.route` per Edge Cases «Sin conexión» y Constitución VI (partial)
+
+## Clarify sobre la versión funcional (2026-11-04) · pendiente de plan y analyze
+
+Tareas que salen de `informes/clarify-3.md`. Se implementan después de revisar `plan.md` y de `/speckit-analyze`.
+
+- [X] T011 Liberar las reservas no presentadas (FR-009 matizada, spec-005 FR-010; plan decisión 2, R7; ampliada por analyze-3 A1). **Prueba primero** en `apps/web/tests/integration/006/escanear.test.ts`: mover (h2) a los 5 min del inicio (antes del límite) y añadir (k): aforo 2, 2 reservas sin presentarse → sin reserva a +9 min «No quedan plazas sin reservar», a +10 min admitido; quien reservó llega a +11 min → admitido (1 < 2); el segundo que reservó llega a +12 min → «Aforo completo». Después: en `acreditacion.ts`, el paso de plazas sin reservar solo mientras `reservaVigente(sesion.inicio, ahora)` (issue #7)
+- [X] T012 Rechazar la entrada en sesiones solapadas (FR-011, Clarifications P4; plan decisiones 2 y 3, R3 y R6; reescrita por analyze-3 A2 y A3). **Prueba primero**: (l) admitido en «grande» (0–60) → en «pequeña» (0–60) «Ya registrado en «En sala grande» a esta hora», 0 asistencias en pequeña; en una sesión contigua (60–120) se admite; (m) el mismo código a la vez en dos sesiones solapadas, 5 veces → exactamente 1 asistencia; (n) `agenda.anadir` ∥ `escanear` de la misma persona y sesión antes del inicio, 5 veces → ninguna falla por interbloqueo. Después: en `acreditacion.ts` buscar la inscripción por código **sin bloqueo**, bloquear `Inscripcion` y después `Sesion` (orden de spec-005 R1) y comprobar FR-011 tras «ya registrado» (issue #8)
+
+## Convergencia tras clarify-3 (converge-2, 2026-11-05)
+
+- [X] T013 Ajustar datos y prueba a FR-011 (converge-2 F1, F2): en `apps/web/prisma/seed.ts`, la asistencia ya registrada en «Aprendizaje basado en proyectos…» pasa de `asistente1` (que está en «Rúbricas…» a la misma hora) a un asistente de relleno confirmado (`demo01`), así que la ocupación del seed no cambia (1/200 y 2/2). En `apps/web/tests/e2e/006-acceso.spec.ts` US1-2 usa a `demo02` (confirmado, sin ninguna asistencia), con lo que sigue probando «Aforo completo». Regresión e2e completa
