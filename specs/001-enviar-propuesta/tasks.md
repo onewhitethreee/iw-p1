@@ -155,4 +155,4 @@ Tareas que salen de `informes/clarify-2.md`. Se implementan después de revisar 
 
 ## Convergencia tras clarify-2 (converge-2, 2026-11-05)
 
-- [ ] T018 Corregir «Project Structure» en `specs/001-enviar-propuesta/plan.md`: sustituir `integration/001/propuesta.test.ts` por `enviar.test.ts`, `mias.test.ts` y `fixtures.ts`, y añadir la migración `prisma/migrations/20261105100000_propuesta_titulo_unico/` (converge-2 F2; decisión 6)
+- [X] T018 Corregir «Project Structure» en `specs/001-enviar-propuesta/plan.md`: sustituir `integration/001/propuesta.test.ts` por `enviar.test.ts`, `mias.test.ts` y `fixtures.ts`, y añadir la migración `prisma/migrations/20261105100000_propuesta_titulo_unico/` (converge-2 F2; decisión 6)

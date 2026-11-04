@@ -82,9 +82,14 @@ apps/web/src/
     └── enviar/
         ├── page.tsx                 # carga congresos con llamada abierta
         └── formulario.tsx           # react-hook-form + zod (US1)
+apps/web/prisma/migrations/
+└── 20261105100000_propuesta_titulo_unico/  # índice único de títulos repetidos (decisión 6, FR-011)
 apps/web/tests/
-├── integration/001/propuesta.test.ts
-└── e2e/001-enviar-propuesta.spec.ts
+├── integration/001/
+│   ├── enviar.test.ts               # US1, FR-011 (k)–(n)
+│   ├── mias.test.ts                 # US2
+│   └── fixtures.ts
+└── e2e/001-enviar-propuesta.spec.ts # incluye US1-7
 ```
 
 **Structure Decision**: se sigue la estructura de 000-core; el trabajo de la historia queda en `routers/propuesta.ts`,
