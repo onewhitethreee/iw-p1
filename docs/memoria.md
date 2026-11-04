@@ -465,7 +465,7 @@ Esta sección cierra el refinamiento (enunciado §5.4) sobre la aplicación inte
 
 Son tres recorridos que, entre todos, pasan por las **8 historias** y por los cuatro bloques del reparto. Se automatizan como prueba de integración en [`apps/web/tests/integration/integrado/recorridos.test.ts`](../apps/web/tests/integration/integrado/recorridos.test.ts). La prueba llama a la API tRPC real con el usuario y el reloj de cada paso, es decir, lo mismo que hace la interfaz.
 
-- **Versión del código**: `main` en `1aa2f5c` más la prueba de recorridos (cambio local, todavía sin commit).
+- **Versión del código**: `main` en `98db582` (commit que añade la prueba de recorridos).
 - **Ejecución**: 2026-11-04, con `pnpm --filter web exec vitest run tests/integration/integrado` → **3/3 en verde** (~1,5 s).
 
 Cobertura de las historias (✔ = la historia se ejecuta a través de su API dentro del recorrido; *pre* = sus datos se usan como precondición):
@@ -537,7 +537,7 @@ Ejecutada el 2026-11-04 sobre el mismo árbol, después de añadir los recorrido
 | Unitarias (`packages/domain`) | **42/42** ✔ |
 | Integración (`apps/web`, BD `congresalia_test`) | **166/166** ✔: las 163 anteriores más los 3 recorridos |
 | Tipos (`tsc --noEmit`) y lint de la prueba nueva | sin errores ✔ |
-| E2E (Playwright) | No se ha vuelto a ejecutar, porque esta iteración no cambia código de la aplicación. El último resultado es **46/46** en la integración (`6289ab7`, §5.2) |
+| E2E (Playwright, `pnpm build && pnpm test:e2e`) | 1.ª ejecución: **44 ✔, 1 ✘, 1 sin ejecutar**. Falla `005-agenda.spec.ts:40` (US1-6) porque una prueba de spec-008 confirmaba la inscripción de asistente4 (ver registro mínimo). Tras corregir la prueba de spec-008: **46/46** ✔ en dos ejecuciones seguidas |
 
 Los 4 criterios de tiempo con una persona real (§5.3) siguen pendientes de verificación manual.
 
@@ -581,7 +581,8 @@ Recoge las decisiones y hallazgos con efecto en la funcionalidad, al menos uno p
 | HU-08 · FR-003 | P1: ocupación = máx(reservas, asistencias) / aforo | clarify | spec, `packages/domain/src/ocupacion.ts` | T002, T007a · `b6e8710` | `ocupacion.test.ts`, `008/resumen.test.ts` ✔ | Cerrado |
 | HU-08 · US3 | I1 HIGH: la prueba independiente era incompatible con el seed | analyze | spec, quickstart | T009b · `86cd97d` | `008/cambiar-sala.test.ts` ✔ | Cerrado |
 | HU-08 · Edge «conexión falla» | F1 MEDIUM: el panel mostraba «Failed to fetch» | converge | `panel.tsx` | T014 · `c8cb253`, `450a2b7` | e2e `008-panel` con red cortada ✔ | Cerrado |
-| HU-01…HU-08 · §5.4 | Faltaba una verificación que encadenara historias | verificación integrada | `tests/integration/integrado/recorridos.test.ts` | RC-1, RC-2, RC-3 · pendiente de commit | 3/3 ✔ | Cerrado |
+| HU-01…HU-08 · §5.4 | Faltaba una verificación que encadenara historias | verificación integrada | `tests/integration/integrado/recorridos.test.ts` | RC-1, RC-2, RC-3 · `98db582` | 3/3 ✔ | Cerrado |
+| HU-05 · US1-6 ↔ HU-08 · US1-1 | La regresión e2e falla de forma intermitente: la prueba del panel confirmaba en la BD «la primera inscripción pendiente» (`findFirst` sin orden), que podía ser la de asistente4, la que US1-6 de spec-005 necesita pendiente. Los ficheros e2e se ejecutan en paralelo y en orden no determinista; el 46/46 de la integración fue fortuito | verificación integrada (regresión) | `tests/e2e/008-panel.spec.ts` | Corrección local, pendiente de commit | Antes: 44 ✔, 1 ✘ (`005-agenda.spec.ts:40`), 1 sin ejecutar. Después: **46/46** en dos ejecuciones seguidas ✔ | Cerrado |
 
 #### 5.4.5 Matriz de trazabilidad
 
@@ -699,7 +700,7 @@ Resumen de hallazgos y su tratamiento:
 
 ### 7.3 Historial de commits
 
-Hay unos **77 commits**, todos del 3 de noviembre de 2026:
+El historial de `main` tiene **84 commits**: 1 del 26 de octubre (inicio del proyecto), 79 del 3 de noviembre (todo el ciclo SDD de las 9 specs y la integración) y 4 del 4 de noviembre (limpieza, verificación de 000-core y recorridos de §5.4). La tabla siguiente cuenta los 77 commits de pasos del ciclo:
 
 | Rama | Commits |
 |------|---------|

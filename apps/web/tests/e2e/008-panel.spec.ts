@@ -31,9 +31,15 @@ test.describe.serial("spec-008 · panel en tiempo real (HU-08)", () => {
     await expect(page.getByTestId("fila-desglose")).toHaveCount(6);
     const antes = await page.getByTestId("ingresos").textContent();
 
-    // Un pago aprobado nuevo (otra ventana / otro asistente) aparece en ≤ 6 s sin recargar
+    // Un pago aprobado nuevo (otra ventana / otro asistente) aparece en ≤ 6 s sin recargar.
+    // Solo una inscripción de relleno del panel (demoNN@): asistente4 debe seguir pendiente para spec-005 US1-6,
+    // y los ficheros e2e se ejecutan en paralelo en un orden no determinista.
     const ins = await db.inscripcion.findFirstOrThrow({
-      where: { congreso: { slug: "congreso-innovacion-educativa-2026" }, estado: "PENDIENTE_PAGO" },
+      where: {
+        congreso: { slug: "congreso-innovacion-educativa-2026" },
+        estado: "PENDIENTE_PAGO",
+        usuario: { email: { startsWith: "demo" } },
+      },
     });
     await db.pago.create({ data: { inscripcionId: ins.id, importeCent: 12345, resultado: "APROBADO", referencia: "e2e-panel" } });
     await db.inscripcion.update({ where: { id: ins.id }, data: { estado: "CONFIRMADA" } });
