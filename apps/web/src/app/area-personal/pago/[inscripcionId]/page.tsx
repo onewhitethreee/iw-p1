@@ -14,7 +14,7 @@ export default async function PagoPage({ params }: { params: Promise<{ inscripci
   const { inscripcionId } = await params;
   const ins = (await (await api()).inscripcion.mias()).find((i) => i.id === inscripcionId);
   if (!ins) return <AccesoDenegado />;
-  if (ins.estado === "CONFIRMADA") redirect("/area-personal");
+  if (ins.estado !== "PENDIENTE_PAGO") redirect("/area-personal"); // confirmada o cancelada (clarify-2 P4)
   return (
     <Card className="mx-auto max-w-md">
       <CardHeader>
