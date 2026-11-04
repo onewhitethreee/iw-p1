@@ -20,6 +20,10 @@
 - Q: ¿Cuántas propuestas puede enviar un ponente al mismo congreso? → A: Sin límite.
 - Q: Cuando la propuesta se decide, ¿qué ve el ponente? → A: Solo el estado (Enviada, En evaluación, Aceptada, Rechazada); nunca puntuaciones, comentarios ni evaluadores.
 
+### Session 2026-11-04 (clarify sobre la versión funcional)
+
+- Q: ¿Qué hace el sistema si el mismo ponente envía al mismo congreso una propuesta con el mismo título que otra suya? → A: La rechaza con «Ya has enviado una propuesta con este título a este congreso»; no se guarda una segunda. El título se compara sin distinguir mayúsculas/minúsculas ni espacios al principio o al final.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Enviar una propuesta dentro del plazo (Priority: P1)
@@ -39,6 +43,7 @@ y envía la propuesta. El sistema la registra en estado `ENVIADA`.
 4. **Given** un formulario con el resumen demasiado corto o sin área, **When** el ponente lo envía, **Then** el sistema indica qué campo no es válido y no guarda la propuesta.
 5. **Given** un área temática que pertenece a otro congreso, **When** se envía la propuesta con ella (petición manipulada), **Then** el sistema la rechaza como área no válida.
 6. **Given** un usuario sin el rol ponente (p. ej. un asistente) o sin sesión, **When** intenta enviar una propuesta, **Then** el sistema la rechaza (sin sesión, le pide iniciarla).
+7. **Given** un ponente que ya envió al congreso X la propuesta «Título A», **When** envía otra con el título « título a » al mismo congreso (también por doble clic o reintento de red), **Then** el sistema la rechaza con «Ya has enviado una propuesta con este título a este congreso» y sigue habiendo una sola (Clarifications P4).
 
 ---
 
@@ -62,7 +67,7 @@ El ponente ve la lista de sus propuestas con congreso, título, área, fecha de 
 ### Edge Cases
 
 - Último día del plazo (000-core FR-005a, clarify de 000-core P1): el plazo incluye el día de cierre completo en la zona del congreso; un envío a las 23:59 del día de cierre se acepta y uno a las 00:00 del día siguiente se rechaza. Cuenta la hora del servidor.
-- Dos envíos idénticos seguidos por doble clic: el botón se desactiva mientras se envía; si aun así llegan dos, se guardan como dos propuestas (no hay regla de unicidad en la narrativa).
+- Dos envíos idénticos seguidos por doble clic: el botón se desactiva mientras se envía; si aun así llegan dos, el servidor guarda solo la primera y rechaza la segunda por título repetido (Clarifications P4). El mismo título en **otro** congreso sí se admite.
 - Un ponente puede enviar varias propuestas al mismo congreso, sin límite (Clarifications P2).
 - Una vez enviada, la propuesta no se puede editar ni retirar (Clarifications P1).
 
@@ -75,11 +80,12 @@ El ponente ve la lista de sus propuestas con congreso, título, área, fecha de 
 - **FR-003**: El sistema MUST comprobar que el área temática pertenece al congreso elegido.
 - **FR-004**: El sistema MUST registrar como autor al usuario que envía, la fecha de envío y el estado `ENVIADA`.
 - **FR-005**: El sistema MUST mostrar al ponente solo sus propias propuestas, con su estado actual.
-- **FR-006**: Las reglas FR-001 … FR-004 MUST validarse en el servidor (Constitución IV).
+- **FR-006**: Las reglas FR-001 … FR-004 y FR-011 MUST validarse en el servidor (Constitución IV).
 - **FR-007**: La lista de congresos para enviar MUST mostrar solo los que tienen la llamada abierta e indicar el día de cierre del plazo.
 - **FR-008**: Una propuesta enviada MUST ser inmutable para su autor: no se ofrece ni existe operación para editarla o retirarla (Clarifications P1).
-- **FR-009**: El sistema MUST NOT limitar el número de propuestas de un ponente por congreso (Clarifications P2).
+- **FR-009**: El sistema MUST NOT limitar el número de propuestas de un ponente por congreso (Clarifications P2), salvo los títulos repetidos (FR-011).
 - **FR-010**: Lo que ve el ponente de sus propuestas (pantalla y respuesta del servidor) MUST limitarse a congreso, título, área, resumen, fecha de envío y estado; nunca puntuaciones, comentarios ni evaluadores (Clarifications P3).
+- **FR-011**: El sistema MUST rechazar, también ante envíos simultáneos, una propuesta del mismo autor al mismo congreso con un título igual a otra suya (comparación sin mayúsculas/minúsculas ni espacios al principio o al final), con el mensaje «Ya has enviado una propuesta con este título a este congreso» (Clarifications P4).
 
 ### Key Entities
 

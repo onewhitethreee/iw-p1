@@ -21,4 +21,9 @@
 - **Motivo**: hace verificables los casos límite de FR-005a sin esperar al reloj real.
 
 ## R5. Mensajes de error
-- **Decisión**: `CONFLICT` «El plazo de envío de propuestas de este congreso está cerrado» / «El plazo de envío de este congreso se abre el {día}»; `BAD_REQUEST` «El área temática no pertenece a este congreso»; `NOT_FOUND` «Congreso no encontrado».
+- **Decisión**: `CONFLICT` «El plazo de envío de propuestas de este congreso está cerrado» / «El plazo de envío de este congreso se abre el {día}»; `BAD_REQUEST` «El área temática no pertenece a este congreso»; `NOT_FOUND` «Congreso no encontrado»; `CONFLICT` «Ya has enviado una propuesta con este título a este congreso» (R6).
+
+## R6. Títulos repetidos (clarify-2 P4, 2026-11-04)
+- **Decisión**: índice único de PostgreSQL sobre `(autorId, congresoId, lower(btrim(titulo)))`, creado en una migración SQL (Prisma no expresa índices sobre expresiones en `schema.prisma`, igual que los CHECK de 000-core). La violación `P2002` se convierte en `CONFLICT`.
+- **Motivo**: la base de datos garantiza la regla también con envíos simultáneos, sin transacción ni bloqueo en el código (Constitución I). `lower(btrim(…))` aplica la comparación decidida: sin mayúsculas/minúsculas ni espacios al principio o al final (el esquema zod ya recorta, y el índice lo garantiza también fuera del formulario).
+- **Alternativas descartadas**: comprobar con `findFirst` antes de crear (deja una carrera entre los dos pasos y necesitaría `FOR UPDATE` sobre el autor); columna `tituloNormalizado` (duplica un dato que la expresión ya calcula).

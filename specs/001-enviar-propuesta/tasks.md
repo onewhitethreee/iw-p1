@@ -136,6 +136,7 @@ Tras T003:  T004 (enviar.test.ts)  ∥  T009 (mias.test.ts)
 | FR-008 (inmutable, P1) | T004i |
 | FR-009 (sin límite, P2) | T004h |
 | FR-010 (privacidad, P3) | T009c, T010 |
+| FR-011 (título repetido, clarify-2 P4) · US1-7 | T016, T017 |
 | US1-1…6 | T004, T007, T008 |
 | US2-1…5 | T009, T011, T012 (US2-4 = T004i, US2-5 = T011/T012) |
 | SC-001 | T014 (manual) |
@@ -144,3 +145,14 @@ Tras T003:  T004 (enviar.test.ts)  ∥  T009 (mias.test.ts)
 ## Phase 6: Convergence
 
 - [ ] T015 Medir con una persona real (el responsable u otra) el tiempo desde abrir `/ponente/enviar` hasta ver «Propuesta enviada» con una propuesta válida y registrar el resultado (objetivo < 3 min) en `specs/001-enviar-propuesta/informes/verificacion.md` per SC-001 (partial) · **2026-11-04**: estimación KLM registrada en `verificacion.md` ([informe](../000-core/informes/estimacion-klm.md)); sigue abierta hasta la medición real
+
+## Clarify sobre la versión funcional (2026-11-04) · pendiente de plan y analyze
+
+Tareas que salen de `informes/clarify-2.md`. Se implementan después de revisar `plan.md` y de `/speckit-analyze`.
+
+- [X] T016 Rechazar propuestas con título repetido (FR-011, Clarifications P4; plan decisión 6, R6; reescrita por analyze-3 A1). **Prueba primero** en `apps/web/tests/integration/001/enviar.test.ts`: (k) mismo autor, congreso y título → `CONFLICT` «Ya has enviado una propuesta con este título a este congreso» y sigue habiendo una; (l) « título a » frente a «Título A» → rechazo; (m) dos envíos simultáneos con `Promise.all` → 1 guardada y 1 `CONFLICT`; (n) el mismo título en otro congreso, o de otro autor, se acepta. Comprobar que (k)–(m) fallan. Después: migración SQL `propuesta_titulo_unico` con `CREATE UNIQUE INDEX … ("autorId", "congresoId", lower(btrim("titulo")))` y, en `apps/web/src/server/api/routers/propuesta.ts`, `P2002` → `conflicto(…)` (issue #5)
+- [X] T017 [US1-7] e2e en `apps/web/tests/e2e/001-enviar-propuesta.spec.ts`: tras US1-1, volver a enviar el mismo título en minúsculas → alerta «Ya has enviado una propuesta con este título a este congreso» y sigue en `/ponente/enviar` (analyze-3 A4, quickstart #9)
+
+## Convergencia tras clarify-2 (converge-2, 2026-11-05)
+
+- [X] T018 Corregir «Project Structure» en `specs/001-enviar-propuesta/plan.md`: sustituir `integration/001/propuesta.test.ts` por `enviar.test.ts`, `mias.test.ts` y `fixtures.ts`, y añadir la migración `prisma/migrations/20261105100000_propuesta_titulo_unico/` (converge-2 F2; decisión 6)

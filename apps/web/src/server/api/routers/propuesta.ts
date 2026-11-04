@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { fecha, plazoEnvio } from "@congresalia/domain";
@@ -24,19 +25,24 @@ export const propuestaRouter = createTRPCRouter({
       const area = await ctx.db.areaTematica.findFirst({ where: { id: input.areaId, congresoId: congreso.id }, select: { id: true } });
       if (!area) throw new TRPCError({ code: "BAD_REQUEST", message: "El área temática no pertenece a este congreso" });
 
-      const p = await ctx.db.propuesta.create({
-        data: {
-          congresoId: congreso.id,
-          areaId: area.id,
-          autorId: ctx.usuario.id, // FR-004: nunca se acepta el autor desde la entrada
-          titulo: input.titulo,
-          resumen: input.resumen,
-          estado: "ENVIADA",
-          enviadaEn: ahora,
-        },
-        select: { id: true, estado: true },
-      });
-      return p;
+      try {
+        return await ctx.db.propuesta.create({
+          data: {
+            congresoId: congreso.id,
+            areaId: area.id,
+            autorId: ctx.usuario.id, // FR-004: nunca se acepta el autor desde la entrada
+            titulo: input.titulo,
+            resumen: input.resumen,
+            estado: "ENVIADA",
+            enviadaEn: ahora,
+          },
+          select: { id: true, estado: true },
+        });
+      } catch (e) {
+        // FR-011: índice único (autorId, congresoId, lower(btrim(titulo))); cubre también los envíos simultáneos (R6)
+        if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") conflicto("Ya has enviado una propuesta con este título a este congreso");
+        throw e;
+      }
     }),
 
   /** US2 · FR-005, FR-010: solo las propias y solo los campos permitidos (sin datos de evaluación). */
