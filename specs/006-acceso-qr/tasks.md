@@ -66,3 +66,10 @@ T001 → T002 → US1 (T003 → T004 → T005) → US2 (T006 → T007) → T008 
 ## Phase 6: Convergence
 
 - [X] T010 En `apps/web/src/app/acreditacion/[slug]/[sesionId]/escaner.tsx`, ante un fallo de red de `escanear` mostrar «Sin conexión: no se puede validar. Comprueba la red y vuelve a intentarlo.» (no el mensaje técnico del navegador) y, si falla el refresco de `ocupacion`, avisar «Ocupación sin actualizar»; e2e en `apps/web/tests/e2e/006-acceso.spec.ts` cortando `/api/trpc` con `page.route` per Edge Cases «Sin conexión» y Constitución VI (partial)
+
+## Clarify sobre la versión funcional (2026-11-04) · pendiente de plan y analyze
+
+Tareas que salen de `informes/clarify-3.md`. Se implementan después de revisar `plan.md` y de `/speckit-analyze`.
+
+- [ ] T011 Liberar las reservas no presentadas (FR-009 matizada, spec-005 FR-010): en `apps/web/src/server/api/routers/acreditacion.ts` aplicar `reservaVigente` (spec-005 T012) al calcular las plazas sin reservar. Prueba primero en `apps/web/tests/integration/006/escanear.test.ts` con reloj simulado: 10:09 rechazado y 10:10 admitido; quien reservó y llega tarde con la sala llena → «Aforo completo» (issue #7)
+- [ ] T012 Rechazar la entrada en sesiones solapadas (FR-011, Clarifications P4): en el mismo procedimiento, y dentro del bloqueo, comprobar si hay asistencias de la inscripción en otra sesión solapada (A7, `packages/domain` intervalos). Prueba primero: A → B solapada rechazada sin consumir aforo, A → C contigua admitida, B ∥ A simultáneos → solo una (issue #8)
