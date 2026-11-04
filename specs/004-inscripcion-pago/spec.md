@@ -63,7 +63,7 @@ y obtiene su acreditación con código QR en el área personal.
 3. **Given** una inscripción ya `CONFIRMADA`, **When** se intenta pagar de nuevo, **Then** el sistema lo rechaza (no hay pagos dobles).
 4. **Given** una inscripción de otro usuario, **When** alguien intenta pagarla o ver su QR, **Then** el sistema lo rechaza.
 5. **Given** una inscripción pendiente, **When** el asistente abre su área personal, **Then** ve «Pendiente de pago», el importe y los botones «Pagar» y «Cancelar inscripción», pero no el QR.
-6. **Given** una inscripción `PENDIENTE_PAGO` como estudiante con un pago rechazado, **When** su titular la cancela y se inscribe de nuevo como profesional, **Then** la primera queda `CANCELADA` con su intento de pago conservado, y la nueva se crea `PENDIENTE_PAGO` con el precio de profesional vigente ese día (Clarifications P4).
+6. **Given** una inscripción `PENDIENTE_PAGO` como estudiante con un pago rechazado, **When** su titular la cancela y se inscribe de nuevo como profesional, **Then** primero ve su inscripción «Cancelada» y, al inscribirse de nuevo, «Pendiente de pago» como profesional con el precio de profesional vigente ese día; el intento de pago rechazado se conserva (Clarifications P4).
 7. **Given** una inscripción `CONFIRMADA` o de otro usuario, **When** alguien intenta cancelarla (también con una petición directa), **Then** el sistema lo rechaza y la inscripción no cambia.
 
 ### Edge Cases
@@ -89,7 +89,7 @@ y obtiene su acreditación con código QR en el área personal.
 - **FR-008**: El sistema MUST registrar cada intento de pago (importe, resultado, fecha) sin guardar datos de tarjeta.
 - **FR-009**: Solo el propietario MUST poder pagar su inscripción y ver su QR.
 - **FR-010**: Importes en euros con formato español.
-- **FR-011**: El tipo de asistente y el importe MUST ser inmutables una vez creada la inscripción; no hay operación para cambiarlos (Clarifications P1). Para corregir el tipo se usa FR-014.
+- **FR-011**: El tipo de asistente y el importe MUST ser inmutables mientras la inscripción no se cancele; no hay operación para cambiarlos (Clarifications P1). Para corregir el tipo, el titular cancela y vuelve a inscribirse (FR-014): entonces se fijan de nuevo con la tarifa vigente ese día.
 - **FR-012**: Se MUST admitir inscripciones hasta el fin del congreso, también mientras está en curso (Clarifications P2).
 - **FR-013**: La pasarela simulada MUST pedir un número de 16 dígitos; MUST rechazar solo la tarjeta 4000 0000 0000 0002; el pago MUST guardar como referencia «SIM-…-últimos 4 dígitos» y nunca el número completo (Clarifications P3).
 - **FR-014**: El titular MUST poder cancelar una inscripción `PENDIENTE_PAGO`; pasa a `CANCELADA`, conserva sus intentos de pago y deja de contar para FR-003. Una inscripción `CONFIRMADA` MUST NOT poder cancelarse (Clarifications P4).

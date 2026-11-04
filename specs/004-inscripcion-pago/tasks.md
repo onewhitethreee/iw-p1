@@ -80,6 +80,7 @@ Tras T003:  T004 (inscribir.test) ∥ T007 (pagar.test)
 | FR-011 (inmutable, P1) | T004h |
 | FR-012 (en curso, P2) | T004d |
 | FR-013 (pasarela, P3) | T002, T007e/f |
+| FR-014 (cancelar, clarify-2 P4) · FR-003/FR-011 revisados · US2-6/US2-7 | T014, T015 |
 | US1-1…7 / US2-1…5 | T004–T011 |
 | SC-001 / SC-002 / SC-003 | T012 / T007a,g / T004a,b |
 
@@ -91,5 +92,5 @@ Tras T003:  T004 (inscribir.test) ∥ T007 (pagar.test)
 
 Tareas que salen de `informes/clarify-2.md`. Se implementan después de revisar `plan.md` y de `/speckit-analyze`.
 
-- [ ] T014 Cancelar una inscripción pendiente (FR-014, Clarifications P4): primero en `specs/000-core/data-model.md` y `prisma/schema.prisma` el estado `CANCELADA` y la unicidad solo para inscripciones no canceladas (índice parcial en la migración); después `inscripcion.cancelar` en `apps/web/src/server/api/routers/inscripcion.ts` (solo el titular, solo `PENDIENTE_PAGO`, con bloqueo frente a un pago simultáneo). Prueba primero en `apps/web/tests/integration/004/`: cancelar y volver a inscribirse; confirmada → rechazo sin cambios; otro usuario → rechazo; cancelar ∥ pagar → solo una gana (issue #6)
-- [ ] T015 Botón «Cancelar inscripción» en el área personal para las inscripciones pendientes (US2-5), con e2e en `apps/web/tests/e2e/004-inscripcion.spec.ts` (US2-6) (issue #6)
+- [ ] T014 Cancelar y volver a inscribirse en el servidor (FR-014, FR-003, FR-011; plan decisiones 2, 3 y 8, R7; reescrita por analyze-3 A1 y A4). **Prueba primero** en `apps/web/tests/integration/004/cancelar.test.ts`: (a) cancelar una pendiente → `CANCELADA`, los pagos rechazados se conservan; (b) volver a inscribirse con otro tipo → misma inscripción, `PENDIENTE_PAGO`, tipo, tarifa e importe de ese día; (c) cancelar una confirmada → `CONFLICT`, sin cambios; (d) inexistente o ajena → `FORBIDDEN`; (e) ya cancelada → `CONFLICT`; (f) `pagar` una cancelada → `CONFLICT`, sin pago; (g) `cancelar` ∥ `pagar` simultáneos → o bien confirmada con pago aprobado, o bien cancelada sin pago aprobado, nunca las dos cosas; (h) volver a inscribirse después del día límite temprano → precio general. Actualizar `inscribir.test.ts` (h): existe `cancelar` y sigue sin haber operación para cambiar el tipo. Comprobar que fallan. Después: migración `20261105110000_inscripcion_cancelada` (`ALTER TYPE "EstadoInscripcion" ADD VALUE 'CANCELADA'`), enum en `schema.prisma`, `cancelar`, reactivación en `crear` y rechazo en `pagar` (issue #6)
+- [ ] T015 Interfaz (plan decisión 9, US2-5…7; ampliada por analyze-3 A5): `apps/web/src/app/area-personal/cancelar.tsx`, con confirmación en la tarjeta que avisa del precio vigente; insignia «Cancelada» y enlace «Inscribirme de nuevo» en `area-personal/page.tsx`; la página `congresos/[slug]/inscripcion` no trata una cancelada como «ya inscrito»; `area-personal/pago/[inscripcionId]` redirige si no está pendiente. e2e en `apps/web/tests/e2e/004-inscripcion.spec.ts` (US2-6: cancelar → «Cancelada» → inscribirse de nuevo con otro tipo → «Pendiente de pago») (issue #6)
