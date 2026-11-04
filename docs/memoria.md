@@ -21,7 +21,7 @@ Congresalia es una aplicación web para organizar congresos científicos y profe
 - los **asistentes**, que se inscriben, pagan, construyen su agenda y descargan su certificado;
 - el **personal de acreditación**, que controla con un QR el acceso a cada sala.
 
-El proyecto se ha desarrollado entero con Spec Kit. Hay una especificación común (`000-core`) y ocho especificaciones, una por historia de usuario. Cada una ha pasado el ciclo *specify → clarify → plan → tasks → analyze → implement → converge*, y todos los informes se guardan en el repositorio como evidencia. **Resultado**: las 8 historias están implementadas, convergidas e **integradas en `main`** con un merge de las 8 ramas. Las reglas de negocio se validan en el servidor y están cubiertas por 251 pruebas automáticas (42 unitarias, 163 de integración y 46 e2e), todas en verde sobre la aplicación integrada. Quedan abiertas solo 4 mediciones de tiempo con usuarios reales.
+El proyecto se ha desarrollado entero con Spec Kit. Hay una especificación común (`000-core`) y ocho especificaciones, una por historia de usuario. Cada una ha pasado el ciclo *specify → clarify → plan → tasks → analyze → implement → converge*, y todos los informes se guardan en el repositorio como evidencia. **Resultado**: las 8 historias están implementadas, convergidas e **integradas en `main`** con un merge de las 8 ramas. Las reglas de negocio se validan en el servidor y están cubiertas por 254 pruebas automáticas (42 unitarias, 166 de integración —incluidos 3 recorridos que pasan por las 8 historias, §5.4— y 46 e2e), todas en verde sobre la aplicación integrada. Quedan abiertas solo 4 mediciones de tiempo con usuarios reales.
 
 ## URL del repositorio en GitHub
 
@@ -456,6 +456,157 @@ Cada spec tiene un `quickstart.md` con los escenarios que se pueden comprobar en
 Tras integrar las ramas se comprobó, sobre la aplicación completa, lo que dependía de varias historias: el programa público (spec-003) muestra la sala nueva de una sesión cambiada desde el panel (spec-008), y el área personal enlaza a la agenda (spec-005) y al certificado (spec-007) desde las inscripciones confirmadas (spec-004).
 
 La revisión cruzada que pide el enunciado se ha sustituido, por ser un grupo de una persona, por una **autorrevisión diferida**. Se apoya en la lista de calidad `checklists/requirements.md` (17/17 en todas las specs) y en dos pasadas de `/speckit-analyze` por spec.
+
+### 5.4 Verificación integrada y valoración del refinamiento
+
+Esta sección cierra el refinamiento (enunciado §5.4) sobre la aplicación integrada en `main`. Al ser un grupo de una persona, en la columna *revisor* figura **autorrevisión diferida**: una revisión hecha en una sesión distinta de la de redacción (ver §5.3 y [agrupamiento.md](agrupamiento.md)). Las salidas completas de los comandos están en `specs/<spec>/informes/`.
+
+#### 5.4.1 Recorridos completos
+
+Son tres recorridos que, entre todos, pasan por las **8 historias** y por los cuatro bloques del reparto. Se automatizan como prueba de integración en [`apps/web/tests/integration/integrado/recorridos.test.ts`](../apps/web/tests/integration/integrado/recorridos.test.ts). La prueba llama a la API tRPC real con el usuario y el reloj de cada paso, es decir, lo mismo que hace la interfaz.
+
+- **Versión del código**: `main` en `1aa2f5c` más la prueba de recorridos (cambio local, todavía sin commit).
+- **Ejecución**: 2026-11-04, con `pnpm --filter web exec vitest run tests/integration/integrado` → **3/3 en verde** (~1,5 s).
+
+Cobertura de las historias (✔ = la historia se ejecuta a través de su API dentro del recorrido; *pre* = sus datos se usan como precondición):
+
+| Recorrido | Tipo | HU-01 | HU-02 | HU-03 | HU-04 | HU-05 | HU-06 | HU-07 | HU-08 |
+|-----------|------|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|:-----:|
+| RC-1 | Satisfactorio | | | *pre* | ✔ | ✔ | ✔ | ✔ | ✔ |
+| RC-2 | Error, permiso y estado | | | *pre* | ✔ | ✔ | ✔ | ✔ | ✔ |
+| RC-3 | Satisfactorio con errores de regla | ✔ | ✔ | ✔ | ✔ | ✔ | | | |
+| **Total** | | 1 | 1 | 1 | 3 | 3 | 2 | 2 | 2 |
+
+**RC-1 · Recorrido satisfactorio: inscripción → agenda → acceso QR → certificado → panel** (HU-04, HU-05, HU-06, HU-07, HU-08)
+
+| | |
+|---|---|
+| Precondiciones | Congreso con programa publicado. Empieza el 10-05-2027 a las 10:00 (Europe/Madrid) y dura 2 días. Ya pasó la fecha de inscripción temprana. Tarifa *profesional*: 150 € temprana / 200 € general. 5 sesiones de 60 min en el «Auditorio» (aforo 100). Usuarios: asistente «Lucía», organizadora y personal de acreditación |
+| Datos de prueba | Tarjeta `4111 1111 1111 1111` (aprobada). Reloj: inscripción y agenda 10 días antes; escaneos al inicio de cada sesión; certificado 3 días después del inicio |
+
+| Paso | Acción | Resultado esperado | Resultado observado |
+|------|--------|--------------------|---------------------|
+| 1 | HU-04 · Lucía se inscribe como profesional y paga | Tarifa `GENERAL` de 200,00 €; pago `APROBADO`; inscripción `CONFIRMADA` con código QR | Igual ✔ |
+| 2 | HU-05 · Añade las 5 sesiones a su agenda | 5 × `{ ok: true }` | Igual ✔ |
+| 3 | HU-06 · La puerta escanea su QR en las sesiones 1–4 | 4 × `ADMITIDO`, con el nombre «Lucía» | Igual ✔ |
+| 4 | HU-07 · Consulta su certificado al terminar el congreso | `DISPONIBLE`, 80 % (4 de 5) | Igual ✔ |
+| 5 | HU-08 · La organizadora abre el panel durante la sesión 1 | 1 confirmada, 0 pendientes; ingresos 200,00 € en *profesional × general*; sesión 1 con 1 reserva, 1 asistencia y aforo 100 | Igual ✔ |
+
+**RC-2 · Recorrido con error, permiso y estado: plaza reservada → cambio de sala → nueva reserva y acceso** (HU-05, HU-06, HU-08, HU-07, sobre las sesiones y salas de HU-03)
+
+| | |
+|---|---|
+| Precondiciones | Congreso igual que en RC-1. Una sesión de 60 min en el «Seminario» (aforo 1) y un «Auditorio» libre (aforo 50). Asistentes «Ana» y «Blas», ambos confirmados con HU-04 |
+| Datos de prueba | Reloj: agenda y cambio de sala 10 días antes; escaneo al inicio; certificado a los 30 min |
+
+| Paso | Acción | Resultado esperado | Resultado observado |
+|------|--------|--------------------|---------------------|
+| 1 | HU-05 · Ana reserva la única plaza; Blas intenta reservarla | Ana: ok. Blas: `CONFLICT` «Aforo completo», y sigue habiendo 1 reserva | Igual ✔ |
+| 2 | HU-06 · La puerta escanea a Blas, que no tiene reserva | `RECHAZADO` «No quedan plazas sin reservar» (spec-006 clarify P3) | Igual ✔ |
+| 3 | HU-08 · Ana (asistente) llama directamente a `panel.cambiarSala` | `FORBIDDEN` | Igual ✔ |
+| 4 | HU-08 · La organizadora pasa la sesión al Auditorio | `{ sala: "Auditorio", aforo: 50 }` | Igual ✔ |
+| 5 | HU-05 + HU-06 · Blas reserva y la puerta lo escanea | Reserva ok; `ADMITIDO`, ocupación 1/50 | Igual ✔ |
+| 6 | HU-07 · Blas consulta el certificado durante el congreso | `NO_FINALIZADO`, no disponible | Igual ✔ |
+
+**RC-3 · De la propuesta al programa: envío en plazo → evaluación anónima → programa sin choques → agenda** (HU-01, HU-02, HU-03, HU-04, HU-05)
+
+| | |
+|---|---|
+| Precondiciones | Congreso igual que en RC-1, pero con el **programa en borrador** y sin sesiones. El plazo de envío va de −90 a −60 días respecto al inicio. Salas «Sala A» (40) y «Sala B» (60). Usuarios: ponente «Pedro Ponente», organizadora, dos miembros del comité y asistente «Marta» |
+| Datos de prueba | Dos propuestas: «Telemedicina rural» y «Historia clínica digital». Puntuaciones 8 y 9 para la primera, 7 y 7 para la segunda. Reloj: envío a −75 días; envío tardío a −50; evaluación y programa a −55; consulta pública a −40 |
+
+| Paso | Acción | Resultado esperado | Resultado observado |
+|------|--------|--------------------|---------------------|
+| 1 | HU-01 · Pedro envía las dos propuestas en plazo | 2 propuestas `ENVIADA` | Igual ✔ |
+| 2 | HU-01 · Pedro envía una tercera con el plazo ya cerrado | `CONFLICT` «El plazo de envío de propuestas de este congreso está cerrado» | Igual ✔ |
+| 3 | HU-02 · La organizadora asigna 2 evaluadores a cada propuesta; el comité consulta sus asignaciones | 2 asignaciones; la respuesta **no contiene el nombre del autor** | Igual ✔ |
+| 4 | HU-02 · Se intenta aceptar «Telemedicina rural» con una sola evaluación | `CONFLICT` «Se necesitan al menos 2 evaluaciones (tiene 1)» | Igual ✔ |
+| 5 | HU-02 · Se completan las evaluaciones y se aceptan las dos propuestas | 2 × `{ estado: "ACEPTADA" }` | Igual ✔ |
+| 6 | HU-03 · Se programa «Telemedicina rural» el 10-05 de 10:00 a 11:00 en la Sala A | Sesión creada | Igual ✔ |
+| 7 | HU-03 · Se programa «Historia clínica digital» de 10:30 a 11:30 en **otra** sala | `CONFLICT` «Pedro Ponente ya tiene la sesión «Telemedicina rural» de 10:00 a 11:00» | Igual ✔ |
+| 8 | HU-03 · Se programa de 11:00 a 12:00 en la Sala B | Sesión creada (los intervalos son semiabiertos, A7) | Igual ✔ |
+| 9 | HU-03 · Un visitante anónimo consulta el programa antes y después de publicarlo | Antes: `publicado: false`. Después: las 2 ponencias con su sala y su ponente | Igual ✔ |
+| 10 | HU-04 + HU-05 · Marta se inscribe, paga y añade las dos ponencias seguidas a su agenda | Confirmada; 2 × `{ ok: true }`, sin aviso de solape | Igual ✔ |
+
+#### 5.4.2 Regresión
+
+Ejecutada el 2026-11-04 sobre el mismo árbol, después de añadir los recorridos:
+
+| Suite | Resultado |
+|-------|-----------|
+| Unitarias (`packages/domain`) | **42/42** ✔ |
+| Integración (`apps/web`, BD `congresalia_test`) | **166/166** ✔: las 163 anteriores más los 3 recorridos |
+| Tipos (`tsc --noEmit`) y lint de la prueba nueva | sin errores ✔ |
+| E2E (Playwright) | No se ha vuelto a ejecutar, porque esta iteración no cambia código de la aplicación. El último resultado es **46/46** en la integración (`6289ab7`, §5.2) |
+
+Los 4 criterios de tiempo con una persona real (§5.3) siguen pendientes de verificación manual.
+
+#### 5.4.3 Balance de la iteración
+
+Compara la versión inicial de cada spec (antes del primer `clarify`) con la final:
+
+| Indicador | Inicial | Final | Evidencia |
+|-----------|---------|-------|-----------|
+| Ambigüedades (preguntas de `/speckit-clarify`) | 24 abiertas en 11 sesiones (9 specs + 2.ª sesión en 003 y 006) | **24/24 resueltas** y llevadas a la spec como criterios *Dado… Cuando… Entonces…*. De ellas, 2/24 con respuesta explícita del responsable y 22/24 aceptando la opción recomendada por delegación, cada una con su justificación en la narrativa o la constitución | `informes/clarify-*.md` y `.diff` |
+| Incidencias documentales (`/speckit-analyze`) | 42 detectadas: 4 CRITICAL, 4 HIGH, 11 MEDIUM y 23 LOW | **40/42 cerradas** con corrección, 1/42 aceptada con justificación (000-core U1) y 1/42 descartada como falso positivo (000-core K1). Segunda pasada: **0 CRITICAL y 0 HIGH** en 9/9 specs | `informes/analyze-1.md`, `analyze-2.md`, `analyze-registro.md` |
+| Brechas de implementación (`/speckit-converge`) | 12 tareas añadidas | **8/12 cerradas** con prueba primero. Quedan **4/12 abiertas**, todas de medición humana (T015, T020, T022, T013) | `informes/converge-*.md` |
+| Criterios de aceptación de las 8 historias | 105 (79 FR + 26 SC) | **101/105 verificados**: 79/79 FR y 22/26 SC. Los 4 SC restantes son las mediciones humanas | `informes/verificacion.md`, §5.2 |
+| Recorridos entre historias | 0 | **3/3** en verde, que cubren **8/8 historias** | §5.4.1 |
+
+#### 5.4.4 Registro mínimo
+
+Recoge las decisiones y hallazgos con efecto en la funcionalidad, al menos uno por historia y fase. El resto de entradas, de gravedad LOW (redacción, numeración y nombres), están en el `analyze-registro.md` de cada spec. Responsable de todas las filas: **Yangfeng Liu**. Revisor: **autorrevisión diferida**.
+
+| Historia y criterio | Hallazgo o decisión | Comando | Documentos o código afectados | Tarea y commit | Prueba y resultado | Estado |
+|---|---|---|---|---|---|---|
+| 000 · FR-005a | P1: las fechas límite son días completos en la zona del congreso | clarify | spec, data-model, `packages/domain/src/fechas.ts` | T033–T039 · `7564c3a`, `a4df046` | `fechas.test.ts` ✔ | Cerrado |
+| 000 · US2 | D1 CRITICAL: faltaba el caso de error (slug inexistente → 404) | analyze | spec, tasks, `not-found.tsx` | T040–T041 · `50d946f`, `a4df046` | e2e `core.spec.ts` ✔ | Cerrado |
+| 000 · FR-021, Const. IV | F1–F3: errores en inglés, sin CHECK en BD, quickstart roto | converge | `error.tsx`, migración `restricciones_check`, quickstart | T042–T044 · `10797e9`, `c718481` | `core/invariantes.test.ts` 6/6 ✔ (antes: `INSERT` con aforo 0 aceptado) | Cerrado |
+| HU-01 · FR-008 | P1: la propuesta no se edita una vez enviada | clarify | spec FR-008, US2-4 | T004i · `c41556d` | `001/enviar.test.ts` ✔ | Cerrado |
+| HU-01 · US2 | D1 CRITICAL: US2 no tenía caso límite (lista vacía) | analyze | spec US2-5, tasks, quickstart | T011–T012 · `7e7741a` | e2e `001-enviar-propuesta` ✔ | Cerrado |
+| HU-01 · SC-001 | F1: medición humana < 3 min sin hacer | converge | tasks | T015 · `fb0e5ce` | manual | **Abierto** |
+| HU-02 · FR-010 | P1: las asignaciones no se retiran, se añaden evaluadores | clarify | spec FR-010 | T010g · `36a7ca1` | `002/asignar.test.ts` ✔ | Cerrado |
+| HU-02 · FR-006 | U1 MEDIUM: carrera entre evaluar y decidir | analyze | plan R4 (`FOR UPDATE`), research, tasks | T007, T015, T014(f2) · `eaac1b9` | `002/decidir.test.ts` ✔ | Cerrado |
+| HU-03 · FR-003 | A1 HIGH: la spec admitía cruzar la medianoche y el plan no → clarify-2 P3 | analyze → clarify | spec FR-003, data-model, plan | T006(f) · `b1abb0b`, `f3d05bf` | `003/programar.test.ts` ✔ | Cerrado |
+| HU-03 · Const. V | C1 CRITICAL: `programa.*` no estaba en el contrato de 000-core | analyze | `000-core/contracts/trpc-api.md` | `f3d05bf` | analyze-2 sin hallazgos ✔ | Cerrado |
+| HU-03 · plan dec. 7 | F2: `noindex` y `robots` sin documentar | converge | plan | T021 · `9a20012`, `83bc99f` | Lighthouse SEO 100 ✔ | Cerrado |
+| HU-04 · FR-013 | P3: pasarela de 16 dígitos; rechaza solo `4000…0002`; se guardan solo los últimos 4 | clarify | spec, `inscripcion.ts` | T007e/f · `3ed9bc3` | `004/pagar.test.ts` ✔ | Cerrado |
+| HU-04 · Const. V | C1 CRITICAL: la firma de `presupuesto` no coincidía con 000-core | analyze | contrato 000-core | `a38c20d` | analyze-2 sin hallazgos ✔ | Cerrado |
+| HU-05 · FR-009 | P1: si un cambio del programa crea un solape, se conservan ambas con aviso | clarify | spec, plan R3, `agenda.ts` | T006e · `109b3cb` | `005/anadir.test.ts` ✔ | Cerrado |
+| HU-05 · plan | F1: faltaba el enlace «Mi agenda» en el área personal | converge | `area-personal/page.tsx` | T011 · `d07f3c9`, `7e53c03` | e2e `005-agenda` ✔ | Cerrado |
+| HU-06 · FR-009 ↔ HU-05 A6 | H1 HIGH: la reserva no garantizaba la plaza en la puerta → clarify-2 P3 | analyze → clarify | spec, plan R2, contrato, `acreditacion.ts` | T003(h2) · `8a1d7c1` | `006/escanear.test.ts` ✔; RC-2 paso 2 ✔ | Cerrado |
+| HU-06 · Edge «sin conexión» | F1 MEDIUM: sin red se mostraba «Failed to fetch» | converge | `escaner.tsx` | T010 · `0e59cc1`, `305445e` | e2e `006-acceso` con red cortada ✔ | Cerrado |
+| HU-07 · FR-003 | P2: el porcentaje se trunca (nunca muestra «80 %» a quien no llega) | clarify | spec, `packages/domain/src/certificado.ts` | T002 · `b6e09ae` | `certificado.test.ts` ✔ | Cerrado |
+| HU-07 · FR-004 | F1 MEDIUM: un nombre no latino daba 500 («WinAnsi cannot encode») | converge | `pdf-certificado.ts` | T011 · `edf5492`, `b3efdfd` | `007/descarga.test.ts`: antes 500, ahora 200 con PDF válido ✔ | Cerrado |
+| HU-08 · FR-003 | P1: ocupación = máx(reservas, asistencias) / aforo | clarify | spec, `packages/domain/src/ocupacion.ts` | T002, T007a · `b6e8710` | `ocupacion.test.ts`, `008/resumen.test.ts` ✔ | Cerrado |
+| HU-08 · US3 | I1 HIGH: la prueba independiente era incompatible con el seed | analyze | spec, quickstart | T009b · `86cd97d` | `008/cambiar-sala.test.ts` ✔ | Cerrado |
+| HU-08 · Edge «conexión falla» | F1 MEDIUM: el panel mostraba «Failed to fetch» | converge | `panel.tsx` | T014 · `c8cb253`, `450a2b7` | e2e `008-panel` con red cortada ✔ | Cerrado |
+| HU-01…HU-08 · §5.4 | Faltaba una verificación que encadenara historias | verificación integrada | `tests/integration/integrado/recorridos.test.ts` | RC-1, RC-2, RC-3 · pendiente de commit | 3/3 ✔ | Cerrado |
+
+#### 5.4.5 Matriz de trazabilidad
+
+Hay dos criterios por historia, los de más riesgo. La matriz completa *requisito → tareas* está al final de cada `tasks.md`.
+
+| Historia | Criterio | Decisión del plan | Tareas | Prueba prevista |
+|----------|----------|-------------------|--------|-----------------|
+| HU-01 | FR-002 · No se admiten propuestas fuera de plazo | Plazo de día completo (000-core FR-005a) con instante simulable (R4) | T004b/c, T005 | `integration/001/enviar.test.ts` + RC-3 |
+| HU-01 | FR-010 · El ponente solo ve el estado | `mias` sin puntuaciones ni comentarios (R3) | T009c, T010 | `integration/001/mias.test.ts` |
+| HU-02 | FR-005 · Revisión anónima | El autor nunca sale del servidor (R1) | T003, T006, T007, T017 | `integration/002/anonimato.test.ts` + RC-3 |
+| HU-02 | FR-007 · Decidir solo con ≥ 2 evaluaciones | Bloqueo `FOR UPDATE` al evaluar y al decidir (R4) | T014a–d, T015 | `integration/002/decidir.test.ts` + RC-3 |
+| HU-03 | FR-004 · Un ponente sin dos sesiones a la vez | Solape semiabierto A7 (R2) y serialización (R1) | T006b/d, T009b, T007, T010 | `integration/003/programar.test.ts`, `mover.test.ts` + RC-3 |
+| HU-03 | FR-009 · Programa público bien posicionado | SSR, metadatos, sitemap y robots (R4, R5) | T015–T019 | e2e `003-programa.spec.ts` + `lighthouse.json` |
+| HU-04 | FR-002 · Tarifa por tipo y fecha, calculada en el servidor | El importe no se recibe del cliente (decisión 1) | T002, T004a/b/f, T005 | `integration/004/inscribir.test.ts`, `domain/tarifa.test.ts` |
+| HU-04 | FR-005 · Se confirma solo al pagar | Transacción con `FOR UPDATE` y pasarela simulada (decisiones 3–5) | T004a, T007a/b, T008 | `integration/004/pagar.test.ts` |
+| HU-05 | FR-003 · Sin sesiones solapadas en la agenda | Orden de validación (decisión 2), regla A7 | T003b/c/i, T004 | `integration/005/anadir.test.ts` |
+| HU-05 | FR-004 · Sin sesiones con el aforo completo | Bloqueo inscripción → sesión (decisión 1) | T003d/e, T004 | `integration/005/anadir.test.ts` (20 peticiones simultáneas) + RC-2 |
+| HU-06 | FR-003 · Rechazo con el aforo completo | Orden de comprobación (decisión 2) | T003a–d/g, T004 | `integration/006/escanear.test.ts` |
+| HU-06 | FR-009 · La reserva garantiza la plaza | Plazas sin reservar para quien no reservó (clarify P3) | T003h/h2 | `integration/006/escanear.test.ts` + RC-2 |
+| HU-07 | FR-002 · Certificado solo con ≥ 80 % de la agenda | Una sola función de cálculo (decisiones 1, 4 y 5) | T002, T004a/b/f, T006 | `integration/007/estado.test.ts`, `domain/certificado.test.ts` + RC-1 |
+| HU-07 | FR-005 · Solo el titular lo descarga | Titularidad por construcción (decisión 3) | T005c/d, T007 | `integration/007/descarga.test.ts` |
+| HU-08 | FR-004 · Refresco en tiempo real | Sondeo cada 5 s (decisión 1, A9) | T004d, T006, T013 | e2e `008-panel.spec.ts` |
+| HU-08 | FR-005 · Cambiar a una sala mayor | Aforo ≥ ocupación, sin solape (decisiones 4 y 5, P2/P3) | T009–T011 | `integration/008/cambiar-sala.test.ts` + RC-2 |
+
+**Revisión de la cobertura.** Se ha comprobado que existe cada fichero de la columna *prueba prevista* y que la suite lo ejecuta en verde (§5.4.2). No se han introducido errores artificiales. El revisor es una autorrevisión diferida, por la misma razón que en §5.3.
 
 ---
 
