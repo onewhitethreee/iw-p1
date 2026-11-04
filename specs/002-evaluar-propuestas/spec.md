@@ -19,6 +19,10 @@
 - Q: Si un evaluador asignado no evalúa, ¿puede el organizador quitarle la asignación? → A: No; las asignaciones no se quitan. El organizador puede asignar más evaluadores y decidir en cuanto haya al menos 2 evaluaciones.
 - Q: ¿La decisión del organizador está sujeta a una nota mínima? → A: No; decide libremente viendo la puntuación media y el número de evaluaciones.
 
+### Session 2026-11-04 (clarify sobre la versión funcional)
+
+- Q: La narrativa dice que el comité está «formado por expertos del área». ¿Debe el sistema impedir asignar una propuesta a un miembro de otra área? → A: No; cualquier miembro del comité puede recibir cualquier propuesta del congreso. Elegir al evaluador adecuado lo decide el organizador.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Evaluar una propuesta asignada sin conocer al autor (Priority: P1)
@@ -99,6 +103,7 @@ El organizador ve, por propuesta, el número de evaluaciones y la puntuación me
 - **FR-009**: Todas las reglas anteriores MUST validarse en el servidor.
 - **FR-010**: Las asignaciones MUST ser permanentes: no existe operación para quitarlas (Clarifications P1).
 - **FR-011**: La decisión MUST depender solo de la voluntad del organizador y del mínimo de 2 evaluaciones; no hay nota mínima ni decisión automática (Clarifications P2).
+- **FR-012**: La asignación MUST NOT restringirse por área temática: el organizador puede asignar a cualquier usuario con rol `COMITE` una propuesta de cualquier área del congreso, con las únicas restricciones de FR-002 (Clarifications P3).
 
 ### Key Entities
 
@@ -116,5 +121,5 @@ El organizador ve, por propuesta, el número de evaluaciones y la puntuación me
 
 - La asignación es manual por parte del organizador; no hay reparto automático (no lo pide la narrativa).
 - No se gestionan conflictos de interés más allá de la autoría (p. ej. misma institución).
-- El comité no está separado por área; cualquier miembro puede recibir cualquier propuesta.
+- **Decisión (Clarifications P3)**: el comité no está separado por área; cualquier miembro puede recibir cualquier propuesta. No se registran especialidades de los evaluadores.
 - El ponente no ve los comentarios del comité en la versión 1.
