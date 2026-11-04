@@ -23,7 +23,7 @@
 
 | # | Pregunta | Respuesta | Justificación | Criterios afectados | Decidido por |
 |---|----------|-----------|---------------|---------------------|--------------|
-| P4 | Si el asistente se equivocó de tipo y aún no ha pagado, ¿cómo lo corrige? | Cancela la pendiente y se inscribe de nuevo; una confirmada no se cancela | Probando US1-3 se ve que la P1 de clarify-1 deja al asistente bloqueado para siempre: con el tipo equivocado no puede corregirlo ni volver a inscribirse (FR-003). La narrativa dice que «la inscripción solo se confirma cuando se ha pagado»: mientras no hay pago no hay compromiso ni dinero que devolver, así que cancelar no exige reembolsos. Se **revoca en parte** P1, pero se mantiene que el tipo de una inscripción no cambia: la tarifa se fija al crear cada inscripción (A4). | FR-003, FR-011, FR-014 (nuevo), US2-5…7, Edge Cases, Assumptions; modelo de 000-core (estado `CANCELADA`) | Yangfeng Liu (respuesta directa, 2026-11-04) |
+| P4 | Si el asistente se equivocó de tipo y aún no ha pagado, ¿cómo lo corrige? | Cancela la pendiente y se inscribe de nuevo; una confirmada no se cancela | Permitir cancelar antes de pagar evita que quien se equivoca de tipo de entrada se quede bloqueado. Después del pago no se permite cancelar para no entrar en la complejidad de los reembolsos; los casos excepcionales con el tipo de entrada los resuelve el organizador fuera del sistema. *(Justificación del responsable.)* | FR-003, FR-011, FR-014 (nuevo), US2-5…7, Edge Cases, Assumptions; modelo de 000-core (estado `CANCELADA`) | Yangfeng Liu (respuesta directa, 2026-11-04) |
 
 ## Criterios en formato Dado… Cuando… Entonces…
 
