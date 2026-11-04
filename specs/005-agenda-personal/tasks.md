@@ -73,10 +73,21 @@ Tras T002:  T003 (anadir.test) ∥ T006 (quitar.test)
 | FR-006 (quitar no empezadas) | T006b/c, T007 |
 | FR-007 (plazas, completa, en agenda) | T003a/d, T005 |
 | FR-008 (servidor) | T003, T006 |
+| FR-010 (vigencia de la reserva, clarify-2 P2) · US1-8 | T012; verificación en la puerta: spec-006 T011 |
 | FR-009 (aviso de solape, P1) | T006e, T007, T008 |
 | US1-1…7 / US2-1…4 | T003–T009 |
 | SC-001 / SC-002 / SC-003 | T003b,i / T003e / T005 (manual) |
 
 ## Phase 6: Convergence
 
-- [ ] T011 Al integrar en `main` (después de spec-004), añadir en `apps/web/src/app/area-personal/page.tsx` un enlace «Mi agenda» a `/area-personal/agenda/{slug}` en cada inscripción confirmada per plan: Structure Decision (partial)
+- [X] T011 Al integrar en `main` (después de spec-004), añadir en `apps/web/src/app/area-personal/page.tsx` un enlace «Mi agenda» a `/area-personal/agenda/{slug}` en cada inscripción confirmada per plan: Structure Decision (partial)
+
+## Clarify sobre la versión funcional (2026-11-04) · pendiente de plan y analyze
+
+Tareas que salen de `informes/clarify-2.md`. Se implementan después de revisar `plan.md` y de `/speckit-analyze`.
+
+- [X] T012 Regla de vigencia de la reserva (FR-010, Clarifications P2; plan decisión 7, R6; precisada por analyze-3 A3): `MARGEN_RESERVA_MIN = 10` y `reservaVigente(inicio, ahora)` (`ahora < inicio + 10 min`) en `packages/domain/src/ocupacion.ts`. **Prueba primero** en `packages/domain/tests/ocupacion.test.ts`: antes del inicio, +9:59 → vigente; +10:00 y después → no vigente. **Dependencia** (analyze-3 A1): US1-8 se verifica de extremo a extremo con la prueba de spec-006 T011, que usa esta función (issue #7)
+
+## Convergencia tras clarify-2 (converge-2, 2026-11-05)
+
+- [X] T013 Marcar T011 como hecha, con la evidencia: enlace «Mi agenda» en `apps/web/src/app/area-personal/page.tsx` y e2e «T011 (integración)» de `apps/web/tests/e2e/005-agenda.spec.ts` (converge-2 F1)
