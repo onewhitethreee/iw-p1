@@ -23,7 +23,7 @@
 
 | # | Pregunta | Respuesta | Justificación | Criterios afectados | Decidido por |
 |---|----------|-----------|---------------|---------------------|--------------|
-| P4 | Un asistente ya registrado en A se escanea en B, que se solapa con A. ¿Se le admite? | No: «Ya registrado en «A» a esta hora» | Revisando el escaneo (`acreditacion.escanear`), solo se compara con la misma sesión: el mismo QR entra en dos sesiones a la vez. Eso infla la ocupación de B (HU-08) y puede sumar asistencia para el certificado (HU-07). La narrativa usa el escaneo para registrar «la asistencia real», y una persona no puede estar en dos salas a la vez. Las contiguas se admiten, con la misma regla A7 de todo el sistema. | FR-011 (nuevo), US1-8 (nuevo), Edge Cases | Yangfeng Liu (respuesta directa, 2026-11-04) |
+| P4 | Un asistente ya registrado en A se escanea en B, que se solapa con A. ¿Se le admite? | No: «Ya registrado en «A» a esta hora» | Impedir que una misma persona se registre en dos sesiones a la vez evita inflar los datos de ocupación y garantiza que el porcentaje de asistencia y los certificados sean exactos. *(Justificación del responsable.)* | FR-011 (nuevo), US1-8 (nuevo), Edge Cases | Yangfeng Liu (respuesta directa, 2026-11-04) |
 | (005-P2) | Efecto en esta spec de la decisión de spec-005 sobre las reservas no presentadas | FR-009 se matiza: desde inicio + 10 min las reservas no presentadas dejan de contar | Decidida en spec-005 (dueña de la reserva); aquí se refleja para que las dos specs describan la misma regla. | FR-009, P3 (anotación), US1-9 (nuevo) | Yangfeng Liu (respuesta directa, 2026-11-04) |
 
 ## Criterios en formato Dado… Cuando… Entonces…
