@@ -194,7 +194,7 @@
     const h = actual;
     $("ficha").innerHTML = `
       <div><div class="rol">${esc(h.hu)} · ${esc(h.rol || "")}</div><h2>${esc(h.titulo)}</h2></div>
-      ${h.spec ? `<a class="spec" href="../${esc(h.spec)}">Especificación ↗</a>` : "<span></span>"}
+      ${h.spec ? `<a class="spec" href="https://github.com/onewhitethreee/iw-p1/blob/main/${esc(h.spec)}">Especificación ↗</a>` : "<span></span>"}
       <p class="como">${esc(h.como || "")}</p>
       <ul>${(h.criterios || []).map((x) => `<li>${esc(x)}</li>`).join("")}</ul>`;
   }

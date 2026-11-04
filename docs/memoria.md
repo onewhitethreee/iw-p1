@@ -7,7 +7,7 @@
 | Asignatura | Ingeniería Web · Universidad de Alicante · curso 2026-27 · Parte I (Spec-Driven Development) |
 | Grupo | G16 · un integrante |
 | Autor | **Yangfeng Liu** |
-| Fecha | 3 de noviembre de 2026 |
+| Fecha | 4 de noviembre de 2026 |
 | Metodología | Spec-Driven Development con GitHub Spec Kit 1.2.4 |
 | Pila | Next.js 15 (App Router) · tRPC 11 · Prisma 6 · PostgreSQL 16 · shadcn/ui sobre Tailwind CSS 4 · TypeScript 5 |
 
