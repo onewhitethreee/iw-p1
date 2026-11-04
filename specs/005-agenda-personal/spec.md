@@ -18,6 +18,10 @@
 
 - Q: Si el organizador mueve una sesión y ahora se solapa con otra que el asistente ya tenía en su agenda, ¿qué pasa con la agenda? → A: La agenda conserva ambas sesiones y el asistente ve, en las dos, el aviso «Se solapa con «…»» para que decida cuál quitar; la regla de solape se aplica al añadir.
 
+### Session 2026-11-04 (clarify sobre la versión funcional)
+
+- Q: Una reserva de la agenda garantiza la plaza en la puerta (spec-006 P3). Si quien reservó no se presenta, ¿hasta cuándo se le guarda? → A: Hasta 10 minutos después del inicio. Desde ese momento las plazas reservadas de quienes no han entrado quedan libres para cualquiera, y quien reservó y llega tarde entra en las mismas condiciones que quien no reservó. La sesión **sigue en su agenda** (y cuenta para el certificado).
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Añadir sesiones a mi agenda respetando solapes y aforo (Priority: P1)
@@ -38,6 +42,7 @@ añadida le reserva una plaza. El sistema no le deja añadir una sesión que se 
 5. **Given** dos asistentes que intentan reservar a la vez la última plaza, **When** llegan ambas peticiones, **Then** solo una se acepta y la otra recibe «Aforo completo».
 6. **Given** un asistente con inscripción `PENDIENTE_PAGO` o sin inscripción, **When** intenta añadir una sesión (también con una petición directa), **Then** el sistema lo rechaza indicando que necesita una inscripción confirmada.
 7. **Given** una sesión que ya está en su agenda, **When** intenta añadirla de nuevo, **Then** el sistema lo rechaza sin duplicarla.
+8. **Given** una sesión con aforo 40, 40 reservas y 30 asistentes que ya han entrado, **When** a las 10:10 (inicio 10:00) llega alguien sin reserva, **Then** se le admite (spec-006 FR-009) y las 10 reservas no presentadas siguen en sus agendas; **When** llega a las 10:09, **Then** se rechaza con «No quedan plazas sin reservar» (Clarifications P2).
 
 ---
 
@@ -62,6 +67,7 @@ El asistente ve su agenda ordenada por día y hora y puede quitar sesiones que t
 - Si el organizador mueve una sesión de la agenda a otro horario y ahora se solapa con otra de la agenda, la agenda conserva ambas; el asistente ve un aviso de solape para que decida cuál quitar (la regla de A7 se comprueba al añadir).
 - Sesiones de otro congreso nunca aparecen en la agenda de este.
 - No se pueden añadir sesiones que ya han empezado o terminado (FR-002).
+- Reserva no presentada: garantiza la plaza solo hasta 10 minutos después del inicio (Clarifications P2). Si quien reservó llega más tarde y la sala está llena, se le rechaza por aforo completo; la sesión sigue en su agenda y, sin asistencia, cuenta como no asistida en el certificado (HU-07).
 
 ## Requirements *(mandatory)*
 
@@ -76,6 +82,7 @@ El asistente ve su agenda ordenada por día y hora y puede quitar sesiones que t
 - **FR-007**: La lista de sesiones MUST mostrar las plazas libres y marcar las completas y las que ya están en la agenda.
 - **FR-008**: Todas las reglas MUST validarse en el servidor.
 - **FR-009**: La agenda MUST marcar con un aviso las sesiones que se solapan entre sí por cambios posteriores del programa, sin quitarlas (Clarifications P1).
+- **FR-010**: Una reserva MUST garantizar la plaza en la puerta solo hasta 10 minutos después del inicio de la sesión; después deja de contar como plaza reservada para el control de acceso (spec-006 FR-009), pero la sesión MUST permanecer en la agenda (Clarifications P2).
 
 ### Key Entities
 
@@ -91,6 +98,6 @@ El asistente ve su agenda ordenada por día y hora y puede quitar sesiones que t
 
 ## Assumptions
 
-- Reservar en la agenda equivale a reservar plaza (A6).
+- Reservar en la agenda equivale a reservar plaza (A6), hasta 10 minutos después del inicio (Clarifications P2). Esto concreta A6, que no fija la duración de la reserva; se anotará en 000-core al revisar el plan.
 - No existe lista de espera para sesiones completas (no la pide la narrativa).
 - El personal de acreditación no exige que la sesión esté en la agenda para entrar (ver spec-006).

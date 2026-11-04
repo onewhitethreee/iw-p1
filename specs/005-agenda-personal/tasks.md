@@ -80,3 +80,9 @@ Tras T002:  T003 (anadir.test) ∥ T006 (quitar.test)
 ## Phase 6: Convergence
 
 - [ ] T011 Al integrar en `main` (después de spec-004), añadir en `apps/web/src/app/area-personal/page.tsx` un enlace «Mi agenda» a `/area-personal/agenda/{slug}` en cada inscripción confirmada per plan: Structure Decision (partial)
+
+## Clarify sobre la versión funcional (2026-11-04) · pendiente de plan y analyze
+
+Tareas que salen de `informes/clarify-2.md`. Se implementan después de revisar `plan.md` y de `/speckit-analyze`.
+
+- [ ] T012 Regla de vigencia de la reserva (FR-010, Clarifications P2): función pura `reservaVigente(inicio, ahora)` (`ahora < inicio + 10 min`) en `packages/domain/src/`, con pruebas unitarias en el límite (9:59 y 10:00 después del inicio). La usa spec-006 T011 (issue #7)
