@@ -446,12 +446,19 @@ Con todo integrado en `main` se ejecutan **42 pruebas unitarias, 163 de integrac
 
 Cada spec tiene un `quickstart.md` con los escenarios que se pueden comprobar en la aplicación usando los datos de ejemplo. El resultado de cada uno se registra en `informes/verificacion.md`, con las columnas *esperado / observado / resultado*. Hay 4 criterios que solo puede medir una persona y siguen **pendientes**, anotados como tareas de convergencia:
 
-| Tarea | Criterio |
-|-------|----------|
-| spec-001 T015 | Enviar una propuesta en menos de 3 min |
-| spec-002 T020 | Evaluar en menos de 2 min |
-| spec-003 T022 | Programar una ponencia en menos de 1 min |
-| spec-004 T013 | Inscribirse y pagar en menos de 3 min |
+| Tarea | Criterio | Estimación KLM, perfil medio / lento (no es una medición) |
+|-------|----------|-------------------------------------------------------------|
+| spec-001 T015 | Enviar una propuesta en menos de 3 min | Resumen pegado: 28 s / 55 s ✔ · Resumen tecleado: 70 s ✔ / **235 s ✘** |
+| spec-002 T020 | Evaluar en menos de 2 min | 59 s / 111 s ✔ (30 s son de lectura) |
+| spec-003 T022 | Programar una ponencia en menos de 1 min | 16 s / 23 s ✔ |
+| spec-004 T013 | Inscribirse y pagar en menos de 3 min | 20 s / 35 s ✔ |
+
+Mientras no se hagan esas mediciones, se ha **estimado** el tiempo con el *Keystroke-Level Model* (Card, Moran y Newell, 1983) ([informe](../specs/000-core/informes/estimacion-klm.md)). Playwright ejecuta cada flujo en la interfaz real y cuenta las teclas, los clics, los cambios entre ratón y teclado y los pasos mentales; la espera del sistema se mide. El tiempo de la persona se calcula con los valores publicados del modelo, para un mecanógrafo medio (0,28 s/tecla) y para el más lento de la tabla original (1,2 s/tecla). El script es [`apps/web/tests/klm/estimar-klm.ts`](../apps/web/tests/klm/estimar-klm.ts).
+
+Conclusiones:
+- La interfaz no es el cuello de botella en ningún flujo: la espera del sistema es < 0,5 s.
+- El único riesgo es **HU-01 con el resumen tecleado por alguien lento**. SC-001 no dice si el resumen se trae preparado, así que no se rebaja el criterio: se deja anotado para la medición real y, si falla, para un nuevo `clarify`.
+- Las 4 tareas siguen **abiertas**, porque una estimación no sustituye a la medición con personas.
 
 Tras integrar las ramas se comprobó, sobre la aplicación completa, lo que dependía de varias historias: el programa público (spec-003) muestra la sala nueva de una sesión cambiada desde el panel (spec-008), y el área personal enlaza a la agenda (spec-005) y al certificado (spec-007) desde las inscripciones confirmadas (spec-004).
 
@@ -549,7 +556,7 @@ Compara la versión inicial de cada spec (antes del primer `clarify`) con la fin
 |-----------|---------|-------|-----------|
 | Ambigüedades (preguntas de `/speckit-clarify`) | 24 abiertas en 11 sesiones (9 specs + 2.ª sesión en 003 y 006) | **24/24 resueltas** y llevadas a la spec como criterios *Dado… Cuando… Entonces…*. De ellas, 2/24 con respuesta explícita del responsable y 22/24 aceptando la opción recomendada por delegación, cada una con su justificación en la narrativa o la constitución | `informes/clarify-*.md` y `.diff` |
 | Incidencias documentales (`/speckit-analyze`) | 42 detectadas: 4 CRITICAL, 4 HIGH, 11 MEDIUM y 23 LOW | **40/42 cerradas** con corrección, 1/42 aceptada con justificación (000-core U1) y 1/42 descartada como falso positivo (000-core K1). Segunda pasada: **0 CRITICAL y 0 HIGH** en 9/9 specs | `informes/analyze-1.md`, `analyze-2.md`, `analyze-registro.md` |
-| Brechas de implementación (`/speckit-converge`) | 12 tareas añadidas | **8/12 cerradas** con prueba primero. Quedan **4/12 abiertas**, todas de medición humana (T015, T020, T022, T013) | `informes/converge-*.md` |
+| Brechas de implementación (`/speckit-converge`) | 12 tareas añadidas | **8/12 cerradas** con prueba primero. Quedan **4/12 abiertas**, todas de medición humana (T015, T020, T022, T013), con una estimación KLM registrada que anticipa que se cumplen 4/4 con un mecanógrafo medio y 3/4 con el perfil lento | `informes/converge-*.md`, [estimacion-klm.md](../specs/000-core/informes/estimacion-klm.md) |
 | Criterios de aceptación de las 8 historias | 105 (79 FR + 26 SC) | **101/105 verificados**: 79/79 FR y 22/26 SC. Los 4 SC restantes son las mediciones humanas | `informes/verificacion.md`, §5.2 |
 | Recorridos entre historias | 0 | **3/3** en verde, que cubren **8/8 historias** | §5.4.1 |
 
@@ -582,7 +589,8 @@ Recoge las decisiones y hallazgos con efecto en la funcionalidad, al menos uno p
 | HU-08 · US3 | I1 HIGH: la prueba independiente era incompatible con el seed | analyze | spec, quickstart | T009b · `86cd97d` | `008/cambiar-sala.test.ts` ✔ | Cerrado |
 | HU-08 · Edge «conexión falla» | F1 MEDIUM: el panel mostraba «Failed to fetch» | converge | `panel.tsx` | T014 · `c8cb253`, `450a2b7` | e2e `008-panel` con red cortada ✔ | Cerrado |
 | HU-01…HU-08 · §5.4 | Faltaba una verificación que encadenara historias | verificación integrada | `tests/integration/integrado/recorridos.test.ts` | RC-1, RC-2, RC-3 · `98db582` | 3/3 ✔ | Cerrado |
-| HU-05 · US1-6 ↔ HU-08 · US1-1 | La regresión e2e falla de forma intermitente: la prueba del panel confirmaba en la BD «la primera inscripción pendiente» (`findFirst` sin orden), que podía ser la de asistente4, la que US1-6 de spec-005 necesita pendiente. Los ficheros e2e se ejecutan en paralelo y en orden no determinista; el 46/46 de la integración fue fortuito | verificación integrada (regresión) | `tests/e2e/008-panel.spec.ts` | Corrección local, pendiente de commit | Antes: 44 ✔, 1 ✘ (`005-agenda.spec.ts:40`), 1 sin ejecutar. Después: **46/46** en dos ejecuciones seguidas ✔ | Cerrado |
+| HU-01 SC-001 · HU-02 SC-003 · HU-03 SC-004 · HU-04 SC-001 | Las 4 tareas de medición humana no tenían ningún dato. Se estiman con KLM sobre la interfaz real; HU-01 con el resumen tecleado y el perfil lento no cumple (235 s > 180 s) | verificación integrada (estimación KLM) | `tests/klm/estimar-klm.ts`, [estimacion-klm.md](../specs/000-core/informes/estimacion-klm.md), `verificacion.md` y `tasks.md` de 001–004 | T015, T020, T022, T013 · pendiente de commit | Medio 4/4 ✔ · lento 3/4 | **Abierto** (falta la medición real) |
+| HU-05 · US1-6 ↔ HU-08 · US1-1 | La regresión e2e falla de forma intermitente: la prueba del panel confirmaba en la BD «la primera inscripción pendiente» (`findFirst` sin orden), que podía ser la de asistente4, la que US1-6 de spec-005 necesita pendiente. Los ficheros e2e se ejecutan en paralelo y en orden no determinista; el 46/46 de la integración fue fortuito | verificación integrada (regresión) | `tests/e2e/008-panel.spec.ts` | `68433b3` | Antes: 44 ✔, 1 ✘ (`005-agenda.spec.ts:40`), 1 sin ejecutar. Después: **46/46** en dos ejecuciones seguidas ✔ | Cerrado |
 
 #### 5.4.5 Matriz de trazabilidad
 
@@ -773,7 +781,7 @@ gitGraph
 
 ### 8.3 Trabajo futuro
 
-1. **Hacer las 4 mediciones humanas** (T015, T020, T022, T013) y registrarlas.
+1. **Hacer las 4 mediciones humanas** (T015, T020, T022, T013) y registrarlas junto a su estimación KLM. En HU-01, anotar si el resumen se pegó o se tecleó.
 2. Unificar los bloqueos de `programa` (spec-003) y `panel` (spec-008) cuando ambos escriben en la misma sala, para que un alta de sesión y un cambio de sala simultáneos se serialicen también entre sí.
 3. Fuera del alcance de la versión 1 y solo si entran en una spec:
    - gestión de congresos desde la interfaz;

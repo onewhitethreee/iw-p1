@@ -85,4 +85,4 @@ Tras T003:  T004 (inscribir.test) ∥ T007 (pagar.test)
 
 ## Phase 6: Convergence
 
-- [ ] T013 Medir con una persona real el tiempo desde abrir `/congresos/[slug]/inscripcion` hasta ver el QR en el área personal (objetivo < 3 min) y registrarlo en `specs/004-inscripcion-pago/informes/verificacion.md` per SC-001 (partial)
+- [ ] T013 Medir con una persona real el tiempo desde abrir `/congresos/[slug]/inscripcion` hasta ver el QR en el área personal (objetivo < 3 min) y registrarlo en `specs/004-inscripcion-pago/informes/verificacion.md` per SC-001 (partial) · **2026-11-04**: estimación KLM registrada en `verificacion.md` ([informe](../000-core/informes/estimacion-klm.md)); sigue abierta hasta la medición real

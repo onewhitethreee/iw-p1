@@ -154,4 +154,4 @@ US1 (MVP: el comité ya puede evaluar las asignaciones del seed) → US2 → US3
 
 ## Phase 7: Convergence
 
-- [ ] T020 Medir con una persona real el tiempo desde abrir una asignación pendiente en `/comite` hasta ver «Evaluación guardada» (objetivo < 2 min tras leer el resumen) y registrarlo en `specs/002-evaluar-propuestas/informes/verificacion.md` per SC-003 (partial)
+- [ ] T020 Medir con una persona real el tiempo desde abrir una asignación pendiente en `/comite` hasta ver «Evaluación guardada» (objetivo < 2 min tras leer el resumen) y registrarlo en `specs/002-evaluar-propuestas/informes/verificacion.md` per SC-003 (partial) · **2026-11-04**: estimación KLM registrada en `verificacion.md` ([informe](../000-core/informes/estimacion-klm.md)); sigue abierta hasta la medición real

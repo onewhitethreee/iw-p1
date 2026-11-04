@@ -25,3 +25,7 @@ El formulario por ponencia tiene 4 controles (sala, día, inicio, fin) y el e2e 
 ## Regresión
 
 dominio 38/38 · integración 44/44 (000-core 22 + spec-003 22) · e2e 12/12 (000-core 7 + spec-003 5) · lint y typecheck sin errores.
+
+## Estimación KLM (SC-004 < 1 min) · 2026-11-04
+
+Medición con persona real **todavía pendiente**. Mientras tanto, estimación con el *Keystroke-Level Model* sobre la interfaz real ([informe](../../000-core/informes/estimacion-klm.md), script `apps/web/tests/klm/estimar-klm.ts`): 15,9 s (medio) / 23,2 s (lento) ✔.

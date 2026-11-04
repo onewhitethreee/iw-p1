@@ -26,3 +26,7 @@ La medición con una persona real queda **pendiente de realizar por el responsab
 ## Regresión
 
 dominio 34/34 · integración 50/50 (000-core 22 + spec-002 28) · e2e 14/14 (000-core 7 + spec-002 7) · lint y typecheck sin errores.
+
+## Estimación KLM (SC-003 < 2 min) · 2026-11-04
+
+Medición con persona real **todavía pendiente**. Mientras tanto, estimación con el *Keystroke-Level Model* sobre la interfaz real ([informe](../../000-core/informes/estimacion-klm.md), script `apps/web/tests/klm/estimar-klm.ts`): 58,7 s (medio) / 111,1 s (lento) ✔, de los que 29,7 s son leer la propuesta (99 palabras a 200 ppm). Con el perfil lento queda poco margen: el tiempo depende de leer y escribir, no de la interfaz.

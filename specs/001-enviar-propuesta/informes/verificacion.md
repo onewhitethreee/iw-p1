@@ -28,3 +28,7 @@ el diseño (selectores con valores del congreso, contador de caracteres, errores
 ## Regresión
 
 dominio 34/34 · integración 36/36 (000-core 22 + spec-001 14) · e2e 12/12 (000-core 7 + spec-001 5) · lint y typecheck sin errores.
+
+## Estimación KLM (SC-001 < 3 min) · 2026-11-04
+
+Medición con persona real **todavía pendiente**. Mientras tanto, estimación con el *Keystroke-Level Model* sobre la interfaz real ([informe](../../000-core/informes/estimacion-klm.md), script `apps/web/tests/klm/estimar-klm.ts`): resumen **pegado** 28,4 s (medio) / 55,1 s (lento) ✔; resumen **tecleado** 70,4 s (medio) ✔ / **235,1 s (lento) ✘**. El riesgo está en mecanografiar el resumen, no en la interfaz (~25 s). La medición real debe anotar si el resumen se pegó o se tecleó.

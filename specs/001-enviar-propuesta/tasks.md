@@ -143,4 +143,4 @@ Tras T003:  T004 (enviar.test.ts)  ∥  T009 (mias.test.ts)
 
 ## Phase 6: Convergence
 
-- [ ] T015 Medir con una persona real (el responsable u otra) el tiempo desde abrir `/ponente/enviar` hasta ver «Propuesta enviada» con una propuesta válida y registrar el resultado (objetivo < 3 min) en `specs/001-enviar-propuesta/informes/verificacion.md` per SC-001 (partial)
+- [ ] T015 Medir con una persona real (el responsable u otra) el tiempo desde abrir `/ponente/enviar` hasta ver «Propuesta enviada» con una propuesta válida y registrar el resultado (objetivo < 3 min) en `specs/001-enviar-propuesta/informes/verificacion.md` per SC-001 (partial) · **2026-11-04**: estimación KLM registrada en `verificacion.md` ([informe](../000-core/informes/estimacion-klm.md)); sigue abierta hasta la medición real

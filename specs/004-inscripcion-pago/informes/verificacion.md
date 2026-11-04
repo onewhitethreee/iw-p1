@@ -18,3 +18,7 @@
 **SC-001 (< 3 min)**: el recorrido e2e completo tarda ~4 s; medición con una persona **pendiente del responsable**.
 
 **Regresión**: dominio 34/34 · integración 38/38 (000-core 22 + spec-004 16) · e2e 11/11 (000-core 7 + spec-004 4) · lint y typecheck sin errores.
+
+## Estimación KLM (SC-001 < 3 min) · 2026-11-04
+
+Medición con persona real **todavía pendiente**. Mientras tanto, estimación con el *Keystroke-Level Model* sobre la interfaz real ([informe](../../000-core/informes/estimacion-klm.md), script `apps/web/tests/klm/estimar-klm.ts`): 20,2 s (medio) / 34,9 s (lento) ✔, empezando un clic antes (ficha del congreso).
