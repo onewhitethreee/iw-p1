@@ -102,3 +102,43 @@ describe("propuesta.enviar (spec-001 US1)", () => {
     expect((await db.propuesta.findUniqueOrThrow({ where: { id: r.id } })).autorId).toBe(ponente.id);
   });
 });
+
+describe("propuesta.enviar · títulos repetidos (spec-001 FR-011, clarify-2 P4, T016)", () => {
+  const REPETIDO = { code: "CONFLICT", message: "Ya has enviado una propuesta con este título a este congreso" };
+
+  it("(k) US1-7: el mismo título del mismo autor en el mismo congreso se rechaza y no se guarda", async () => {
+    const c = await congresoConPlazo();
+    const api = await crearCaller((await crearUsuario(["PONENTE"])).id, dentroDelPlazo());
+    await api.propuesta.enviar(datos(c));
+    await expect(api.propuesta.enviar(datos(c))).rejects.toMatchObject(REPETIDO);
+    expect(await db.propuesta.count()).toBe(1);
+  });
+
+  it("(l) se compara sin mayúsculas/minúsculas (también con tildes) ni espacios al principio o al final", async () => {
+    const c = await congresoConPlazo();
+    const api = await crearCaller((await crearUsuario(["PONENTE"])).id, dentroDelPlazo());
+    await api.propuesta.enviar(datos(c)); // «Atención temprana en pediatría»
+    await expect(api.propuesta.enviar({ ...datos(c), titulo: "  ATENCIÓN TEMPRANA EN PEDIATRÍA  " })).rejects.toMatchObject(REPETIDO);
+    expect(await db.propuesta.count()).toBe(1);
+  });
+
+  it("(m) dos envíos simultáneos (doble clic) → se guarda uno y el otro recibe CONFLICT", async () => {
+    const c = await congresoConPlazo();
+    const api = await crearCaller((await crearUsuario(["PONENTE"])).id, dentroDelPlazo());
+    const r = await Promise.allSettled([api.propuesta.enviar(datos(c)), api.propuesta.enviar(datos(c))]);
+    expect(r.filter((x) => x.status === "fulfilled")).toHaveLength(1);
+    expect(r.find((x) => x.status === "rejected")).toMatchObject({ reason: REPETIDO });
+    expect(await db.propuesta.count()).toBe(1);
+  });
+
+  it("(n) el mismo título se acepta en otro congreso o de otro autor", async () => {
+    const c = await congresoConPlazo();
+    const otro = await congresoConPlazo();
+    const api = await crearCaller((await crearUsuario(["PONENTE"])).id, dentroDelPlazo());
+    await api.propuesta.enviar(datos(c));
+    await expect(api.propuesta.enviar(datos(otro))).resolves.toMatchObject({ estado: "ENVIADA" });
+    const otroAutor = await crearCaller((await crearUsuario(["PONENTE"])).id, dentroDelPlazo());
+    await expect(otroAutor.propuesta.enviar(datos(c))).resolves.toMatchObject({ estado: "ENVIADA" });
+    expect(await db.propuesta.count()).toBe(3);
+  });
+});

@@ -5,7 +5,7 @@
 | Entidad | Uso |
 |---------|-----|
 | `Tarifa` | Importes temprano/general por tipo (CHECK: general ≥ temprano ≥ 0) |
-| `Inscripcion` | Única por `(congresoId, usuarioId)`; `tipoAsistente`, `tarifaAplicada` e `importeCent` fijados al crear e **inmutables** (clarify P1); `estado PENDIENTE_PAGO → CONFIRMADA`; `codigoAcreditacion` UUID v4 al confirmar; `confirmadaEn` |
+| `Inscripcion` | Única por `(congresoId, usuarioId)`; `tipoAsistente`, `tarifaAplicada` e `importeCent` fijados al crear e **inmutables mientras no se cancele** (clarify P1, FR-011); `estado PENDIENTE_PAGO → CONFIRMADA`, o `PENDIENTE_PAGO → CANCELADA → PENDIENTE_PAGO` en la misma fila al volver a inscribirse, con tipo, tarifa e importe nuevos (clarify-2 P4, R7); `codigoAcreditacion` UUID v4 al confirmar; `confirmadaEn` |
 | `Pago` | Uno por intento: `importeCent`, `resultado APROBADO/RECHAZADO`, `referencia SIM-xxxxxxxx-NNNN`; como mucho uno `APROBADO` por inscripción |
 
 ## Transiciones

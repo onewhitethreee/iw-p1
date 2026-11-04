@@ -7,11 +7,12 @@ import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "~/components/ui/card";
 import { api } from "~/trpc/server";
+import { CancelarInscripcion } from "./cancelar";
 
 export const metadata: Metadata = { title: "Área personal" };
 export const dynamic = "force-dynamic";
 
-/** spec-004 US2-1/US2-5: mis inscripciones; QR de acreditación solo si está confirmada. */
+/** spec-004 US2-1/US2-5…7: mis inscripciones; QR solo si está confirmada; cancelar las pendientes (clarify-2 P4). */
 export default async function AreaPersonalPage({ searchParams }: { searchParams: Promise<{ pagada?: string }> }) {
   const { pagada } = await searchParams;
   const inscripciones = await (await api()).inscripcion.mias();
@@ -39,7 +40,13 @@ export default async function AreaPersonalPage({ searchParams }: { searchParams:
         {inscripciones.map((i) => (
           <Card key={i.id} data-testid="inscripcion">
             <CardHeader>
-              {i.estado === "CONFIRMADA" ? <Badge variant="success">Confirmada</Badge> : <Badge variant="warning">Pendiente de pago</Badge>}
+              {i.estado === "CONFIRMADA" ? (
+                <Badge variant="success">Confirmada</Badge>
+              ) : i.estado === "CANCELADA" ? (
+                <Badge variant="secondary">Cancelada</Badge>
+              ) : (
+                <Badge variant="warning">Pendiente de pago</Badge>
+              )}
               <CardTitle>{i.congreso.nombre}</CardTitle>
               <CardDescription>
                 {ETIQUETA_TIPO_ASISTENTE[i.tipoAsistente]} · tarifa {i.tarifaAplicada === "TEMPRANA" ? "temprana" : "general"} · {euros(i.importeCent)} · inscrita el{" "}
@@ -61,10 +68,17 @@ export default async function AreaPersonalPage({ searchParams }: { searchParams:
                   <p className="text-xs text-muted-foreground">Muestra este QR en la entrada de cada sala.</p>
                   <code className="text-[10px] text-muted-foreground">{i.codigo}</code>
                 </div>
-              ) : (
-                <Button asChild className="w-fit">
-                  <Link href={`/area-personal/pago/${i.id}`}>Pagar {euros(i.importeCent)}</Link>
+              ) : i.estado === "CANCELADA" ? (
+                <Button asChild variant="outline" className="w-fit">
+                  <Link href={`/congresos/${i.congreso.slug}/inscripcion`}>Inscribirme de nuevo</Link>
                 </Button>
+              ) : (
+                <>
+                  <Button asChild className="w-fit">
+                    <Link href={`/area-personal/pago/${i.id}`}>Pagar {euros(i.importeCent)}</Link>
+                  </Button>
+                  <CancelarInscripcion inscripcionId={i.id} />
+                </>
               )}
             </CardContent>
           </Card>

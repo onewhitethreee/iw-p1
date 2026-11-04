@@ -68,8 +68,8 @@ describe("inscripcion.crear / presupuesto (spec-004 US1)", () => {
     ]);
   });
 
-  it("(h) FR-011 / clarify P1: no existen operaciones para cambiar ni cancelar", () => {
+  it("(h) FR-011 / clarify P1: no existe operación para cambiar el tipo; sí `cancelar` (clarify-2 P4, FR-014)", () => {
     const procs = Object.keys(appRouter._def.procedures).filter((k) => k.startsWith("inscripcion."));
-    expect(procs.sort()).toEqual(["inscripcion.crear", "inscripcion.mias", "inscripcion.pagar", "inscripcion.presupuesto"]);
+    expect(procs.sort()).toEqual(["inscripcion.cancelar", "inscripcion.crear", "inscripcion.mias", "inscripcion.pagar", "inscripcion.presupuesto"]);
   });
 });

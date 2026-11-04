@@ -22,3 +22,26 @@
 ## Estimación KLM (SC-001 < 3 min) · 2026-11-04
 
 Medición con persona real **todavía pendiente**. Mientras tanto, estimación con el *Keystroke-Level Model* sobre la interfaz real ([informe](../../000-core/informes/estimacion-klm.md), script `apps/web/tests/klm/estimar-klm.ts`): 20,2 s (medio) / 34,9 s (lento) ✔, empezando un clic antes (ficha del congreso).
+
+## Iteración tras clarify-2 (T014–T015, FR-014) · 2026-11-05
+
+Rama `spec-004-clarify-2`. Las pruebas se escribieron **antes** del cambio (`tests/integration/004/cancelar.test.ts` y la actualización de `inscribir.test.ts` (h)) y se ejecutaron sobre el código anterior.
+
+| # | Escenario | Entrada | Esperado | Observado **antes** | Observado **después** | Resultado |
+|---|-----------|---------|----------|---------------------|-----------------------|-----------|
+| 10 | US2-6 / (a) cancelar | pendiente de estudiante con un pago rechazado → `cancelar` | `CANCELADA`; el pago rechazado se conserva | ✘ no existe `cancelar` | Igual que lo esperado | ✔ |
+| 11 | US2-6 / (b) volver a inscribirse | tras cancelar, `crear` como profesional a las 23:59 del día límite | Misma inscripción, `PENDIENTE_PAGO`, profesional, 250,00 € temprana; 1 fila; 1 pago anterior | ✘ «Ya tienes una inscripción…» (la fila bloqueaba) | Igual que lo esperado | ✔ |
+| 12 | (h) precio al volver | cancelar y `crear` a las 00:00 del día siguiente al límite | Estudiante 120,00 € general | ✘ | Igual que lo esperado | ✔ |
+| 13 | US2-7 / (c) confirmada | `cancelar` una pagada | `CONFLICT` «Una inscripción pagada no se puede cancelar»; sigue confirmada | ✘ | Igual que lo esperado | ✔ |
+| 14 | US2-7 / (d) ajena o inexistente | `cancelar` con otro usuario | `FORBIDDEN` «No puedes cancelar una inscripción de otra persona» | ✘ | Igual que lo esperado | ✔ |
+| 15 | (e) ya cancelada | segundo `cancelar` | `CONFLICT` «Esta inscripción ya está cancelada» | ✘ | Igual que lo esperado | ✔ |
+| 16 | (f) pagar cancelada | `pagar` tras `cancelar` | `CONFLICT` «Esta inscripción está cancelada»; sin pago | ✘ | Igual que lo esperado | ✔ |
+| 17 | (g) cancelar ∥ pagar ×5 | ambas a la vez | `CONFIRMADA` + 1 aprobado, o `CANCELADA` + 0; nunca mixto | ✔ *(sin `cancelar`, solo podía ganar el pago: pasaba sin probar nada)* | ✔ con las dos operaciones reales | ✔ |
+| 18 | US2-6 interfaz (T015) | usuario nuevo: inscribirse estudiante → «Cancelar inscripción» → «Sí, cancelar» → «Inscribirme de nuevo» profesional | Aviso del precio, «Cancelada» sin «Pagar», después «Pendiente de pago» profesional, 1 tarjeta | — (prueba nueva) | Igual que lo esperado | ✔ |
+
+Comando del «antes»: `pnpm exec vitest run tests/integration/004` → **8 failed | 16 passed**. Después: **24/24**.
+
+**Regresión** (enunciado §5.4; cambia un enum compartido de 000-core): dominio 42/42 · integración **178/178** (170 + 8) · e2e **48/48** (47 + 1, `E2E_PORT=3300`) · lint y typecheck sin errores · `next build` correcto. Agenda, acreditación, certificado y panel siguen en verde sin cambios. `prisma migrate diff` (BD → `schema.prisma`) da una migración vacía.
+
+*Nota de entorno*: `prisma generate` no pudo sustituir `query_engine-windows.dll.node` porque lo tenían abierto dos `next start` antiguos (puertos 3100 y 3200). El cliente TypeScript sí se regeneró (incluye `CANCELADA`) y el binario del motor no depende del esquema. Conviene repetir `pnpm exec prisma generate` cuando esos procesos estén cerrados.
+

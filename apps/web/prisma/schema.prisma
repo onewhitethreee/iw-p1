@@ -39,6 +39,7 @@ enum TarifaAplicada {
 enum EstadoInscripcion {
   PENDIENTE_PAGO
   CONFIRMADA
+  CANCELADA // spec-004 clarify-2 P4 (FR-014)
 }
 
 enum ResultadoPago {

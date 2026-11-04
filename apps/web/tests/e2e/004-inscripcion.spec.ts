@@ -49,6 +49,39 @@ test.describe.serial("spec-004 · inscripción y pago (HU-04)", () => {
     await expect(page.getByRole("button", { name: "Inscribirme" })).toHaveCount(0);
   });
 
+  test("US2-6 (clarify-2 P4, T015): cancelar una pendiente y volver a inscribirse con otro tipo", async ({ page }) => {
+    await page.context().clearCookies();
+    await page.goto("/registro");
+    await page.getByLabel("Nombre y apellidos").fill("Cancela E2E");
+    await page.getByLabel("Correo electrónico").fill(`cancela-${Date.now()}@test.es`);
+    await page.getByLabel("Contraseña").fill("secreta123");
+    await page.getByLabel("Me registro como").selectOption("ASISTENTE");
+    await page.getByRole("button", { name: "Crear cuenta" }).click();
+    await expect(page.getByTestId("usuario-actual")).toContainText("Cancela E2E");
+
+    await page.goto(INSC);
+    await page.getByLabel("Tipo de asistente").selectOption("ESTUDIANTE");
+    await page.getByRole("button", { name: "Inscribirme" }).click();
+    await expect(page).toHaveURL(/\/area-personal\/pago\//);
+
+    await page.goto("/area-personal");
+    const tarjeta = page.getByTestId("inscripcion").filter({ hasText: "Jornadas de Pediatría" });
+    await tarjeta.getByRole("button", { name: "Cancelar inscripción" }).click();
+    await expect(tarjeta).toContainText("Si vuelves a inscribirte, se aplicará el precio vigente ese día.");
+    await tarjeta.getByRole("button", { name: "Sí, cancelar" }).click();
+    await expect(tarjeta).toContainText("Cancelada");
+    await expect(tarjeta.getByRole("link", { name: /^Pagar/ })).toHaveCount(0);
+
+    await tarjeta.getByRole("link", { name: "Inscribirme de nuevo" }).click();
+    await page.getByLabel("Tipo de asistente").selectOption("PROFESIONAL");
+    await page.getByRole("button", { name: "Inscribirme" }).click();
+    await expect(page).toHaveURL(/\/area-personal\/pago\//);
+    await page.goto("/area-personal");
+    await expect(tarjeta).toContainText("Pendiente de pago");
+    await expect(tarjeta).toContainText("Profesional");
+    await expect(page.getByTestId("inscripcion").filter({ hasText: "Jornadas de Pediatría" })).toHaveCount(1);
+  });
+
   test("US1-6: un ponente sin rol de asistente puede añadírselo", async ({ page }) => {
     await entrar(page, "ponente1@congresalia.es");
     await page.goto(INSC);

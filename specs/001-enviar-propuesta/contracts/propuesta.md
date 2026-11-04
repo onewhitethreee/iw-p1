@@ -24,6 +24,7 @@ Concreta las filas `propuesta.*` de [000-core/contracts/trpc-api.md](../../000-c
 | `NOT_FOUND` | congreso inexistente | «Congreso no encontrado» |
 | `CONFLICT` | antes del día de apertura | «El plazo de envío de este congreso se abre el {d de mes de aaaa}» |
 | `CONFLICT` | desde las 00:00 del día siguiente al cierre | «El plazo de envío de propuestas de este congreso está cerrado» |
+| `CONFLICT` | el autor ya tiene en el congreso una propuesta con el mismo título (sin mayúsculas/minúsculas ni espacios extremos; FR-011) | «Ya has enviado una propuesta con este título a este congreso» |
 | `BAD_REQUEST` | área de otro congreso | «El área temática no pertenece a este congreso» |
 | `BAD_REQUEST` | longitudes no válidas | «Hay datos no válidos en el formulario» (+ errores por campo) |
 

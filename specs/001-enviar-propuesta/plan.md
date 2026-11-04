@@ -11,8 +11,8 @@
 El ponente elige un congreso con la llamada abierta, rellena título, resumen y área temática y envía la propuesta;
 después consulta «Mis propuestas» con su estado. Técnicamente: router tRPC `propuesta` (`enviar`, `mias`) que aplica en
 el servidor el plazo de días completos (`plazoEnvio` + FR-005a), la pertenencia del área al congreso y el rol `PONENTE`;
-un esquema zod compartido entre formulario y servidor; y dos pantallas bajo `/ponente`. No se añaden entidades ni
-migraciones: se usan `Propuesta`, `AreaTematica` y `Congreso` de 000-core.
+un esquema zod compartido entre formulario y servidor; y dos pantallas bajo `/ponente`. No se añaden entidades: se usan `Propuesta`, `AreaTematica` y `Congreso` de 000-core. La única migración es el
+índice único que impide los títulos repetidos (decisión 6, clarify-2 P4).
 
 ## Technical Context
 
@@ -20,7 +20,7 @@ migraciones: se usan `Propuesta`, `AreaTematica` y `Congreso` de 000-core.
 
 **Primary Dependencies**: Next.js 15 · tRPC 11 · Prisma 6 · zod · react-hook-form + `@hookform/resolvers` (formulario largo, research R11 de 000-core) · shadcn/ui
 
-**Storage**: PostgreSQL 16, tabla `Propuesta` existente (sin migración nueva)
+**Storage**: PostgreSQL 16, tabla `Propuesta` existente + índice único `(autorId, congresoId, lower(btrim(titulo)))` (migración `propuesta_titulo_unico`, decisión 6)
 
 **Testing**: Vitest (integración del router con `createCaller` e instante simulado `ahora`) · Playwright (recorrido del ponente)
 
@@ -41,10 +41,10 @@ migraciones: se usan `Propuesta`, `AreaTematica` y `Congreso` de 000-core.
 | Principio | Cómo se cumple | Estado |
 |-----------|----------------|--------|
 | I. Simplicidad | Reutiliza `congreso.listar`/`porSlug` para elegir congreso y área; solo 2 procedimientos nuevos | ✅ |
-| II. Cero alcance fantasma | Sin edición, retirada ni límite de propuestas (clarify P1, P2) | ✅ |
+| II. Cero alcance fantasma | Sin edición, retirada ni límite de propuestas (clarify P1, P2); el único rechazo nuevo es el título repetido, decidido en clarify-2 P4 | ✅ |
 | III. Verificable sin leer código | Escenarios Dado/Cuando/Entonces con habitual, error (plazo, datos) y permisos (rol) → [quickstart.md](quickstart.md) | ✅ |
 | IV. Reglas en el servidor | Plazo, área y rol validados en `propuesta.enviar`; pruebas con `createCaller` | ✅ |
-| V. Base común | Sin entidades nuevas; router `propuesta` ya previsto en el contrato de 000-core | ✅ |
+| V. Base común | Sin entidades nuevas; router `propuesta` ya previsto en el contrato de 000-core; el índice único se registra primero en `000-core/data-model.md` | ✅ |
 | VI. Español y euro | Mensajes y fechas en español y en la zona del congreso | ✅ |
 | VII. Datos personales | El autor se toma de la sesión; `mias` solo devuelve campos permitidos (FR-010) | ✅ |
 
@@ -82,9 +82,14 @@ apps/web/src/
     └── enviar/
         ├── page.tsx                 # carga congresos con llamada abierta
         └── formulario.tsx           # react-hook-form + zod (US1)
+apps/web/prisma/migrations/
+└── 20261105100000_propuesta_titulo_unico/  # índice único de títulos repetidos (decisión 6, FR-011)
 apps/web/tests/
-├── integration/001/propuesta.test.ts
-└── e2e/001-enviar-propuesta.spec.ts
+├── integration/001/
+│   ├── enviar.test.ts               # US1, FR-011 (k)–(n)
+│   ├── mias.test.ts                 # US2
+│   └── fixtures.ts
+└── e2e/001-enviar-propuesta.spec.ts # incluye US1-7
 ```
 
 **Structure Decision**: se sigue la estructura de 000-core; el trabajo de la historia queda en `routers/propuesta.ts`,
@@ -97,7 +102,7 @@ apps/web/tests/
 3. **Autor**: siempre `ctx.usuario.id`; la entrada no acepta `autorId` (evita suplantación).
 4. **Respuesta de `mias`**: `select` explícito de los campos de FR-010; nunca `include` de asignaciones o evaluaciones (R3).
 5. **Inmutabilidad (P1)**: el router no expone ninguna mutación de edición o retirada; una prueba lo comprueba.
-6. **Doble clic**: el botón se desactiva mientras la mutación está pendiente; sin regla de unicidad (spec, Edge Cases).
+6. **Títulos repetidos y doble clic** *(revisada el 2026-11-04 tras clarify-2 P4; antes: «sin regla de unicidad»)*: el botón se sigue desactivando mientras la mutación está pendiente, y además la base de datos tiene un índice único sobre `(autorId, congresoId, lower(btrim(titulo)))`. `propuesta.enviar` traduce la violación (`P2002`) a `CONFLICT` «Ya has enviado una propuesta con este título a este congreso», igual que hacen `evaluacion`, `inscripcion` y `programa`. Con el índice, dos envíos simultáneos no pueden colarse entre «comprobar» y «guardar», sin bloqueos en el código (R6). El formulario ya muestra el mensaje del servidor en su alerta, así que la interfaz no cambia.
 
 ## Complexity Tracking
 

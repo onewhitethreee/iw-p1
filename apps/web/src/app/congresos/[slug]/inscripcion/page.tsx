@@ -27,7 +27,7 @@ export default async function InscripcionPage({ params }: { params: Promise<{ sl
   }
   const [precios, usuario] = await Promise.all([trpc.inscripcion.presupuesto({ congresoId: c.id }), getUsuarioActual()]);
   const esAsistente = usuario?.roles.includes("ASISTENTE") ?? false;
-  const yaInscrito = esAsistente ? (await trpc.inscripcion.mias()).find((i) => i.congreso.slug === slug) : undefined;
+  const yaInscrito = esAsistente ? (await trpc.inscripcion.mias()).find((i) => i.congreso.slug === slug && i.estado !== "CANCELADA") : undefined; // una cancelada puede volver a inscribirse (FR-014)
   const desde = encodeURIComponent(`/congresos/${slug}/inscripcion`);
 
   return (
