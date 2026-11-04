@@ -78,4 +78,4 @@ Tareas que salen de `informes/clarify-3.md`. Se implementan después de revisar 
 
 ## Convergencia tras clarify-3 (converge-2, 2026-11-05)
 
-- [ ] T013 Ajustar datos y prueba a FR-011 (converge-2 F1, F2): en `apps/web/prisma/seed.ts`, la asistencia ya registrada en «Aprendizaje basado en proyectos…» pasa de `asistente1` (que está en «Rúbricas…» a la misma hora) a un asistente de relleno confirmado (`demo01`), así que la ocupación del seed no cambia (1/200 y 2/2). En `apps/web/tests/e2e/006-acceso.spec.ts` US1-2 usa a `demo02` (confirmado, sin ninguna asistencia), con lo que sigue probando «Aforo completo». Regresión e2e completa
+- [X] T013 Ajustar datos y prueba a FR-011 (converge-2 F1, F2): en `apps/web/prisma/seed.ts`, la asistencia ya registrada en «Aprendizaje basado en proyectos…» pasa de `asistente1` (que está en «Rúbricas…» a la misma hora) a un asistente de relleno confirmado (`demo01`), así que la ocupación del seed no cambia (1/200 y 2/2). En `apps/web/tests/e2e/006-acceso.spec.ts` US1-2 usa a `demo02` (confirmado, sin ninguna asistencia), con lo que sigue probando «Aforo completo». Regresión e2e completa

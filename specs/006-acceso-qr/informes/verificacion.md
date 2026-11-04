@@ -48,3 +48,12 @@ Comando del «antes»: `pnpm exec vitest run tests/integration/006` → **4 fail
 
 **Regresión**: dominio 43/43 · integración **182/182** · lint, typecheck y `next build` ✔ · e2e **44 passed, 1 failed, 3 sin ejecutar**. El fallo es `006-acceso.spec.ts` US1-2: escanea en «Rúbricas compartidas…» a `asistente3`, que la prueba anterior acaba de admitir en «Aprendizaje basado en proyectos…», a la misma hora. Ahora responde «Ya registrado en … a esta hora», que es lo que pide FR-011. Se trata en converge-2 (F1), junto con el seed (F2).
 
+### Iteración 3 (converge-2 → T013) · 2026-11-05
+
+| # | Escenario | Esperado | Observado antes | Observado después | Resultado |
+|---|-----------|----------|-----------------|-------------------|-----------|
+| 16 | e2e US1-2 «Aforo completo» con `demo02` | «Rechazado · Aforo completo», 2 / 2 | ✘ con `asistente3`: «Ya registrado en … a esta hora» | Igual que lo esperado | ✔ |
+| 17 | Seed sin asistencias solapadas | Auditorio 1/200 (`demo01`), Aula 3 2/2 | ✘ `asistente1` en dos sesiones a la vez | Igual que lo esperado; e2e US1-1 sigue viendo «1 / 200» | ✔ |
+
+**Regresión final**: dominio 43/43 · integración 182/182 · e2e **48/48** · lint y typecheck ✔.
+
