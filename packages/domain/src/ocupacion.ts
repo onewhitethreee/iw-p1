@@ -14,3 +14,9 @@ export function nivelOcupacion(reservas: number, asistencias: number, aforo: num
   const nivel: NivelOcupacion = ocupadas >= aforo ? "COMPLETA" : ocupadas * 100 >= UMBRAL_CASI_COMPLETA * aforo ? "CASI_COMPLETA" : null;
   return { porcentaje, nivel };
 }
+
+/** Minutos después del inicio durante los que una reserva de la agenda garantiza la plaza (spec-005 FR-010, clarify-2 P2). */
+export const MARGEN_RESERVA_MIN = 10;
+
+/** Mientras es vigente, la reserva guarda la plaza en la puerta; después, quien no ha entrado la pierde (spec-006 FR-009). */
+export const reservaVigente = (inicio: Date, ahora: Date) => ahora.getTime() < inicio.getTime() + MARGEN_RESERVA_MIN * 60_000;

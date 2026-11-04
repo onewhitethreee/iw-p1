@@ -117,7 +117,7 @@ Invariantes (A7, intervalo semiabierto):
 - No hay dos sesiones en la misma sala que se solapen.
 - No hay dos sesiones cuyas propuestas tengan el mismo autor y se solapen.
 
-El **aforo de la sesión** es `sala.aforo` (A6). El ponente de la sesión es `propuesta.autor`.
+El **aforo de la sesión** es `sala.aforo` (A6). Una reserva (`EntradaAgenda`) garantiza la plaza en la puerta hasta 10 min después del inicio; después deja de contar para el control de acceso, pero sigue en la agenda (spec-005 clarify-2 P2, `reservaVigente` en `packages/domain`). El ponente de la sesión es `propuesta.autor`.
 
 ### Tarifa
 `id`, `congresoId`, `tipoAsistente`, `importeTempranoCent` (Int ≥ 0), `importeGeneralCent` (Int ≥ importe temprano). Única `(congresoId, tipoAsistente)`.
