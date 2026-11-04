@@ -23,7 +23,7 @@
 
 | # | Pregunta | Respuesta | Justificación | Criterios afectados | Decidido por |
 |---|----------|-----------|---------------|---------------------|--------------|
-| P2 | Si quien reservó no se presenta, ¿hasta cuándo se le guarda la plaza? | Hasta 10 min después del inicio; después queda libre, y la sesión sigue en su agenda | Al encadenar HU-05 con HU-06 se ve que las reservas no presentadas bloquean la puerta hasta el final de la sesión: con una sala medio vacía, se rechaza a gente. La narrativa usa el escaneo para «controlar tanto el aforo como la asistencia real»: el aforo debe reflejar quién está en la sala, no quién pensaba ir. 10 minutos es un margen habitual de cortesía en congresos. Se conserva la sesión en la agenda para no cambiar en silencio el denominador del certificado. | FR-010 (nuevo), US1-8 (nuevo), Edge Cases, Assumptions; **spec-006 FR-009** | Yangfeng Liu (respuesta directa, 2026-11-04) |
+| P2 | Si quien reservó no se presenta, ¿hasta cuándo se le guarda la plaza? | Hasta 10 min después del inicio; después queda libre, y la sesión sigue en su agenda | Liberar a los 10 minutos las plazas de quien no ha escaneado aprovecha al máximo los asientos que de verdad quedan libres y, a la vez, quien llega tarde puede seguir entrando si hay sitio. *(Justificación del responsable.)* | FR-010 (nuevo), US1-8 (nuevo), Edge Cases, Assumptions; **spec-006 FR-009** | Yangfeng Liu (respuesta directa, 2026-11-04) |
 
 ## Criterios en formato Dado… Cuando… Entonces…
 
