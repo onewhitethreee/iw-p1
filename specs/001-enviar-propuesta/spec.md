@@ -80,7 +80,7 @@ El ponente ve la lista de sus propuestas con congreso, título, área, fecha de 
 - **FR-003**: El sistema MUST comprobar que el área temática pertenece al congreso elegido.
 - **FR-004**: El sistema MUST registrar como autor al usuario que envía, la fecha de envío y el estado `ENVIADA`.
 - **FR-005**: El sistema MUST mostrar al ponente solo sus propias propuestas, con su estado actual.
-- **FR-006**: Las reglas FR-001 … FR-004 MUST validarse en el servidor (Constitución IV).
+- **FR-006**: Las reglas FR-001 … FR-004 y FR-011 MUST validarse en el servidor (Constitución IV).
 - **FR-007**: La lista de congresos para enviar MUST mostrar solo los que tienen la llamada abierta e indicar el día de cierre del plazo.
 - **FR-008**: Una propuesta enviada MUST ser inmutable para su autor: no se ofrece ni existe operación para editarla o retirarla (Clarifications P1).
 - **FR-009**: El sistema MUST NOT limitar el número de propuestas de un ponente por congreso (Clarifications P2), salvo los títulos repetidos (FR-011).

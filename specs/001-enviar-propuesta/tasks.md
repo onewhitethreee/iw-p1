@@ -136,6 +136,7 @@ Tras T003:  T004 (enviar.test.ts)  ∥  T009 (mias.test.ts)
 | FR-008 (inmutable, P1) | T004i |
 | FR-009 (sin límite, P2) | T004h |
 | FR-010 (privacidad, P3) | T009c, T010 |
+| FR-011 (título repetido, clarify-2 P4) · US1-7 | T016, T017 |
 | US1-1…6 | T004, T007, T008 |
 | US2-1…5 | T009, T011, T012 (US2-4 = T004i, US2-5 = T011/T012) |
 | SC-001 | T014 (manual) |
@@ -149,4 +150,5 @@ Tras T003:  T004 (enviar.test.ts)  ∥  T009 (mias.test.ts)
 
 Tareas que salen de `informes/clarify-2.md`. Se implementan después de revisar `plan.md` y de `/speckit-analyze`.
 
-- [ ] T016 Rechazar propuestas duplicadas (FR-011, Clarifications P4): en `apps/web/src/server/api/routers/propuesta.ts` comprobar dentro de la transacción (con bloqueo, para envíos simultáneos) que el autor no tiene en ese congreso otra propuesta con el mismo título normalizado → `CONFLICT` con el mensaje de FR-011. Prueba primero en `apps/web/tests/integration/001/enviar.test.ts`: duplicado rechazado, mayúsculas/espacios, dos envíos con `Promise.all` → 1 guardada, mismo título en otro congreso aceptado (issue #5)
+- [ ] T016 Rechazar propuestas con título repetido (FR-011, Clarifications P4; plan decisión 6, R6; reescrita por analyze-3 A1). **Prueba primero** en `apps/web/tests/integration/001/enviar.test.ts`: (k) mismo autor, congreso y título → `CONFLICT` «Ya has enviado una propuesta con este título a este congreso» y sigue habiendo una; (l) « título a » frente a «Título A» → rechazo; (m) dos envíos simultáneos con `Promise.all` → 1 guardada y 1 `CONFLICT`; (n) el mismo título en otro congreso, o de otro autor, se acepta. Comprobar que (k)–(m) fallan. Después: migración SQL `propuesta_titulo_unico` con `CREATE UNIQUE INDEX … ("autorId", "congresoId", lower(btrim("titulo")))` y, en `apps/web/src/server/api/routers/propuesta.ts`, `P2002` → `conflicto(…)` (issue #5)
+- [ ] T017 [US1-7] e2e en `apps/web/tests/e2e/001-enviar-propuesta.spec.ts`: tras US1-1, volver a enviar el mismo título en minúsculas → alerta «Ya has enviado una propuesta con este título a este congreso» y sigue en `/ponente/enviar` (analyze-3 A4, quickstart #9)
