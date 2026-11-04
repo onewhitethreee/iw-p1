@@ -117,13 +117,13 @@ describe("acreditacion.escanear (US1)", () => {
     expect((await api.acreditacion.escanear({ sesionId: s.doble.id, codigo: a.codigo })).resultado).toBe("ADMITIDO");
   });
 
-  it("(h2) clarify P3: las plazas reservadas quedan para quien reservó", async () => {
+  it("(h2) clarify P3: las plazas reservadas quedan para quien reservó (antes de inicio + 10 min, spec-005 P2)", async () => {
     const { c, s, puerta } = await escenario();
     const conReserva = await asistente(c.id);
     await reservar(conReserva.ins.id, s.doble.id);
     const sinReserva1 = await asistente(c.id);
     const sinReserva2 = await asistente(c.id);
-    const api = await puertaCaller(puerta.id);
+    const api = await puertaCaller(puerta.id, min(5)); // analyze-3 A1: AHORA (+10 min) ya es el límite
     expect((await api.acreditacion.escanear({ sesionId: s.doble.id, codigo: sinReserva1.codigo })).resultado).toBe("ADMITIDO");
     expect(await api.acreditacion.escanear({ sesionId: s.doble.id, codigo: sinReserva2.codigo })).toMatchObject({
       resultado: "RECHAZADO",
@@ -169,6 +169,74 @@ describe("acreditacion.escanear (US1)", () => {
     const a = await asistente(c.id);
     const api = await puertaCaller(puerta.id);
     await expect(api.acreditacion.escanear({ sesionId: "no-existe", codigo: a.codigo })).rejects.toMatchObject({ code: "NOT_FOUND" });
+  });
+});
+
+describe("escanear tras clarify-3 / spec-005 P2 (T011, T012)", () => {
+  it("(k) FR-009 matizada: desde inicio + 10 min las reservas no presentadas dejan de guardar la plaza", async () => {
+    const { c, s, puerta } = await escenario();
+    const [r1, r2, sin] = [await asistente(c.id), await asistente(c.id), await asistente(c.id)];
+    await reservar(r1.ins.id, s.doble.id);
+    await reservar(r2.ins.id, s.doble.id); // aforo 2, 2 reservas, nadie ha entrado
+    const a = (m: number) => puertaCaller(puerta.id, min(m));
+    expect(await (await a(9)).acreditacion.escanear({ sesionId: s.doble.id, codigo: sin.codigo })).toMatchObject({
+      resultado: "RECHAZADO",
+      motivo: "No quedan plazas sin reservar",
+    });
+    expect((await (await a(10)).acreditacion.escanear({ sesionId: s.doble.id, codigo: sin.codigo })).resultado).toBe("ADMITIDO");
+    expect((await (await a(11)).acreditacion.escanear({ sesionId: s.doble.id, codigo: r1.codigo })).resultado).toBe("ADMITIDO");
+    expect(await (await a(12)).acreditacion.escanear({ sesionId: s.doble.id, codigo: r2.codigo })).toMatchObject({
+      resultado: "RECHAZADO",
+      motivo: "Aforo completo",
+    });
+    expect(await db.entradaAgenda.count({ where: { sesionId: s.doble.id } })).toBe(2); // las reservas siguen en la agenda
+  });
+
+  it("(l) US1-8 / FR-011: no entra en una sesión solapada con otra en la que ya está; sí en una contigua", async () => {
+    const { c, s, puerta } = await escenario();
+    const a = await asistente(c.id);
+    const api = await puertaCaller(puerta.id);
+    expect((await api.acreditacion.escanear({ sesionId: s.grande.id, codigo: a.codigo })).resultado).toBe("ADMITIDO");
+    expect(await api.acreditacion.escanear({ sesionId: s.pequena.id, codigo: a.codigo })).toMatchObject({
+      resultado: "RECHAZADO",
+      motivo: "Ya registrado en «En sala grande» a esta hora",
+      ocupacion: { asistencias: 0, aforo: 1 },
+    });
+    const autor = await crearUsuario(["PONENTE"]);
+    const p = await db.propuesta.create({
+      data: { congresoId: c.id, areaId: c.areas[0]!.id, autorId: autor.id, titulo: "Contigua", resumen: "r".repeat(120), estado: "ACEPTADA" },
+    });
+    const contigua = await db.sesion.create({
+      data: { congresoId: c.id, propuestaId: p.id, salaId: c.salas.find((x) => x.nombre === "Doble")!.id, inicio: min(60), fin: min(120) },
+    });
+    const luego = await puertaCaller(puerta.id, min(55));
+    expect((await luego.acreditacion.escanear({ sesionId: contigua.id, codigo: a.codigo })).resultado).toBe("ADMITIDO");
+  });
+
+  it("(m) FR-011 concurrente: el mismo código a la vez en dos sesiones solapadas → una sola asistencia", async () => {
+    for (let k = 0; k < 5; k++) {
+      const { c, s, puerta } = await escenario();
+      const otraPuerta = await crearUsuario(["ACREDITACION"]);
+      const a = await asistente(c.id);
+      const rs = await Promise.all([
+        (await puertaCaller(puerta.id)).acreditacion.escanear({ sesionId: s.grande.id, codigo: a.codigo }),
+        (await puertaCaller(otraPuerta.id)).acreditacion.escanear({ sesionId: s.doble.id, codigo: a.codigo }),
+      ]);
+      expect(rs.map((r) => r.resultado).sort()).toEqual(["ADMITIDO", "RECHAZADO"]);
+      expect(await db.asistencia.count({ where: { inscripcionId: a.ins.id } })).toBe(1);
+    }
+  });
+
+  it("(n) analyze-3 A3: agenda.anadir ∥ escanear de la misma persona y sesión no se interbloquean", async () => {
+    for (let k = 0; k < 5; k++) {
+      const { c, s, puerta } = await escenario();
+      const a = await asistente(c.id);
+      const r = await Promise.allSettled([
+        (await crearCaller(a.u.id, min(-20))).agenda.anadir({ sesionId: s.grande.id }),
+        (await puertaCaller(puerta.id, min(-20))).acreditacion.escanear({ sesionId: s.grande.id, codigo: a.codigo }),
+      ]);
+      expect(r.map((x) => x.status)).toEqual(["fulfilled", "fulfilled"]);
+    }
   });
 });
 
