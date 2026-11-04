@@ -84,6 +84,8 @@ Fase calculada (no se guarda): `LLAMADA_ABIERTA` si `envioAbre ≤ ahora < envio
 | enviadaEn | DateTime | momento del envío (servidor) |
 | decididaEn | DateTime? | momento de aceptar o rechazar |
 
+Índice único `(autorId, congresoId, lower(btrim(titulo)))`: un autor no repite título dentro de un congreso (spec-001 clarify-2 P4, FR-011; migración SQL `propuesta_titulo_unico`).
+
 Transiciones (A1):
 
 ```text

@@ -39,6 +39,26 @@ test.describe("spec-001 · enviar propuesta (HU-01)", () => {
     await expect(fila).toContainText("Enviada");
   });
 
+  test("US1-7 (clarify-2 P4, T017): el mismo título repetido en minúsculas se rechaza y no se guarda", async ({ page }) => {
+    const titulo = `Lactancia materna en prematuros ${Date.now()}`;
+    await entrar(page, "ponente1@congresalia.es");
+    const enviar = async (t: string) => {
+      await page.goto("/ponente/enviar");
+      await elegir(page, "Congreso", "Jornadas de Pediatría 2027");
+      await elegir(page, "Área temática", "Neonatología");
+      await page.getByLabel("Título").fill(t);
+      await page.getByLabel("Resumen").fill(RESUMEN);
+      await page.getByRole("button", { name: "Enviar propuesta" }).click();
+    };
+    await enviar(titulo);
+    await expect(page).toHaveURL(/\/ponente\?enviada=1$/);
+    await enviar(`  ${titulo.toLowerCase()} `);
+    await expect(page.getByRole("alert").filter({ hasText: "Ya has enviado una propuesta con este título a este congreso" })).toBeVisible();
+    await expect(page).toHaveURL(/\/ponente\/enviar$/);
+    await page.goto("/ponente");
+    await expect(page.getByTestId("fila-propuesta").filter({ hasText: titulo })).toHaveCount(1);
+  });
+
   test("US1-4: un resumen demasiado corto muestra el error del campo y no se envía", async ({ page }) => {
     await entrar(page, "ponente2@congresalia.es");
     await page.goto("/ponente/enviar");
