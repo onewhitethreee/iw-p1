@@ -32,3 +32,20 @@ dominio 34/34 · integración 36/36 (000-core 22 + spec-001 14) · e2e 12/12 (00
 ## Estimación KLM (SC-001 < 3 min) · 2026-11-04
 
 Medición con persona real **todavía pendiente**. Mientras tanto, estimación con el *Keystroke-Level Model* sobre la interfaz real ([informe](../../000-core/informes/estimacion-klm.md), script `apps/web/tests/klm/estimar-klm.ts`): resumen **pegado** 28,4 s (medio) / 55,1 s (lento) ✔; resumen **tecleado** 70,4 s (medio) ✔ / **235,1 s (lento) ✘**. El riesgo está en mecanografiar el resumen, no en la interfaz (~25 s). La medición real debe anotar si el resumen se pegó o se tecleó.
+
+## Iteración tras clarify-2 (T016–T017, FR-011) · 2026-11-05
+
+Rama `spec-001-clarify-2`. Las pruebas se escribieron **antes** del cambio y se ejecutaron sobre el código anterior.
+
+| # | Escenario | Entrada | Esperado | Observado **antes** (sin índice) | Observado **después** | Resultado |
+|---|-----------|---------|----------|----------------------------------|-----------------------|-----------|
+| 9 | US1-7 / (k) mismo título | 2 × «Atención temprana en pediatría», mismo autor y congreso | 2.º → `CONFLICT` «Ya has enviado una propuesta con este título a este congreso»; 1 guardada | ✘ se aceptaban las dos (2 guardadas) | Igual que lo esperado | ✔ |
+| 10 | (l) mayúsculas, tildes y espacios | «  ATENCIÓN TEMPRANA EN PEDIATRÍA  » tras la anterior | Rechazo; 1 guardada | ✘ aceptada | Igual que lo esperado | ✔ |
+| 11 | (m) doble clic simultáneo | 2 envíos con `Promise.all` | 1 aceptado y 1 `CONFLICT`; 1 guardada | ✘ 2 aceptados | Igual que lo esperado | ✔ |
+| 12 | (n) otro congreso / otro autor | mismo título | Se aceptan (3 guardadas) | ✔ (ya funcionaba; prueba de no regresión) | ✔ | ✔ |
+| 13 | US1-7 interfaz (T017) | `ponente1`: título T y luego «  t  » en minúsculas | Alerta con el mensaje, sigue en `/ponente/enviar`, una sola fila | — (prueba nueva) | Igual que lo esperado | ✔ |
+
+Comando del «antes»: `pnpm exec vitest run tests/integration/001/enviar.test.ts` → **3 failed | 11 passed** ((k), (l), (m) en rojo). Después: **14/14**.
+
+**Regresión** (enunciado §5.4): dominio 42/42 · integración **170/170** (166 + 4) · e2e **47/47** (46 + 1, `E2E_PORT=3300`) · lint y typecheck sin errores · `next build` correcto. `prisma migrate diff` desde la BD hacia `schema.prisma` da una migración vacía: Prisma no intentará borrar el índice.
+

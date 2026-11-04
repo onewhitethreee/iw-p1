@@ -49,7 +49,8 @@ Horario de entrada: `{dia: "AAAA-MM-DD", horaInicio: "HH:mm", horaFin: "HH:mm"}`
 
 ## inscripcion (spec-004)
 | `inscripcion.presupuesto` | query | P | `{congresoId}` | Tarifa vigente hoy (temprana o general) e importe de cada tipo de asistente. Concretado por spec-004 (analyze C1). |
-| `inscripcion.crear` | mutation | ASISTENTE | `{congresoId, tipoAsistente}` | Crea `PENDIENTE_PAGO` con el importe fijado. `CONFLICT` si ya tiene inscripción o el congreso ha finalizado. |
+| `inscripcion.crear` | mutation | ASISTENTE | `{congresoId, tipoAsistente}` | Crea `PENDIENTE_PAGO` con el importe fijado (o reactiva la suya si estaba `CANCELADA`). `CONFLICT` si ya tiene una pendiente o confirmada, o si el congreso ha finalizado. |
+| `inscripcion.cancelar` | mutation | ASISTENTE (propietario) | `{inscripcionId}` | `PENDIENTE_PAGO` → `CANCELADA`; conserva los pagos. `CONFLICT` si está confirmada. Añadido por spec-004 clarify-2 P4. |
 | `inscripcion.pagar` | mutation | ASISTENTE (propietario) | `{inscripcionId, tarjeta}` | Pago simulado. Aprobado → `CONFIRMADA` + código de acreditación. Rechazado → sigue pendiente. `CONFLICT` si ya está confirmada. |
 | `inscripcion.mias` | query | ASISTENTE | — | Inscripciones con estado y, si está confirmada, el QR. |
 
