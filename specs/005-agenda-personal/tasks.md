@@ -87,3 +87,7 @@ Tras T002:  T003 (anadir.test) ∥ T006 (quitar.test)
 Tareas que salen de `informes/clarify-2.md`. Se implementan después de revisar `plan.md` y de `/speckit-analyze`.
 
 - [X] T012 Regla de vigencia de la reserva (FR-010, Clarifications P2; plan decisión 7, R6; precisada por analyze-3 A3): `MARGEN_RESERVA_MIN = 10` y `reservaVigente(inicio, ahora)` (`ahora < inicio + 10 min`) en `packages/domain/src/ocupacion.ts`. **Prueba primero** en `packages/domain/tests/ocupacion.test.ts`: antes del inicio, +9:59 → vigente; +10:00 y después → no vigente. **Dependencia** (analyze-3 A1): US1-8 se verifica de extremo a extremo con la prueba de spec-006 T011, que usa esta función (issue #7)
+
+## Convergencia tras clarify-2 (converge-2, 2026-11-05)
+
+- [ ] T013 Marcar T011 como hecha, con la evidencia: enlace «Mi agenda» en `apps/web/src/app/area-personal/page.tsx` y e2e «T011 (integración)» de `apps/web/tests/e2e/005-agenda.spec.ts` (converge-2 F1)
