@@ -1,0 +1,38 @@
+# Informe `/speckit-clarify` · spec-007 (HU-07 Certificado de asistencia) · iteración 2 (sobre la versión funcional)
+
+- **Fecha**: 2026-11-04 · **Rama**: `spec-007-clarify-2` · **Spec**: [`spec.md`](../spec.md) · previa: [`spec-antes-clarify-2.md`](spec-antes-clarify-2.md) · diferencia: [`clarify-2.diff`](clarify-2.diff)
+- **Responsable**: Yangfeng Liu · **Revisión**: autorrevisión diferida (grupo de una persona)
+- **Instrucción**: «Revisa las ambigüedades de la historia sobre la aplicación ya funcionando, especialmente quién puede realizar cada acción, qué datos son válidos y qué ocurre ante estados incompatibles. Formula las preguntas necesarias para concretar criterios de aceptación verificables.»
+- **Diferencia con la iteración 1**: aquella se hizo antes de implementar. Esta se hace sobre la versión funcional, como pide el §5.1, y **cada respuesta la ha elegido el responsable** (no se acepta la recomendación por delegación).
+
+## Prueba de la versión funcional (paso 1 de §5.1)
+
+- **Commit de referencia**: `7e59b84` (`main`, 2026-11-04) · **Herramienta**: Spec Kit `1.2.4.dev0` (skill `speckit-clarify`)
+- **Suite ejecutada antes de clarify**: dominio 42/42 · integración 166/166 · e2e **46/46** (`E2E_PORT=3300 pnpm test:e2e`, seed recargado) · lint y typecheck sin errores.
+- *Nota*: la primera ejecución del e2e dio 8 fallos de inicio de sesión. La causa era que Playwright reutilizó un `next start` antiguo que seguía en el puerto 3100 (`reuseExistingServer`). Con un servidor limpio, todo en verde. No es un defecto de la aplicación ([#10](https://github.com/onewhitethreee/iw-p1/issues/10)).
+
+## Tres situaciones revisadas
+
+| Situación | Escenario | Evidencia en la versión funcional | Resultado |
+|-----------|-----------|-----------------------------------|-----------|
+| Recorrido habitual | US1-1 asistente1 (4 de 5) ve el 80 % y descarga | e2e `007-certificado` US1-1 + RC-1 | ✔ |
+| Caso límite | US1-2 60 % sin botón; US1-3 URL directa → 403 | e2e US1-2/US1-3 + `integration/007/estado.test.ts` | ✔ |
+| Estado | US1-4 congreso en curso → porcentaje provisional; agenda con solape tras un cambio del programa | e2e US1-4. Al revisar la dependencia con spec-005 P1 se ve que dos sesiones solapadas cuentan las dos en el denominador | ✔ |
+
+## Registro de decisiones
+
+| # | Pregunta | Respuesta | Justificación | Criterios afectados | Decidido por |
+|---|----------|-----------|---------------|---------------------|--------------|
+| P3 | Si un cambio del programa deja dos sesiones solapadas en la agenda, ¿cómo cuentan para el 80 %? | Cada grupo de sesiones solapadas cuenta como 1, asistido si fue a cualquiera de ellas | Con la regla actual, a quien el organizador le movió una sesión le es imposible llegar al 100 %, y puede quedarse por debajo del 80 % (p. ej. 4 de 5) sin haber faltado a nada que pudiera atender. La narrativa pide el 80 % «de las sesiones de su agenda» para justificar horas reales; el solape no es culpa del asistente. Se descartó exigirle que quite una (spec-005 lo deja a su elección y el cambio puede llegar durante el congreso). | FR-002, US1-8 (nuevo), Edge Cases | Yangfeng Liu (respuesta directa, 2026-11-04) |
+
+## Criterios en formato Dado… Cuando… Entonces…
+
+- **P3**: *Dado* una agenda A, B, C, D, E con B y C solapadas y asistencia a A, B, D, E, *cuando* abre «Certificado», *entonces* «100 % (4 de 4)» y puede descargarlo. *Dado* asistencia solo a A, D, E, *entonces* «No disponible: has asistido al 75 % … (3 de 4)».
+
+## Cobertura
+
+Checklist 17/17 → 17/17. Dependencia con HU-05 (solapes): **Resolved** (P3). Umbral, titularidad y estados: Clear. Marcadores: 0.
+
+## Siguiente paso
+
+Antes de tocar código (§5.1): revisar `plan.md` y las tareas añadidas en `tasks.md`; después `/speckit-analyze` (analyze-3), `/speckit-implement` con la prueba primero y `/speckit-converge`. Seguimiento en [#9](https://github.com/onewhitethreee/iw-p1/issues/9).

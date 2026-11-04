@@ -19,6 +19,10 @@
 - Q: ¿Quién puede ver y descargar el certificado de una inscripción? → A: Solo el titular de la inscripción confirmada, sea cual sea su rol (asistente o ponente inscrito). Nadie más, tampoco el organizador.
 - Q: ¿Cómo se muestra un porcentaje que no es entero (p. ej. 2 de 3 sesiones)? → A: Truncado a entero hacia abajo («66 %»), para no mostrar nunca «80 %» a quien no llega; la decisión de disponibilidad usa la comparación exacta.
 
+### Session 2026-11-04 (clarify sobre la versión funcional)
+
+- Q: Si un cambio del programa deja en la agenda dos sesiones solapadas (spec-005 P1), ¿cómo cuentan para el 80 %? → A: Las sesiones de la agenda que se solapan entre sí forman un grupo; cada grupo cuenta como 1 en el total, y se da por asistido si hay asistencia en cualquiera de sus sesiones.
+
 ## User Scenarios & Testing *(mandatory)*
 
 ### User Story 1 - Descargar el certificado si he asistido al 80 % (Priority: P1)
@@ -39,11 +43,13 @@ su agenda. Si es al menos el 80 %, descarga un certificado en PDF con sus datos,
 5. **Given** un asistente con la agenda vacía, **When** abre «Certificado», **Then** ve «No disponible: tu agenda no tiene sesiones».
 6. **Given** un usuario (incluido un organizador) que intenta descargar el certificado de otra persona, **When** hace la petición, **Then** el sistema lo rechaza (Clarifications P1).
 7. **Given** un usuario sin inscripción confirmada en el congreso, **When** abre «Certificado», **Then** ve que no tiene inscripción confirmada.
+8. **Given** una agenda de 5 sesiones en la que «B» y «C» pasaron a solaparse por un cambio del programa, y asistencia a A, B, D y E, **When** el asistente abre «Certificado», **Then** ve «100 % (4 de 4)» y puede descargarlo; sin la asistencia a B ni a C, vería «75 % (3 de 4)» y no podría (Clarifications P3).
 
 ### Edge Cases
 
 - Umbral exacto: 80,0 % se acepta; 79,9 % no (comparación sin redondeo: `asistidas × 100 ≥ 80 × total`). El porcentaje se muestra truncado a entero (Clarifications P2): 2 de 3 → «66 %».
 - Asistencias a sesiones fuera de la agenda no cuentan ni en el numerador ni en el denominador.
+- Sesiones solapadas de la agenda (por un cambio del programa): cuentan como una (Clarifications P3). Las horas de formación siguen siendo la suma de las sesiones a las que asistió (spec-006 P4 impide registrar dos sesiones solapadas).
 - Las horas de formación son la suma de la duración de las sesiones de la agenda a las que asistió (p. ej. «6 h 30 min»).
 - El certificado se puede descargar varias veces; siempre refleja los datos actuales.
 - Una sesión que está en alguna agenda no se puede quitar del programa (000-core, `programa.quitar`), así que la agenda siempre contiene sesiones programadas (analyze I1).
@@ -53,7 +59,7 @@ su agenda. Si es al menos el 80 %, descarga un certificado en PDF con sus datos,
 ### Functional Requirements
 
 - **FR-001**: El certificado MUST estar disponible solo cuando el congreso ha finalizado (`ahora ≥ fin`).
-- **FR-002**: El sistema MUST calcular el porcentaje como sesiones de la agenda con asistencia registrada / sesiones de la agenda, y exigir ≥ 80 %.
+- **FR-002**: El sistema MUST calcular el porcentaje como sesiones de la agenda con asistencia registrada / sesiones de la agenda, y exigir ≥ 80 %. Las sesiones de la agenda que se solapan entre sí (A7, directa o encadenadamente) MUST contar como un único elemento, asistido si hay asistencia en cualquiera de ellas (Clarifications P3).
 - **FR-003**: El área personal MUST mostrar el porcentaje (entero truncado hacia abajo, Clarifications P2), el número de sesiones asistidas y el total, y, si no está disponible, el motivo.
 - **FR-004**: El certificado MUST ser un PDF descargable con: nombre del asistente, congreso, fechas y sede, lista de sesiones asistidas y total de horas de formación.
 - **FR-005**: La descarga MUST volver a comprobar las condiciones en el servidor y solo permitirla al titular de la inscripción confirmada, con independencia de su rol; ningún otro usuario (tampoco el organizador) puede obtenerla (Clarifications P1).

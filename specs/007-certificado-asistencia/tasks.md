@@ -67,3 +67,10 @@ Una sola historia (MVP = US1 completa): primero la regla de dominio (T002), desp
 ## Phase 5: Convergence
 
 - [X] T011 Garantizar que el PDF se genera con cualquier nombre o título: en `apps/web/src/server/pdf-certificado.ts` sanear el texto antes de dibujarlo (caracteres no representables en WinAnsi → letra base sin diacrítico o «?»), con prueba en `apps/web/tests/integration/007/descarga.test.ts` para un titular «刘洋峰 Łukasz» y un título con «≥» (200 y PDF válido) per FR-004 / US1-1 (partial)
+
+## Clarify sobre la versión funcional (2026-11-04) · pendiente de plan y analyze
+
+Tareas que salen de `informes/clarify-2.md`. Se implementan después de revisar `plan.md` y de `/speckit-analyze`.
+
+- [ ] T012 Agrupar las sesiones solapadas (FR-002, Clarifications P3): en `packages/domain/src/certificado.ts` calcular grupos de solape (componentes conexos con la regla A7) y contar asistidos/total por grupo. Pruebas unitarias primero: sin solapes (sin cambios), B∥C asistida B, ninguna del grupo, cadena A–B–C (issue #9)
+- [ ] T013 Usar el cálculo por grupos en `apps/web/src/server/certificado.ts` (estado y descarga) y mostrar «N de M» con M = grupos. Prueba en `apps/web/tests/integration/007/estado.test.ts`: agenda de 5 con un solape → «100 % (4 de 4)» (issue #9)
