@@ -37,7 +37,7 @@ erDiagram
 | `Rol` | `ORGANIZADOR`, `COMITE`, `PONENTE`, `ASISTENTE`, `ACREDITACION` |
 | `EstadoPropuesta` | `ENVIADA`, `EN_EVALUACION`, `ACEPTADA`, `RECHAZADA` |
 | `TipoAsistente` | `PROFESIONAL`, `SOCIO`, `ESTUDIANTE` |
-| `EstadoInscripcion` | `PENDIENTE_PAGO`, `CONFIRMADA` |
+| `EstadoInscripcion` | `PENDIENTE_PAGO`, `CONFIRMADA`, `CANCELADA` (spec-004 clarify-2 P4) |
 | `ResultadoPago` | `APROBADO`, `RECHAZADO` |
 | `EstadoPrograma` | `BORRADOR`, `PUBLICADO` |
 
@@ -130,7 +130,7 @@ El **aforo de la sesión** es `sala.aforo` (A6). El ponente de la sesión es `pr
 | tipoAsistente | TipoAsistente | |
 | tarifaAplicada | `TEMPRANA` \| `GENERAL` | según `creadaEn ≤ congreso.limiteTemprana` |
 | importeCent | Int | fijado al crear la inscripción (A4) |
-| estado | EstadoInscripcion | `PENDIENTE_PAGO` → `CONFIRMADA` |
+| estado | EstadoInscripcion | `PENDIENTE_PAGO` → `CONFIRMADA`; `PENDIENTE_PAGO` → `CANCELADA` (el titular, sin pago aprobado) → `PENDIENTE_PAGO` (al volver a inscribirse: la **misma fila**, con tipo, tarifa, importe y `creadaEn` nuevos). Una cancelada no tiene código, agenda ni asistencias |
 | codigoAcreditacion | String? | UUID v4 único; se genera al confirmar |
 | creadaEn, confirmadaEn | DateTime | |
 

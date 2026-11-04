@@ -11,3 +11,5 @@ Seed: `jornadas-pediatria-2027` (límite temprano futuro → precio temprano), `
 | 5 | US1-3 duplicada | Volver a inscribirse en el mismo congreso | «Ya tienes una inscripción…» |
 | 6 | US2-4 ajena | Integración: pagar la inscripción de otro | FORBIDDEN |
 | 7 | US1-7 manipulada | Integración: enviar `importeCent` | Ignorado; importe del servidor |
+| 8 | US2-6 cancelar y volver (clarify-2 P4) | Inscribirse como estudiante → área personal → «Cancelar inscripción» → «Sí, cancelar» → «Inscribirme de nuevo» como profesional | «Cancelada»; después «Pendiente de pago» como profesional con el precio vigente |
+| 9 | US2-7 confirmada o ajena | Integración: `cancelar` una confirmada o de otro usuario | `CONFLICT` / `FORBIDDEN`; sin cambios |
