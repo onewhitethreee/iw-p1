@@ -23,7 +23,7 @@
 
 | # | Pregunta | Respuesta | Justificación | Criterios afectados | Decidido por |
 |---|----------|-----------|---------------|---------------------|--------------|
-| P3 | Si un cambio del programa deja dos sesiones solapadas en la agenda, ¿cómo cuentan para el 80 %? | Cada grupo de sesiones solapadas cuenta como 1, asistido si fue a cualquiera de ellas | Con la regla actual, a quien el organizador le movió una sesión le es imposible llegar al 100 %, y puede quedarse por debajo del 80 % (p. ej. 4 de 5) sin haber faltado a nada que pudiera atender. La narrativa pide el 80 % «de las sesiones de su agenda» para justificar horas reales; el solape no es culpa del asistente. Se descartó exigirle que quite una (spec-005 lo deja a su elección y el cambio puede llegar durante el congreso). | FR-002, US1-8 (nuevo), Edge Cases | Yangfeng Liu (respuesta directa, 2026-11-04) |
+| P3 | Si un cambio del programa deja dos sesiones solapadas en la agenda, ¿cómo cuentan para el 80 %? | Cada grupo de sesiones solapadas cuenta como 1, asistido si fue a cualquiera de ellas | Contar como una sola las sesiones que se solapan por un cambio de horario del organizador evita que se reduzca el porcentaje del asistente por algo que no depende de él, y protege su derecho al certificado. *(Justificación del responsable.)* | FR-002, US1-8 (nuevo), Edge Cases | Yangfeng Liu (respuesta directa, 2026-11-04) |
 
 ## Criterios en formato Dado… Cuando… Entonces…
 
