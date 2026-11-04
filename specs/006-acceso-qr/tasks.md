@@ -60,6 +60,8 @@ T001 → T002 → US1 (T003 → T004 → T005) → US2 (T006 → T007) → T008 
 | FR-008 (concurrencia) | T003i, T004 |
 | FR-009 (sin agenda, P1) | T003h |
 | FR-010 (ventana, P2) | T003g |
+| FR-009 matizada (spec-005 P2) · US1-9 | T011 |
+| FR-011 (sesiones solapadas, clarify-3 P4) · US1-8 | T012 |
 | US1-1…7 / US2-1 | T003–T008 |
 | SC-001 / SC-002 / SC-003 | T009 / T003i / T003c,d |
 
@@ -71,5 +73,5 @@ T001 → T002 → US1 (T003 → T004 → T005) → US2 (T006 → T007) → T008 
 
 Tareas que salen de `informes/clarify-3.md`. Se implementan después de revisar `plan.md` y de `/speckit-analyze`.
 
-- [ ] T011 Liberar las reservas no presentadas (FR-009 matizada, spec-005 FR-010): en `apps/web/src/server/api/routers/acreditacion.ts` aplicar `reservaVigente` (spec-005 T012) al calcular las plazas sin reservar. Prueba primero en `apps/web/tests/integration/006/escanear.test.ts` con reloj simulado: 10:09 rechazado y 10:10 admitido; quien reservó y llega tarde con la sala llena → «Aforo completo» (issue #7)
-- [ ] T012 Rechazar la entrada en sesiones solapadas (FR-011, Clarifications P4): en el mismo procedimiento, y dentro del bloqueo, comprobar si hay asistencias de la inscripción en otra sesión solapada (A7, `packages/domain` intervalos). Prueba primero: A → B solapada rechazada sin consumir aforo, A → C contigua admitida, B ∥ A simultáneos → solo una (issue #8)
+- [ ] T011 Liberar las reservas no presentadas (FR-009 matizada, spec-005 FR-010; plan decisión 2, R7; ampliada por analyze-3 A1). **Prueba primero** en `apps/web/tests/integration/006/escanear.test.ts`: mover (h2) a los 5 min del inicio (antes del límite) y añadir (k): aforo 2, 2 reservas sin presentarse → sin reserva a +9 min «No quedan plazas sin reservar», a +10 min admitido; quien reservó llega a +11 min → admitido (1 < 2); el segundo que reservó llega a +12 min → «Aforo completo». Después: en `acreditacion.ts`, el paso de plazas sin reservar solo mientras `reservaVigente(sesion.inicio, ahora)` (issue #7)
+- [ ] T012 Rechazar la entrada en sesiones solapadas (FR-011, Clarifications P4; plan decisiones 2 y 3, R3 y R6; reescrita por analyze-3 A2 y A3). **Prueba primero**: (l) admitido en «grande» (0–60) → en «pequeña» (0–60) «Ya registrado en «En sala grande» a esta hora», 0 asistencias en pequeña; en una sesión contigua (60–120) se admite; (m) el mismo código a la vez en dos sesiones solapadas, 5 veces → exactamente 1 asistencia; (n) `agenda.anadir` ∥ `escanear` de la misma persona y sesión antes del inicio, 5 veces → ninguna falla por interbloqueo. Después: en `acreditacion.ts` buscar la inscripción por código **sin bloqueo**, bloquear `Inscripcion` y después `Sesion` (orden de spec-005 R1) y comprobar FR-011 tras «ya registrado» (issue #8)
