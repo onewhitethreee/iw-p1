@@ -484,7 +484,7 @@ Cada spec tiene un `quickstart.md` con los escenarios que se pueden comprobar en
 | spec-003 T022 | Programar una ponencia en menos de 1 min | 16 s / 23 s ✔ |
 | spec-004 T013 | Inscribirse y pagar en menos de 3 min | 20 s / 35 s ✔ |
 
-Mientras no se hagan esas mediciones, se ha **estimado** el tiempo con el *Keystroke-Level Model* (Card, Moran y Newell, 1983) ([informe](../specs/000-core/informes/estimacion-klm.md)). Playwright ejecuta cada flujo en la interfaz real y cuenta las teclas, los clics, los cambios entre ratón y teclado y los pasos mentales; la espera del sistema se mide. El tiempo de la persona se calcula con los valores publicados del modelo, para un mecanógrafo medio (0,28 s/tecla) y para el más lento de la tabla original (1,2 s/tecla). El script es [`apps/web/tests/klm/estimar-klm.ts`](../apps/web/tests/klm/estimar-klm.ts).
+Antes de hacer esas mediciones, se **estimó** el tiempo con el *Keystroke-Level Model* (Card, Moran y Newell, 1983) ([informe](../specs/000-core/informes/estimacion-klm.md)). Playwright ejecuta cada flujo en la interfaz real y cuenta las teclas, los clics, los cambios entre ratón y teclado y los pasos mentales; la espera del sistema se mide. El tiempo de la persona se calcula con los valores publicados del modelo, para un mecanógrafo medio (0,28 s/tecla) y para el más lento de la tabla original (1,2 s/tecla). El script es [`apps/web/tests/klm/estimar-klm.ts`](../apps/web/tests/klm/estimar-klm.ts).
 
 Conclusiones:
 - La interfaz no es el cuello de botella en ningún flujo: la espera del sistema es < 0,5 s.
@@ -602,7 +602,7 @@ Compara la versión inicial de cada spec (antes del primer `clarify`) con la fin
 |-----------|---------|-------|-----------|
 | Ambigüedades (preguntas de `/speckit-clarify`) | 24 abiertas en 11 sesiones (9 specs + 2.ª sesión en 003 y 006) | **24/24 resueltas** y llevadas a la spec como criterios *Dado… Cuando… Entonces…*. De ellas, 2/24 con respuesta explícita del responsable y 22/24 aceptando la opción recomendada por delegación, cada una con su justificación en la narrativa o la constitución | `informes/clarify-*.md` y `.diff` |
 | Incidencias documentales (`/speckit-analyze`) | 42 detectadas: 4 CRITICAL, 4 HIGH, 11 MEDIUM y 23 LOW | **40/42 cerradas** con corrección, 1/42 aceptada con justificación (000-core U1) y 1/42 descartada como falso positivo (000-core K1). Segunda pasada: **0 CRITICAL y 0 HIGH** en 9/9 specs | `informes/analyze-1.md`, `analyze-2.md`, `analyze-registro.md` |
-| Brechas de implementación (`/speckit-converge`) | 12 tareas añadidas | **8/12 cerradas** con prueba primero. Quedan **4/12 abiertas**, todas de medición humana (T015, T020, T022, T013), con una estimación KLM registrada que anticipa que se cumplen 4/4 con un mecanógrafo medio y 3/4 con el perfil lento | `informes/converge-*.md`, [estimacion-klm.md](../specs/000-core/informes/estimacion-klm.md) |
+| Brechas de implementación (`/speckit-converge`) | 12 tareas añadidas | **8/12 cerradas** con prueba primero. Quedan **4/12 abiertas** *(estado previo al cierre; ver la fila «Cierre · brechas abiertas»)*, todas de medición humana (T015, T020, T022, T013), con una estimación KLM registrada que anticipa que se cumplen 4/4 con un mecanógrafo medio y 3/4 con el perfil lento | `informes/converge-*.md`, [estimacion-klm.md](../specs/000-core/informes/estimacion-klm.md) |
 | Criterios de aceptación de las 8 historias | 105 (79 FR + 26 SC) | **101/105 verificados**: 79/79 FR y 22/26 SC. Los 4 SC restantes son las mediciones humanas | `informes/verificacion.md`, §5.2 |
 | **Cierre** · criterios de éxito (SC) | 22/26 | **26/26 verificados**: los 4 de tiempo, medidos con personas (HU-01 con 2 mediciones válidas, por decisión del responsable) | §5.3 |
 | **Cierre** · brechas abiertas | 4 (mediciones) | **0**. Las mediciones produjeron una aclaración (spec-001 clarify-3) y una tarea de interfaz (spec-003 T023), las dos cerradas con prueba | spec-001 `clarify-3.md`, spec-003 `converge-3.md`, `converge-4.md` |
@@ -624,7 +624,7 @@ Recoge las decisiones y hallazgos con efecto en la funcionalidad, al menos uno p
 | 000 · FR-021, Const. IV | F1–F3: errores en inglés, sin CHECK en BD, quickstart roto | converge | `error.tsx`, migración `restricciones_check`, quickstart | T042–T044 · `10797e9`, `c718481` | `core/invariantes.test.ts` 6/6 ✔ (antes: `INSERT` con aforo 0 aceptado) | Cerrado |
 | HU-01 · FR-008 | P1: la propuesta no se edita una vez enviada | clarify | spec FR-008, US2-4 | T004i · `c41556d` | `001/enviar.test.ts` ✔ | Cerrado |
 | HU-01 · US2 | D1 CRITICAL: US2 no tenía caso límite (lista vacía) | analyze | spec US2-5, tasks, quickstart | T011–T012 · `7e7741a` | e2e `001-enviar-propuesta` ✔ | Cerrado |
-| HU-01 · SC-001 | F1: medición humana < 3 min sin hacer | converge | tasks | T015 · `fb0e5ce` | manual | **Abierto** |
+| HU-01 · SC-001 | F1: medición humana < 3 min sin hacer | converge | tasks | T015 · `fb0e5ce` | manual | Cerrado (medido con personas, ver la fila de cierre · PR #22) |
 | HU-02 · FR-010 | P1: las asignaciones no se retiran, se añaden evaluadores | clarify | spec FR-010 | T010g · `36a7ca1` | `002/asignar.test.ts` ✔ | Cerrado |
 | HU-02 · FR-006 | U1 MEDIUM: carrera entre evaluar y decidir | analyze | plan R4 (`FOR UPDATE`), research, tasks | T007, T015, T014(f2) · `eaac1b9` | `002/decidir.test.ts` ✔ | Cerrado |
 | HU-03 · FR-003 | A1 HIGH: la spec admitía cruzar la medianoche y el plan no → clarify-2 P3 | analyze → clarify | spec FR-003, data-model, plan | T006(f) · `b1abb0b`, `f3d05bf` | `003/programar.test.ts` ✔ | Cerrado |
@@ -834,7 +834,7 @@ gitGraph
 ### 8.1 Qué se consiguió
 
 - Las **8 historias integradas en `main`** con un merge de las 8 ramas, y la batería completa de pruebas en verde sobre la aplicación conjunta.
-- Las **8 historias de usuario implementadas**, cada una con su spec, su plan, sus tareas trazadas y sus pruebas. Cada spec terminó con converge en estado *converged*, salvo las mediciones humanas.
+- Las **8 historias de usuario implementadas**, cada una con su spec, su plan, sus tareas trazadas y sus pruebas. Cada spec terminó con converge en estado *converged*, incluidas las mediciones con personas.
 - **Reglas de negocio en el servidor**, comprobadas con pruebas que llaman directamente a la API: anonimato, plazos, mínimo de 2 evaluaciones, solapes, aforo con concurrencia, pago confirmado, 80 % de asistencia y permisos por rol.
 - **Un único modelo de datos** para las 8 specs, gracias a 000-core y al principio V. Solo la segunda ronda añadió dos migraciones pequeñas (índice único de títulos y valor `CANCELADA`), registradas primero en 000-core.
 - **Una segunda ronda de clarify sobre la versión funcional** con las decisiones tomadas por el responsable, llevada por todo el ciclo y con un PR por historia (§4.5).
