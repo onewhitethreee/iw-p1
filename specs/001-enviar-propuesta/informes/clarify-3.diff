@@ -1,0 +1,23 @@
+diff --git a/specs/001-enviar-propuesta/informes/spec-antes-clarify-3.md b/specs/001-enviar-propuesta/spec.md
+index 1ef6153..56afc35 100644
+--- a/specs/001-enviar-propuesta/informes/spec-antes-clarify-3.md
++++ b/specs/001-enviar-propuesta/spec.md
+@@ -24,6 +24,10 @@
+ 
+ - Q: ¿Qué hace el sistema si el mismo ponente envía al mismo congreso una propuesta con el mismo título que otra suya? → A: La rechaza con «Ya has enviado una propuesta con este título a este congreso»; no se guarda una segunda. El título se compara sin distinguir mayúsculas/minúsculas ni espacios al principio o al final.
+ 
++### Session 2026-11-05 (clarify-3, tras la medición con personas)
++
++- Q: SC-001 no dice si el resumen se trae ya redactado. ¿El tiempo incluye escribir el resumen? → A: No. SC-001 mide el envío con el resumen ya redactado (se pega); redactarlo es trabajo del ponente, no de la interfaz.
++
+ ## User Scenarios & Testing *(mandatory)*
+ 
+ ### User Story 1 - Enviar una propuesta dentro del plazo (Priority: P1)
+@@ -95,7 +99,7 @@ El ponente ve la lista de sus propuestas con congreso, título, área, fecha de
+ 
+ ### Measurable Outcomes
+ 
+-- **SC-001**: Un ponente envía una propuesta válida en menos de 3 minutos desde que abre el formulario.
++- **SC-001**: Un ponente con el resumen ya redactado envía una propuesta válida en menos de 3 minutos desde que abre el formulario (Clarifications P5).
+ - **SC-002**: El 100 % de los envíos fuera de plazo se rechazan, también los hechos con una petición directa al servidor.
+ - **SC-003**: El ponente ve el estado actualizado de su propuesta en cuanto el comité u organizador lo cambia (al recargar la página).
