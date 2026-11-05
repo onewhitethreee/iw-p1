@@ -21,7 +21,7 @@ Congresalia es una aplicación web para organizar congresos científicos y profe
 - los **asistentes**, que se inscriben, pagan, construyen su agenda y descargan su certificado;
 - el **personal de acreditación**, que controla con un QR el acceso a cada sala.
 
-El proyecto se ha desarrollado entero con Spec Kit. Hay una especificación común (`000-core`) y ocho especificaciones, una por historia de usuario. Cada una ha pasado el ciclo *specify → clarify → plan → tasks → analyze → implement → converge*, y todos los informes se guardan en el repositorio como evidencia. **Resultado**: las 8 historias están implementadas, convergidas e **integradas en `main`** con un merge de las 8 ramas. Las reglas de negocio se validan en el servidor y están cubiertas por 279 pruebas automáticas (48 unitarias, 183 de integración —incluidos 3 recorridos que pasan por las 8 historias, §5.4— y 48 e2e), todas en verde sobre `main` el 5 de noviembre. Después de la primera versión se hizo **una segunda ronda de `/speckit-clarify` sobre la aplicación ya funcionando**, con las decisiones tomadas por el responsable. Dio 6 cambios de criterio en 6 historias, cada uno llevado por plan → analyze → implement → converge y fusionado con su PR (#11–#18), y sacó a la luz un interbloqueo que ya existía en `main` (§4.5). Quedan abiertas solo 4 mediciones de tiempo con usuarios reales (issues #1–#4).
+El proyecto se ha desarrollado entero con Spec Kit. Hay una especificación común (`000-core`) y ocho especificaciones, una por historia de usuario. Cada una ha pasado el ciclo *specify → clarify → plan → tasks → analyze → implement → converge*, y todos los informes se guardan en el repositorio como evidencia. **Resultado**: las 8 historias están implementadas, convergidas e **integradas en `main`** con un merge de las 8 ramas. Las reglas de negocio se validan en el servidor y están cubiertas por 284 pruebas automáticas (52 unitarias, 183 de integración —incluidos 3 recorridos que pasan por las 8 historias, §5.4— y 49 e2e), todas en verde sobre `main` (`544178b`). Después de la primera versión se hizo **una segunda ronda de `/speckit-clarify` sobre la aplicación ya funcionando**, con las decisiones tomadas por el responsable. Dio 6 cambios de criterio en 6 historias, cada uno llevado por plan → analyze → implement → converge y fusionado con su PR (#11–#18), y sacó a la luz dos defectos que ya existían en `main`: un interbloqueo y una pantalla con datos antiguos tras pagar (§4.5). Los 4 criterios de tiempo **se han medido con personas** (§5.3): dos llevaron a otra vuelta del ciclo, una aclaración de clarify en HU-01 y una mejora de la interfaz en HU-03. Todos los issues (#1–#10) y PR (#11–#22) están cerrados.
 
 ## URL del repositorio en GitHub
 
@@ -425,7 +425,11 @@ La primera ronda de `/speckit-clarify` se hizo **antes** de implementar, y 22 de
 
 **Defecto que ya existía, encontrado en esta ronda.** La prueba (n) de spec-006 reprodujo un **interbloqueo real** (`40P01 deadlock detected`) entre `agenda.anadir` y `acreditacion.escanear` de la misma persona y sesión. Podía pasar entre los 30 min anteriores al inicio y el inicio, porque las dos cosas están permitidas a la vez. `anadir` bloquea inscripción → sesión. `escanear` bloqueaba la sesión, y al insertar la `Asistencia` la clave ajena pedía un bloqueo sobre la inscripción: el orden contrario. Se corrigió con un orden común inscripción → sesión (spec-006 plan R3).
 
-**Datos de ejemplo.** El seed tenía a `asistente1` registrado en dos sesiones solapadas, un estado que la aplicación ya no permite (spec-006 converge-2 F2). La asistencia del Auditorio pasa a `demo01`; la ocupación mostrada es la misma. *Los vídeos de la demo se grabaron con el seed anterior.*
+**Datos de ejemplo.** El seed tenía a `asistente1` registrado en dos sesiones solapadas, un estado que la aplicación ya no permite (spec-006 converge-2 F2). La asistencia del Auditorio pasa a `demo01`; la ocupación mostrada es la misma.
+
+**Demo regrabada y segundo defecto previo (PR #20, #21).** Se regrabaron los 9 vídeos con los escenarios nuevos (126 capítulos, 27,5 min). Al ensayar HU-04, el guion se quedó esperando la tarjeta actualizada: tras **pagar** o tras **volver a inscribirse**, el área personal abierta con su enlace seguía mostrando el estado anterior («Pendiente de pago»), y al recargar se veía bien. La causa era la caché del router de Next en el cliente: el formulario hacía `router.push` sin `router.refresh()`. **El caso del pago estaba en `main` desde la primera entrega**, y las e2e no lo veían porque entraban con `page.goto`. Se trató como spec-004 converge-4: e2e con navegación por enlaces (fallaba), `router.refresh()` y converge-5 *converged*.
+
+**Mediciones con personas (PR #22).** Ver §5.3. HU-02 y HU-04 cumplen 3/3. En HU-01 una persona tardó más de 3 min tecleando el resumen. El responsable aclaró en **clarify-3 P5** que SC-001 se mide con el resumen ya redactado: es una condición que faltaba, no un criterio rebajado. En HU-03 una persona tardó 1:12. El responsable **mantuvo el criterio** y pidió mejorar la interfaz (spec-003 converge-3 → T023): al elegir sala se proponen las horas del primer hueco libre (`primerHueco` en `packages/domain`). Con esa interfaz, la nueva medición dio 3/3.
 
 ---
 
@@ -460,6 +464,7 @@ Resultado de la regresión completa de cada rama antes de integrarla, tal como q
 | spec-008 | 37/37 | 38/38 (22 + 16) | 12/12 (7 + 5) | ✔ |
 | **main integrada** | **42/42** | **163/163** | **46/46** | ✔ |
 | **main tras la segunda ronda (2026-11-05, `50c56e8`)** | **48/48** | **183/183** | **48/48** | ✔ |
+| **main final (2026-11-05, `544178b`)** | **52/52** | **183/183** | **49/49** | ✔ |
 
 Con todo integrado en `main` se ejecutaron **42 pruebas unitarias, 163 de integración y 46 e2e** (las 45 de las ramas más la de T011 de spec-005), todas en verde. Tras la segunda ronda (§4.5) son **48, 183 y 48**: 6 unitarias, 17 de integración y 2 e2e nuevas, más los 3 recorridos de §5.4. Algunas mediciones destacadas:
 
@@ -470,7 +475,7 @@ Con todo integrado en `main` se ejecutaron **42 pruebas unitarias, 163 de integr
 
 ### 5.3 Validación manual
 
-Cada spec tiene un `quickstart.md` con los escenarios que se pueden comprobar en la aplicación usando los datos de ejemplo. El resultado de cada uno se registra en `informes/verificacion.md`, con las columnas *esperado / observado / resultado*. Hay 4 criterios que solo puede medir una persona y siguen **pendientes**, anotados como tareas de convergencia:
+Cada spec tiene un `quickstart.md` con los escenarios que se pueden comprobar en la aplicación usando los datos de ejemplo. El resultado de cada uno se registra en `informes/verificacion.md`, con las columnas *esperado / observado / resultado*. Hay 4 criterios que solo puede medir una persona. Se estimaron primero con KLM (tabla siguiente) y después **se midieron con personas** (tabla «Mediciones con personas», más abajo):
 
 | Tarea | Criterio | Estimación KLM, perfil medio / lento (no es una medición) |
 |-------|----------|-------------------------------------------------------------|
@@ -484,7 +489,18 @@ Mientras no se hagan esas mediciones, se ha **estimado** el tiempo con el *Keyst
 Conclusiones:
 - La interfaz no es el cuello de botella en ningún flujo: la espera del sistema es < 0,5 s.
 - El único riesgo es **HU-01 con el resumen tecleado por alguien lento**. SC-001 no dice si el resumen se trae preparado, así que no se rebaja el criterio: se deja anotado para la medición real y, si falla, para un nuevo `clarify`.
-- Las 4 tareas siguen **abiertas**, porque una estimación no sustituye a la medición con personas.
+- Una estimación no sustituye a la medición con personas: por eso las 4 tareas quedaron abiertas hasta medir.
+
+**Mediciones con personas (5 de noviembre).** Hechas por el responsable con 3 personas que no conocían la aplicación, con el seed recargado antes de cada una. Evidencia en el `verificacion.md` de cada spec:
+
+| Criterio | Persona A | Persona B | Persona C | Resultado |
+|----------|-----------|-----------|-----------|-----------|
+| HU-01 SC-001 · enviar < 3 min | 1:35 (pegado) | 2:48 (tecleado) | 3:22 (tecleado) ✘ | Clarify-3 P5: se mide con el resumen ya redactado. Válidas: 1:35 y una 2.ª medición pegando, 2:23 → **2/2 ✔**. El responsable dio por suficientes 2 mediciones |
+| HU-02 SC-003 · evaluar < 2 min tras leer | 1:10 | 1:20 | 1:35 | **3/3 ✔** |
+| HU-03 SC-004 · programar < 1 min | 42 s | 58 s | 1:12 ✘ | Se mantiene el criterio y se mejora la interfaz (T023). Con la interfaz nueva: 42 s · 58 s · 59 s → **3/3 ✔** |
+| HU-04 SC-001 · inscribirse y pagar < 3 min | 1:25 | 1:50 | 2:15 | **3/3 ✔** |
+
+La estimación KLM acertó en lo esencial: el único riesgo de HU-01 era teclear el resumen con el perfil lento (235 s estimados, 3:22 medidos).
 
 Tras integrar las ramas se comprobó, sobre la aplicación completa, lo que dependía de varias historias: el programa público (spec-003) muestra la sala nueva de una sesión cambiada desde el panel (spec-008), y el área personal enlaza a la agenda (spec-005) y al certificado (spec-007) desde las inscripciones confirmadas (spec-004).
 
@@ -576,7 +592,7 @@ Ejecutada el 2026-11-04 sobre el mismo árbol, después de añadir los recorrido
 
 *Nota de entorno*: el e2e se lanza con un puerto libre (`E2E_PORT=3300 pnpm test:e2e`). Si queda un `next start` antiguo en el puerto 3100, Playwright lo reutiliza (`reuseExistingServer`) y fallan 8 pruebas de inicio de sesión que no tienen nada que ver con la aplicación.
 
-Los 4 criterios de tiempo con una persona real (§5.3) siguen pendientes de verificación manual (issues #1–#4).
+**Cierre (`544178b`)**: dominio **52/52**, integración **183/183**, e2e **49/49**, lint, typecheck y build sin errores. Los 4 criterios de tiempo están medidos con personas (§5.3).
 
 #### 5.4.3 Balance de la iteración
 
@@ -588,6 +604,9 @@ Compara la versión inicial de cada spec (antes del primer `clarify`) con la fin
 | Incidencias documentales (`/speckit-analyze`) | 42 detectadas: 4 CRITICAL, 4 HIGH, 11 MEDIUM y 23 LOW | **40/42 cerradas** con corrección, 1/42 aceptada con justificación (000-core U1) y 1/42 descartada como falso positivo (000-core K1). Segunda pasada: **0 CRITICAL y 0 HIGH** en 9/9 specs | `informes/analyze-1.md`, `analyze-2.md`, `analyze-registro.md` |
 | Brechas de implementación (`/speckit-converge`) | 12 tareas añadidas | **8/12 cerradas** con prueba primero. Quedan **4/12 abiertas**, todas de medición humana (T015, T020, T022, T013), con una estimación KLM registrada que anticipa que se cumplen 4/4 con un mecanógrafo medio y 3/4 con el perfil lento | `informes/converge-*.md`, [estimacion-klm.md](../specs/000-core/informes/estimacion-klm.md) |
 | Criterios de aceptación de las 8 historias | 105 (79 FR + 26 SC) | **101/105 verificados**: 79/79 FR y 22/26 SC. Los 4 SC restantes son las mediciones humanas | `informes/verificacion.md`, §5.2 |
+| **Cierre** · criterios de éxito (SC) | 22/26 | **26/26 verificados**: los 4 de tiempo, medidos con personas (HU-01 con 2 mediciones válidas, por decisión del responsable) | §5.3 |
+| **Cierre** · brechas abiertas | 4 (mediciones) | **0**. Las mediciones produjeron una aclaración (spec-001 clarify-3) y una tarea de interfaz (spec-003 T023), las dos cerradas con prueba | spec-001 `clarify-3.md`, spec-003 `converge-3.md`, `converge-4.md` |
+| **Cierre** · defectos previos encontrados | 1 (interbloqueo) | **2**, los dos corregidos con prueba: interbloqueo `anadir` ∥ `escanear` y pantalla con datos antiguos tras pagar (spec-004 converge-4) | §4.5 |
 | Recorridos entre historias | 0 | **3/3** en verde, que cubren **8/8 historias** | §5.4.1 |
 | **2.ª ronda** · ambigüedades sobre la versión funcional | 8/8 historias revisadas | **6 preguntas, 6/6 respondidas y justificadas por el responsable**; 2/8 historias sin ambigüedades nuevas (se conserva el informe y se explica por qué se mantienen los criterios) | `informes/clarify-2.md` (003 y 006: `clarify-3.md`) |
 | **2.ª ronda** · incidencias documentales (`analyze-3`) | 20 detectadas en 5 specs: 0 CRITICAL, 0 HIGH, 13 MEDIUM y 7 LOW | **20/20 cerradas**; `analyze-4` sin hallazgos en 5/5 | `informes/analyze-3.md`, `analyze-4.md`, `analyze-registro.md` |
@@ -623,7 +642,7 @@ Recoge las decisiones y hallazgos con efecto en la funcionalidad, al menos uno p
 | HU-08 · US3 | I1 HIGH: la prueba independiente era incompatible con el seed | analyze | spec, quickstart | T009b · `86cd97d` | `008/cambiar-sala.test.ts` ✔ | Cerrado |
 | HU-08 · Edge «conexión falla» | F1 MEDIUM: el panel mostraba «Failed to fetch» | converge | `panel.tsx` | T014 · `c8cb253`, `450a2b7` | e2e `008-panel` con red cortada ✔ | Cerrado |
 | HU-01…HU-08 · §5.4 | Faltaba una verificación que encadenara historias | verificación integrada | `tests/integration/integrado/recorridos.test.ts` | RC-1, RC-2, RC-3 · `98db582` | 3/3 ✔ | Cerrado |
-| HU-01 SC-001 · HU-02 SC-003 · HU-03 SC-004 · HU-04 SC-001 | Las 4 tareas de medición humana no tenían ningún dato. Se estiman con KLM sobre la interfaz real; HU-01 con el resumen tecleado y el perfil lento no cumple (235 s > 180 s) | verificación integrada (estimación KLM) | `tests/klm/estimar-klm.ts`, [estimacion-klm.md](../specs/000-core/informes/estimacion-klm.md), `verificacion.md` y `tasks.md` de 001–004 | T015, T020, T022, T013 · `7e59b84` | Medio 4/4 ✔ · lento 3/4 | **Abierto** (falta la medición real, issues #1–#4) |
+| HU-01 SC-001 · HU-02 SC-003 · HU-03 SC-004 · HU-04 SC-001 | Las 4 tareas de medición humana no tenían ningún dato. Se estiman con KLM sobre la interfaz real; HU-01 con el resumen tecleado y el perfil lento no cumple (235 s > 180 s) | verificación integrada (estimación KLM) | `tests/klm/estimar-klm.ts`, [estimacion-klm.md](../specs/000-core/informes/estimacion-klm.md), `verificacion.md` y `tasks.md` de 001–004 | T015, T020, T022, T013 · `7e59b84` | Medio 4/4 ✔ · lento 3/4 | Cerrado (medido con personas, ver las filas de cierre) |
 | HU-05 · US1-6 ↔ HU-08 · US1-1 | La regresión e2e falla de forma intermitente: la prueba del panel confirmaba en la BD «la primera inscripción pendiente» (`findFirst` sin orden), que podía ser la de asistente4, la que US1-6 de spec-005 necesita pendiente. Los ficheros e2e se ejecutan en paralelo y en orden no determinista; el 46/46 de la integración fue fortuito | verificación integrada (regresión) | `tests/e2e/008-panel.spec.ts` | `68433b3` | Antes: 44 ✔, 1 ✘ (`005-agenda.spec.ts:40`), 1 sin ejecutar. Después: **46/46** en dos ejecuciones seguidas ✔ | Cerrado |
 | HU-01 · FR-011 | clarify-2 P4 (responsable): sin títulos repetidos del mismo autor en un congreso | clarify → plan → analyze-3 (A1–A4) → implement → converge-2 (F2) | spec, plan dec. 6, R6, contrato, `000-core/data-model.md`, migración `propuesta_titulo_unico`, `propuesta.ts` | T016–T018 · `e6144ed`, `7282677`, `4190f17`, `24b6176`, `68c40b3` · PR #11 | `001/enviar.test.ts` (k)–(n): antes 3 ✘, después ✔; e2e US1-7 ✔ | Cerrado |
 | HU-02 · FR-012 | clarify-2 P3 (responsable): se mantiene la asignación sin restricción por área | clarify | spec | `1a4dbdf` · PR #12 | comportamiento existente | Cerrado |
@@ -633,6 +652,11 @@ Recoge las decisiones y hallazgos con efecto en la funcionalidad, al menos uno p
 | HU-06 · FR-011, FR-009 | clarify-3 P4 (responsable): sin entrar en dos sesiones solapadas; FR-009 matizada por HU-05 | clarify → plan (R3 orden de bloqueo) → analyze-3 (A1–A4) → implement → converge-2 (F1 e2e, F2 seed) | spec, plan, contrato, `acreditacion.ts`, `seed.ts`, e2e 006 | T011–T013 · `58dbbc1`, `2d03870`, `290f4cf`, `b8e88bd`, `b108420` · PR #16 | `006/escanear.test.ts` (k)–(n): antes 4 ✘ (incluido el interbloqueo 40P01), después 20/20; e2e 48/48 | Cerrado |
 | HU-07 · FR-002 | clarify-2 P3 (responsable): las sesiones solapadas cuentan como una | clarify → plan (dec. 4, R4) → analyze-3 (A1–A3) → implement → converge-2 | spec, plan, `packages/domain/certificado.ts`, `server/certificado.ts`, pantalla | T012–T013 · `9f457a8`, `d9bee1a`, `d298c37`, `c5853e1`, `ca41a0f` · PR #17 | `certificado.test.ts` y `007/estado.test.ts` (i): antes 6 ✘, después ✔ | Cerrado |
 | HU-08 | clarify-2: sin ambigüedades nuevas; criterios mantenidos con justificación | clarify | informe | `85d6a30` · PR #18 | e2e 008 ✔ | Cerrado |
+| HU-04 · US2-1, US2-6 | Defecto: el área personal mostraba un estado anterior tras pagar o volver a inscribirse (desde la primera entrega en el caso del pago) | converge-4 (al regrabar la demo) | `inscripcion/formulario.tsx`, `pago/formulario.tsx`, e2e 004 | T017 · `7e1fe5f`, `fecb5bf` · PR #20 | e2e con navegación por enlaces: antes ✘ («Pendiente de pago»), después 5/5; 48/48 | Cerrado |
+| HU-01 · SC-001 | Medición: 1 de 3 > 3 min tecleando → clarify-3 P5: se mide con el resumen redactado | clarify | spec SC-001, `clarify-3.md/.diff`, `verificacion.md` | T015 · `6a1e5e2` · PR #22 | 1:35 y 2:23 pegando ✔ (2 mediciones, decisión del responsable) | Cerrado |
+| HU-02 · SC-003 | Medición con personas | verificación | `verificacion.md` | T020 · `c01405d` · PR #22 | 1:10 · 1:20 · 1:35 ✔ | Cerrado |
+| HU-03 · SC-004 | Medición 2/3 → se mantiene el criterio y se proponen las horas al programar | converge-3 → implement → converge-4 | plan, `packages/domain/intervalos.ts`, `programa/acciones.tsx`, e2e 003 | T022, T023 · `747017a`, `b9e1f8d` · PR #22 | dominio y e2e: antes ✘, después ✔; nueva medición 42 s · 58 s · 59 s ✔ | Cerrado |
+| HU-04 · SC-001 | Medición con personas | verificación | `verificacion.md` | T013 · `f647efd` · PR #22 | 1:25 · 1:50 · 2:15 ✔ | Cerrado |
 
 #### 5.4.5 Matriz de trazabilidad
 
@@ -661,6 +685,7 @@ Hay dos criterios por historia, los de más riesgo. La matriz completa *requisit
 | HU-05 | FR-010 · Reserva hasta inicio + 10 min (2.ª ronda) | `reservaVigente` en `packages/domain` (decisión 7) | T012 + spec-006 T011 | `domain/ocupacion.test.ts` + `integration/006/escanear.test.ts` (k) |
 | HU-06 | FR-011 · Sin sesiones solapadas en la puerta (2.ª ronda) | Comprobación A7 y bloqueo inscripción → sesión (decisiones 2 y 3) | T012, T013 | `integration/006/escanear.test.ts` (l)–(n) |
 | HU-07 | FR-002 · Turnos de sesiones solapadas (2.ª ronda) | `recuentoPorTurnos` (decisión 4, R4) | T012, T013 | `domain/certificado.test.ts` + `integration/007/estado.test.ts` (i) |
+| HU-03 | SC-004 · Programar en < 1 min (medición) | Horas propuestas con `primerHueco` (decisión añadida en converge-3) | T022, T023 | `domain/intervalos.test.ts` + e2e «SC-004 (converge-3, T023)» + medición con personas |
 
 **Revisión de la cobertura.** Se ha comprobado que existe cada fichero de la columna *prueba prevista* y que la suite lo ejecuta en verde (§5.4.2). No se han introducido errores artificiales. El revisor es una autorrevisión diferida, por la misma razón que en §5.3.
 
@@ -746,7 +771,7 @@ Resumen de hallazgos y su tratamiento:
 
 - **Ramas**: `main` y una por spec (`spec-001` … `spec-008`), todas creadas desde `main`. Las dependencias entre ramas se anotan en el `tasks.md` de cada spec; por ejemplo, el enlace «Mi agenda» se hace al integrar. Para que cada historia se pudiera probar sola, en dos casos se copió sin cambios código de otra rama (`fechas.ts` de spec-003 en spec-005; el `global-setup` de los e2e de spec-002).
 - **Issues**: en la primera entrega no se crearon (el backlog vivía solo en los `tasks.md`). En la segunda ronda se abrieron **10 issues**: #1–#4 para las mediciones humanas (abiertas), #5–#9 para implementar las decisiones de clarify (cerradas por sus PR) y #10 para esta actualización de la memoria. Cada tarea de `tasks.md` cita su issue. `speckit-taskstoissues` aparece como obsoleto en Spec Kit 1.2.4 y no se usó.
-- **Pull requests**: la segunda ronda se integró con **8 PR**, uno por historia (#11–#18, ramas `spec-00X-clarify-2`). Cada uno documenta su ciclo con un commit por paso, la evidencia del «antes» y la regresión completa, y cierra su issue. #16 se construyó sobre #15, porque necesita `reservaVigente`, y se fusionó después. En la primera entrega no se usaron PR: la integración se hizo con un **merge directo en `main`**: primero se fusionaron las 8 ramas en orden (001 → 008) en una rama de ensayo para resolver los conflictos y pasar todas las pruebas, y después se llevó el resultado a `main` en un único commit de merge que tiene como padres `main` y las 8 ramas `spec-*`. Los conflictos fueron los previstos:
+- **Pull requests**: la segunda ronda se integró con **8 PR**, uno por historia (#11–#18, ramas `spec-00X-clarify-2`); después, #19 (memoria), #20 (defecto de la caché del router), #21 (demo regrabada) y #22 (mediciones con personas). Cada uno documenta su ciclo con un commit por paso, la evidencia del «antes» y la regresión completa, y cierra su issue. #16 se construyó sobre #15, porque necesita `reservaVigente`, y se fusionó después. En la primera entrega no se usaron PR: la integración se hizo con un **merge directo en `main`**: primero se fusionaron las 8 ramas en orden (001 → 008) en una rama de ensayo para resolver los conflictos y pasar todas las pruebas, y después se llevó el resultado a `main` en un único commit de merge que tiene como padres `main` y las 8 ramas `spec-*`. Los conflictos fueron los previstos:
   - `root.ts`, donde cada rama registra su router: se conservan todos;
   - los índices de `organizador/`, `area-personal/` y la ficha del congreso: se combinan los enlaces de cada spec (propuestas, programa, panel; inscripción y programa; QR, «Mi agenda» y certificado);
   - el contrato y el plan de 000-core: se combinan las filas de cada spec;
@@ -756,7 +781,7 @@ Resumen de hallazgos y su tratamiento:
 
 ### 7.3 Historial de commits
 
-Tras la segunda ronda, `main` tiene **139 commits**: los 84 de la primera entrega más 53 de la ronda de refinamiento (40 de pasos del ciclo y 13 merges, entre ellos los 8 de PR). En la primera entrega, el historial de `main` tenía **84 commits**: 1 del 26 de octubre (inicio del proyecto), 79 del 3 de noviembre (todo el ciclo SDD de las 9 specs y la integración) y 4 del 4 de noviembre (limpieza, verificación de 000-core y recorridos de §5.4). La tabla siguiente cuenta los 77 commits de pasos del ciclo:
+Al cierre (`544178b`), `main` tiene **155 commits**. Tras la segunda ronda tenía **139**: los 84 de la primera entrega más 53 de la ronda de refinamiento (40 de pasos del ciclo y 13 merges, entre ellos los 8 de PR). En la primera entrega, el historial de `main` tenía **84 commits**: 1 del 26 de octubre (inicio del proyecto), 79 del 3 de noviembre (todo el ciclo SDD de las 9 specs y la integración) y 4 del 4 de noviembre (limpieza, verificación de 000-core y recorridos de §5.4). La tabla siguiente cuenta los 77 commits de pasos del ciclo:
 
 | Rama | Commits |
 |------|---------|
@@ -831,10 +856,12 @@ gitGraph
 | Interbloqueo `anadir` ∥ `escanear` que las pruebas de la primera entrega no cubrían | Prueba concurrente que lo reproduce y orden de bloqueo común (spec-006 R3) |
 | Un analyze dio por comprobadas las pruebas sin mirar las e2e ni el seed (spec-006) | La regresión e2e lo detectó; converge-2 lo corrigió, y desde spec-007 analyze revisa también e2e y seed |
 | Un servidor `next start` antiguo reutilizado por Playwright daba fallos falsos | Ejecutar el e2e con `E2E_PORT` libre |
+| Las e2e entraban en las pantallas con `page.goto` y no veían un defecto de la navegación en el cliente (datos antiguos tras pagar) | Lo descubrió el ensayo de la demo; las e2e de HU-04 navegan ahora con los enlaces, como un usuario |
+| Dos criterios de tiempo no se cumplían para todas las personas | No se rebajó ninguno: se aclaró una condición que faltaba (HU-01) y se mejoró la interfaz (HU-03) hasta cumplirlos |
 
 ### 8.3 Trabajo futuro
 
-1. **Hacer las 4 mediciones humanas** (T015, T020, T022, T013; issues #1–#4) y registrarlas junto a su estimación KLM. En HU-01, anotar si el resumen se pegó o se tecleó.
+1. Repetir la medición de HU-03 SC-004 si cambia el formulario de programación (la persona más lenta quedó a 1 s del límite), y ampliar la de HU-01 a una 3.ª persona.
 2. Unificar los bloqueos de `programa` (spec-003) y `panel` (spec-008) cuando ambos escriben en la misma sala, para que un alta de sesión y un cambio de sala simultáneos se serialicen también entre sí.
 3. Fuera del alcance de la versión 1 y solo si entran en una spec:
    - gestión de congresos desde la interfaz;
