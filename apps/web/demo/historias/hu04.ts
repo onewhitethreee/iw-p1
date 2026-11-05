@@ -50,17 +50,32 @@ export const hu04: Historia = {
     await e.clic(p.getByRole("link", { name: "Área personal" }), 1200);
     await e.resaltar(tarjeta("Jornadas de Pediatría"), 3000);
 
+    // ── US2-6 (clarify-2 P4)
+    await e.escenario("US2-6", "Se equivocó de tipo: cancelar y volver a inscribirse", "Asistente 5 quería «Profesional». Como aún no ha pagado, cancela la inscripción y se inscribe de nuevo, al precio vigente hoy.");
+    await e.clic(tarjeta("Jornadas de Pediatría").getByRole("button", { name: "Cancelar inscripción" }), 1200);
+    await e.resaltar(p.getByText("Si vuelves a inscribirte, se aplicará el precio vigente ese día."), 2000);
+    await e.clic(tarjeta("Jornadas de Pediatría").getByRole("button", { name: "Sí, cancelar" }), 1500);
+    await tarjeta("Jornadas de Pediatría").getByText("Cancelada").waitFor();
+    await e.resaltar(tarjeta("Jornadas de Pediatría"), 2400);
+    await e.clic(tarjeta("Jornadas de Pediatría").getByRole("link", { name: "Inscribirme de nuevo" }), 1200);
+    await e.elegir(p.getByLabel("Tipo de asistente"), "PROFESIONAL", 1200);
+    await e.clic(p.getByRole("button", { name: "Inscribirme" }), 1500);
+    await p.getByRole("button", { name: "Pagar 250,00 €" }).waitFor();
+    await e.clic(p.getByRole("link", { name: "Área personal" }), 1200);
+    await e.resaltar(tarjeta("Jornadas de Pediatría"), 2600);
+    await e.narrar("Es la misma inscripción, ahora como profesional (250 €) y otra vez pendiente de pago.", 1800);
+
     // ── US2-2
     await e.escenario("US2-2", "Pago rechazado", "Con la tarjeta de prueba 4000 0000 0000 0002 el pago se rechaza; la inscripción sigue pendiente y se puede reintentar.");
-    await e.clic(tarjeta("Jornadas de Pediatría").getByRole("link", { name: "Pagar 90,00 €" }), 1200);
+    await e.clic(tarjeta("Jornadas de Pediatría").getByRole("link", { name: "Pagar 250,00 €" }), 1200);
     await e.escribir(p.getByLabel("Número de tarjeta"), "4000 0000 0000 0002");
-    await e.clic(p.getByRole("button", { name: "Pagar 90,00 €" }), 1200);
+    await e.clic(p.getByRole("button", { name: "Pagar 250,00 €" }), 1200);
     await e.resaltar(p.getByRole("main").getByRole("alert"), 2600);
 
     // ── US2-1
     await e.escenario("US2-1", "Pago aprobado y acreditación con QR", "Reintenta con otra tarjeta: la inscripción pasa a «Confirmada» y aparece su código QR.");
     await e.escribir(p.getByLabel("Número de tarjeta"), "4111 1111 1111 1111");
-    await e.clic(p.getByRole("button", { name: "Pagar 90,00 €" }), 1500);
+    await e.clic(p.getByRole("button", { name: "Pagar 250,00 €" }), 1500);
     await p.waitForURL(/pagada=1/);
     await e.resaltar(p.getByText("Pago aprobado. Tu inscripción está confirmada."), 1600);
     await e.resaltar(tarjeta("Jornadas de Pediatría"), 2000);
@@ -70,6 +85,13 @@ export const hu04: Historia = {
     await e.escenario("US2-3", "Sin pagos dobles", "Intentar pagar otra vez la inscripción ya confirmada.");
     const mia = await db.inscripcion.findFirstOrThrow({ where: { usuario: { email: "asistente5@congresalia.es" }, congresoId: ped } });
     await e.peticion("inscripcion.pagar", { inscripcionId: mia.id, tarjeta: "4111 1111 1111 1111" });
+    await e.ocultarConsola();
+
+    // ── US2-7 (clarify-2 P4)
+    await e.escenario("US2-7", "Una inscripción pagada no se cancela", "Ya no aparece el botón y, con una petición directa, el servidor lo rechaza.");
+    await e.ir("/area-personal", 900);
+    await e.resaltar(tarjeta("Jornadas de Pediatría"), 1600);
+    await e.peticion("inscripcion.cancelar", { inscripcionId: mia.id });
     await e.ocultarConsola();
 
     // ── US1-3
@@ -95,6 +117,9 @@ export const hu04: Historia = {
     // ── US2-4
     await e.escenario("US2-4", "Pagar la inscripción de otra persona", "Asistente 5 intenta pagar la inscripción pendiente de Asistente 4.");
     await e.peticion("inscripcion.pagar", { inscripcionId: deAsistente4.id, tarjeta: "4111 1111 1111 1111" });
+    await e.ocultarConsola();
+    await e.narrar("Tampoco puede cancelarla: solo la cancela su titular (US2-7).", 1000);
+    await e.peticion("inscripcion.cancelar", { inscripcionId: deAsistente4.id });
     await e.ocultarConsola();
 
     // ── US1-4

@@ -128,5 +128,10 @@ export const hu05: Historia = {
     await e.ir(AGENDA, 1200);
     await e.resaltar(enAgenda("Aprendizaje basado en proyectos"), 2200);
     await e.peticion("agenda.quitar", { sesionId: aprendizaje });
+    await e.ocultarConsola();
+
+    // ── US1-8 (clarify-2 P2)
+    await e.escenario("US1-8", "La reserva guarda la plaza hasta 10 minutos después del inicio", "Pasado ese margen, la plaza de quien no se ha presentado queda libre para cualquiera; la sesión sigue en su agenda. Se comprueba en la puerta: vídeo de HU-06, escenario US1-9.");
+    await e.resaltar(enAgenda("Aprendizaje basado en proyectos"), 2400);
   },
 };
