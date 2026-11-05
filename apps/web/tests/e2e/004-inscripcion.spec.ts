@@ -40,6 +40,10 @@ test.describe.serial("spec-004 · inscripción y pago (HU-04)", () => {
     const tarjeta = page.getByTestId("inscripcion").filter({ hasText: "Jornadas de Pediatría" });
     await expect(tarjeta).toContainText("Confirmada");
     await expect(tarjeta.getByRole("img", { name: "Código QR de acreditación" })).toBeVisible();
+    // converge-4 F1: volver al área personal con el enlace (navegación en el cliente) muestra el estado actual
+    await page.getByRole("link", { name: "Área personal" }).first().click();
+    await expect(page).toHaveURL(/\/area-personal$/);
+    await expect(tarjeta).toContainText("Confirmada");
   });
 
   test("US1-3: ya inscrito → aviso con enlace al área personal", async ({ page }) => {
@@ -64,7 +68,7 @@ test.describe.serial("spec-004 · inscripción y pago (HU-04)", () => {
     await page.getByRole("button", { name: "Inscribirme" }).click();
     await expect(page).toHaveURL(/\/area-personal\/pago\//);
 
-    await page.goto("/area-personal");
+    await page.getByRole("link", { name: "Área personal" }).first().click(); // navegación en el cliente, como un usuario (converge-4 F1)
     const tarjeta = page.getByTestId("inscripcion").filter({ hasText: "Jornadas de Pediatría" });
     await tarjeta.getByRole("button", { name: "Cancelar inscripción" }).click();
     await expect(tarjeta).toContainText("Si vuelves a inscribirte, se aplicará el precio vigente ese día.");
@@ -75,8 +79,8 @@ test.describe.serial("spec-004 · inscripción y pago (HU-04)", () => {
     await tarjeta.getByRole("link", { name: "Inscribirme de nuevo" }).click();
     await page.getByLabel("Tipo de asistente").selectOption("PROFESIONAL");
     await page.getByRole("button", { name: "Inscribirme" }).click();
-    await expect(page).toHaveURL(/\/area-personal\/pago\//);
-    await page.goto("/area-personal");
+    await expect(page.getByRole("button", { name: "Pagar 250,00 €" })).toBeVisible();
+    await page.getByRole("link", { name: "Área personal" }).first().click(); // converge-4 F1: antes mostraba «Cancelada» (caché del router)
     await expect(tarjeta).toContainText("Pendiente de pago");
     await expect(tarjeta).toContainText("Profesional");
     await expect(page.getByTestId("inscripcion").filter({ hasText: "Jornadas de Pediatría" })).toHaveCount(1);

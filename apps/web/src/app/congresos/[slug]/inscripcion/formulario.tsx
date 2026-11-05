@@ -14,7 +14,13 @@ type Tipo = "PROFESIONAL" | "SOCIO" | "ESTUDIANTE";
 export function FormularioInscripcion({ congresoId, tipos }: { congresoId: string; tipos: { tipoAsistente: Tipo; etiqueta: string }[] }) {
   const router = useRouter();
   const trpc = useTRPC();
-  const crear = useMutation(trpc.inscripcion.crear.mutationOptions({ onSuccess: (r) => router.push(`/area-personal/pago/${r.id}`) }));
+  const crear = useMutation(trpc.inscripcion.crear.mutationOptions({
+      onSuccess: (r) => {
+        router.push(`/area-personal/pago/${r.id}`);
+        router.refresh(); // invalida la caché del router: una inscripción reactivada no se ve «Cancelada» (converge-4 F1)
+      },
+    }),
+  );
   const [tipo, setTipo] = useState<Tipo | "">("");
   return (
     <div className="grid gap-3">

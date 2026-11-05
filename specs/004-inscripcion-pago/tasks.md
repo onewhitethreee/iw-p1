@@ -98,3 +98,7 @@ Tareas que salen de `informes/clarify-2.md`. Se implementan después de revisar 
 ## Convergencia tras clarify-2 (converge-2, 2026-11-05)
 
 - [X] T016 Actualizar la documentación que contradice el código (converge-2 F1, F2): en `specs/004-inscripcion-pago/data-model.md`, el estado `CANCELADA`, la transición y «inmutables mientras no se cancele» (FR-011); en el «Summary» de `plan.md`, 5 procedimientos y la migración `inscripcion_cancelada`
+
+## Convergencia al regrabar la demo (converge-4, 2026-11-05)
+
+- [X] T017 Estado actual del área personal tras inscribirse o pagar (converge-4 F1): **prueba primero** en `apps/web/tests/e2e/004-inscripcion.spec.ts`, volviendo al área personal con el enlace «Área personal» (navegación en el cliente, como un usuario) tras pagar y tras volver a inscribirse; las dos fallaban. Después: `router.refresh()` tras `router.push` en `congresos/[slug]/inscripcion/formulario.tsx` y `area-personal/pago/[inscripcionId]/formulario.tsx`, el mismo patrón que ya usa `ponente/enviar/formulario.tsx`

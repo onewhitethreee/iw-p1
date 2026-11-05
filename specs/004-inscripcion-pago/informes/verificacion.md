@@ -45,3 +45,11 @@ Comando del «antes»: `pnpm exec vitest run tests/integration/004` → **8 fail
 
 *Nota de entorno*: `prisma generate` no pudo sustituir `query_engine-windows.dll.node` porque lo tenían abierto dos `next start` antiguos (puertos 3100 y 3200). El cliente TypeScript sí se regeneró (incluye `CANCELADA`) y el binario del motor no depende del esquema. Conviene repetir `pnpm exec prisma generate` cuando esos procesos estén cerrados.
 
+## Iteración 4 (converge-4 → T017, navegación en el cliente) · 2026-11-05
+
+| # | Escenario | Entrada | Esperado | Observado **antes** | Observado **después** | Resultado |
+|---|-----------|---------|----------|---------------------|-----------------------|-----------|
+| 19 | US2-1 tras pagar | pagar con 4111…; en `?pagada=1` pulsar «Área personal» | «Confirmada» con QR | ✘ «Pendiente de pago · Pagar 90,00 € · Cancelar inscripción» (caché del router) | Igual que lo esperado | ✔ |
+| 20 | US2-6 tras volver a inscribirse | cancelar → «Inscribirme de nuevo» profesional → «Área personal» | «Pendiente de pago · Profesional · 250,00 €» | ✘ «Cancelada · Estudiante · 90,00 €» | Igual que lo esperado | ✔ |
+
+Comando: `E2E_PORT=3300 pnpm exec playwright test tests/e2e/004-inscripcion.spec.ts`. Antes: fallaron los dos escenarios (cada uno en su ejecución, porque la serie se detiene en el primer fallo). Después: **5/5**. Regresión e2e completa **48/48**; lint, typecheck y `next build` ✔.
