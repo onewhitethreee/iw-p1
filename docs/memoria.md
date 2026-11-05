@@ -7,7 +7,7 @@
 | Asignatura | Ingeniería Web · Universidad de Alicante · curso 2026-27 · Parte I (Spec-Driven Development) |
 | Grupo | G16 · un integrante |
 | Autor | **Yangfeng Liu** |
-| Fecha | 4 de noviembre de 2026 |
+| Fecha | 4 de noviembre de 2026 · revisada el 5 de noviembre de 2026 tras la ronda de refinamiento (§4.5) |
 | Metodología | Spec-Driven Development con GitHub Spec Kit 1.2.4 |
 | Pila | Next.js 15 (App Router) · tRPC 11 · Prisma 6 · PostgreSQL 16 · shadcn/ui sobre Tailwind CSS 4 · TypeScript 5 |
 
@@ -21,7 +21,7 @@ Congresalia es una aplicación web para organizar congresos científicos y profe
 - los **asistentes**, que se inscriben, pagan, construyen su agenda y descargan su certificado;
 - el **personal de acreditación**, que controla con un QR el acceso a cada sala.
 
-El proyecto se ha desarrollado entero con Spec Kit. Hay una especificación común (`000-core`) y ocho especificaciones, una por historia de usuario. Cada una ha pasado el ciclo *specify → clarify → plan → tasks → analyze → implement → converge*, y todos los informes se guardan en el repositorio como evidencia. **Resultado**: las 8 historias están implementadas, convergidas e **integradas en `main`** con un merge de las 8 ramas. Las reglas de negocio se validan en el servidor y están cubiertas por 254 pruebas automáticas (42 unitarias, 166 de integración —incluidos 3 recorridos que pasan por las 8 historias, §5.4— y 46 e2e), todas en verde sobre la aplicación integrada. Quedan abiertas solo 4 mediciones de tiempo con usuarios reales.
+El proyecto se ha desarrollado entero con Spec Kit. Hay una especificación común (`000-core`) y ocho especificaciones, una por historia de usuario. Cada una ha pasado el ciclo *specify → clarify → plan → tasks → analyze → implement → converge*, y todos los informes se guardan en el repositorio como evidencia. **Resultado**: las 8 historias están implementadas, convergidas e **integradas en `main`** con un merge de las 8 ramas. Las reglas de negocio se validan en el servidor y están cubiertas por 279 pruebas automáticas (48 unitarias, 183 de integración —incluidos 3 recorridos que pasan por las 8 historias, §5.4— y 48 e2e), todas en verde sobre `main` el 5 de noviembre. Después de la primera versión se hizo **una segunda ronda de `/speckit-clarify` sobre la aplicación ya funcionando**, con las decisiones tomadas por el responsable. Dio 6 cambios de criterio en 6 historias, cada uno llevado por plan → analyze → implement → converge y fusionado con su PR (#11–#18), y sacó a la luz un interbloqueo que ya existía en `main` (§4.5). Quedan abiertas solo 4 mediciones de tiempo con usuarios reales (issues #1–#4).
 
 ## URL del repositorio en GitHub
 
@@ -29,6 +29,7 @@ El proyecto se ha desarrollado entero con Spec Kit. Hay una especificación com�
 
 - `main`: aplicación completa e integrada (base común `specs/000-core` y las 8 historias), con la documentación.
 - `spec-001` … `spec-008`: una rama por historia de usuario, con su especificación, sus informes y su código; todas se integraron en `main` con un único commit de merge.
+- `spec-001-clarify-2` … `spec-008-clarify-2`: la ronda de refinamiento sobre la versión funcional (§4.5), una por historia, fusionadas en `main` con los **pull requests #11–#18**. El trabajo pendiente se sigue en los **issues #1–#10**.
 
 ---
 
@@ -112,10 +113,10 @@ Cada historia tiene escenarios «Dado… Cuando… Entonces…». Hay al menos u
 | FR-012 (A3) | Puntuación entera de 1 a 10 y comentario obligatorio |
 | FR-013 | Anonimato: nada de lo que recibe un evaluador incluye datos del autor |
 | FR-014 (A7) | `[inicioA, finA)` y `[inicioB, finB)` se solapan si `inicioA < finB` y `inicioB < finA` |
-| FR-015 (A6) | Aforo de una sesión = aforo de su sala; ni las reservas ni las asistencias pueden superarlo |
+| FR-015 (A6) | Aforo de una sesión = aforo de su sala; ni las reservas ni las asistencias pueden superarlo. La reserva garantiza la plaza en la puerta hasta 10 min después del inicio (spec-005 clarify-2 P2) |
 | FR-016 (A4) | Tarifa según tipo de asistente y fecha de creación (temprana o general); queda fijada en la inscripción |
-| FR-017/018 (A5) | `PENDIENTE_PAGO` → `CONFIRMADA` con pago simulado; solo la inscripción confirmada da QR, agenda y certificado |
-| FR-019 | Certificado: asistencias a sesiones de la agenda / sesiones de la agenda ≥ 80 %, con el congreso finalizado |
+| FR-017/018 (A5) | `PENDIENTE_PAGO` → `CONFIRMADA` con pago simulado; solo la inscripción confirmada da QR, agenda y certificado. Una pendiente puede pasar a `CANCELADA` y volver a `PENDIENTE_PAGO` en la misma fila (spec-004 clarify-2 P4) |
+| FR-019 | Certificado: asistencias a sesiones de la agenda / sesiones de la agenda ≥ 80 %, con el congreso finalizado. Las sesiones de la agenda que se solapan cuentan como una (spec-007 clarify-2 P3) |
 | FR-020 (A9) | El panel se refresca solo cada 5 s o menos |
 | FR-021 | Español de España e importes en euros (por ejemplo, «1.250,00 €») |
 | FR-022 | Datos de ejemplo reproducibles con tres congresos en fases distintas |
@@ -124,13 +125,13 @@ Cada historia tiene escenarios «Dado… Cuando… Entonces…». Hay al menos u
 
 | Spec | Requisitos clave |
 |------|------------------|
-| 001 | Enviar solo dentro del plazo y con un área del congreso; la propuesta enviada es inmutable; el ponente ve solo el estado, nunca puntuaciones ni evaluadores |
-| 002 | El organizador asigna evaluadores con rol comité, nunca al autor ni dos veces al mismo; el evaluador ve solo sus asignadas, sin autor; la evaluación se puede modificar hasta que se decide; para decidir hacen falta 2 evaluaciones o más; las asignaciones son permanentes |
+| 001 | Enviar solo dentro del plazo y con un área del congreso; la propuesta enviada es inmutable; el ponente ve solo el estado, nunca puntuaciones ni evaluadores; **un autor no repite título en un congreso** (clarify-2 P4) |
+| 002 | El organizador asigna evaluadores con rol comité, nunca al autor ni dos veces al mismo; el evaluador ve solo sus asignadas, sin autor; la evaluación se puede modificar hasta que se decide; para decidir hacen falta 2 evaluaciones o más; las asignaciones son permanentes; **la asignación no se restringe por área** (clarify-2 P3) |
 | 003 | Solo se programan propuestas aceptadas; sin solapes de ponente ni de sala; dentro de las fechas y en el mismo día; un congreso finalizado bloquea el programa; una sesión empezada solo puede cambiar de sala; programa público con SSR, SEO, sitemap y robots |
-| 004 | Precio vigente visible; importe calculado en el servidor y fijado; una inscripción por congreso; pasarela simulada (la tarjeta de prueba `4000 0000 0000 0002` se rechaza); QR único al confirmar; no se guardan datos de tarjeta |
-| 005 | Agenda solo con inscripción confirmada; sesiones publicadas y no empezadas; sin solapes; sin superar el aforo, también con peticiones simultáneas; se puede quitar hasta que empiece; aviso si un cambio posterior del programa crea un solape |
-| 006 | Solo el rol `ACREDITACION`; código existente, confirmado y del mismo congreso; ventana desde 30 min antes del inicio hasta el fin; «Ya registrado» sin consumir aforo; quien reservó tiene la plaza garantizada; el aforo se respeta con varias puertas a la vez |
-| 007 | Certificado disponible solo con el congreso finalizado y un 80 % o más (comparación exacta); porcentaje mostrado truncado a entero; PDF con nombre, congreso, fechas, sede, sesiones y horas; solo el titular puede descargarlo |
+| 004 | Precio vigente visible; importe calculado en el servidor y fijado; una inscripción no cancelada por congreso; **una pendiente se puede cancelar y volver a inscribirse; una confirmada no** (clarify-2 P4); pasarela simulada (la tarjeta de prueba `4000 0000 0000 0002` se rechaza); QR único al confirmar; no se guardan datos de tarjeta |
+| 005 | Agenda solo con inscripción confirmada; sesiones publicadas y no empezadas; sin solapes; sin superar el aforo, también con peticiones simultáneas; se puede quitar hasta que empiece; aviso si un cambio posterior del programa crea un solape; **la reserva garantiza la plaza hasta 10 min después del inicio** (clarify-2 P2) |
+| 006 | Solo el rol `ACREDITACION`; código existente, confirmado y del mismo congreso; ventana desde 30 min antes del inicio hasta el fin; «Ya registrado» sin consumir aforo; quien reservó tiene la plaza garantizada hasta 10 min después del inicio; **nadie entra en dos sesiones que se solapan** (clarify-3 P4); el aforo se respeta con varias puertas a la vez |
+| 007 | Certificado disponible solo con el congreso finalizado y un 80 % o más (comparación exacta); porcentaje mostrado truncado a entero; PDF con nombre, congreso, fechas, sede, sesiones y horas; solo el titular puede descargarlo; **las sesiones solapadas de la agenda cuentan como una** (clarify-2 P3) |
 | 008 | Solo el organizador; inscripciones e ingresos (pagos aprobados) con desglose por tipo × tarifa; ocupación por sesión = máx(reservas, asistencias) / aforo, con aviso a partir del 90 % y del 100 %; refresco cada 5 s; cambio de sala a una libre con aforo suficiente |
 
 ### 2.4 Requisitos no funcionales
@@ -385,7 +386,7 @@ Una prueba lanza 10 escaneos simultáneos para la última plaza y comprueba que 
 
 ### 4.4 Decisiones tomadas sobre la marcha
 
-Salieron de `/speckit-clarify` (preguntas de la herramienta, respondidas con la opción recomendada), de `/speckit-analyze` (incoherencias entre artefactos) y de `/speckit-converge` (huecos entre el código y la spec):
+Salieron de `/speckit-clarify` (en la primera ronda, preguntas de la herramienta respondidas con la opción recomendada por delegación; en la segunda, respondidas por el responsable, ver §4.5), de `/speckit-analyze` (incoherencias entre artefactos) y de `/speckit-converge` (huecos entre el código y la spec):
 
 | Spec | Decisión | Origen |
 |------|----------|--------|
@@ -401,6 +402,30 @@ Salieron de `/speckit-clarify` (preguntas de la herramienta, respondidas con la 
 | 007 | Solo el titular descarga; porcentaje truncado a entero; PDF robusto ante caracteres no latinos | clarify P1–P2, converge T011 |
 | 008 | Ocupación = máx(reservas, asistencias); aforo destino ≥ esa cifra; solo sesiones no terminadas; ejemplo del seed corregido | clarify P1–P3, analyze I1, converge T014 |
 | Todas | **Revisar y actualizar el contrato de 000-core en cada `/speckit-plan`** | Lección de los hallazgos C1 (spec-003 y spec-004) y X1 (spec-002) |
+
+
+### 4.5 Segunda ronda de refinamiento sobre la versión funcional (4 y 5 de noviembre)
+
+La primera ronda de `/speckit-clarify` se hizo **antes** de implementar, y 22 de sus 24 respuestas fueron la opción recomendada por delegación (§5.4.3). Para cumplir el §5.1 del enunciado se repitió **sobre la aplicación ya funcionando**:
+
+1. Se probaron las 8 historias (dominio 42/42, integración 166/166, e2e 46/46 sobre `7e59b84`) y se revisaron por historia tres situaciones: habitual, inválida o límite, y permisos o estado.
+2. Se buscaron ambigüedades **reales**, comprobándolas contra el código. Las respuestas y las justificaciones las dio el responsable, no la herramienta.
+3. Cada decisión que cambiaba un criterio pasó por plan → analyze (inicial y final) → implement (pruebas primero, guardando el fallo previo) → converge hasta *converged*, y se fusionó con su PR.
+
+| Historia | Decisión del responsable | Justificación (resumen) | Resultado técnico | PR / issue |
+|----------|--------------------------|-------------------------|-------------------|------------|
+| HU-01 | Se rechaza una propuesta del mismo autor al mismo congreso con el mismo título | Evitar que el comité haga el mismo trabajo dos veces | Índice único `(autorId, congresoId, lower(btrim(titulo)))` en la BD; cubre también el doble clic | #11 / #5 |
+| HU-02 | La asignación **no** se restringe por área (se mantiene el criterio) | El organizador ya elige al experto adecuado | Solo documentación (FR-012) | #12 |
+| HU-03 | Sin ambigüedades nuevas | Se explica por qué se mantienen los criterios | — | #13 |
+| HU-04 | Una inscripción pendiente se puede cancelar y volver a hacer; una pagada no. **Revoca en parte la P1 de la primera ronda** | Que nadie quede bloqueado por elegir mal el tipo, sin entrar en reembolsos | Estado `CANCELADA`; se reutiliza la misma fila, así que agenda, QR, certificado y panel no cambian | #14 / #6 |
+| HU-05 | La reserva garantiza la plaza hasta 10 min después del inicio | Aprovechar los asientos que de verdad quedan libres, sin dejar fuera a quien llega tarde si hay sitio | `reservaVigente()` en `packages/domain` | #15 / #7 |
+| HU-06 | Nadie entra en una sesión que se solapa con otra en la que ya está registrado | Que la ocupación y el certificado sean exactos | Comprobación A7 en `escanear` y bloqueo inscripción → sesión | #16 / #7, #8 |
+| HU-07 | Las sesiones solapadas de la agenda cuentan como una para el 80 % | El solape lo provoca el organizador, no el asistente | `recuentoPorTurnos()` (componentes conexas) en `packages/domain` | #17 / #9 |
+| HU-08 | Sin ambigüedades nuevas | Se explica por qué se mantienen el sondeo de 5 s y la ocupación | — | #18 |
+
+**Defecto que ya existía, encontrado en esta ronda.** La prueba (n) de spec-006 reprodujo un **interbloqueo real** (`40P01 deadlock detected`) entre `agenda.anadir` y `acreditacion.escanear` de la misma persona y sesión. Podía pasar entre los 30 min anteriores al inicio y el inicio, porque las dos cosas están permitidas a la vez. `anadir` bloquea inscripción → sesión. `escanear` bloqueaba la sesión, y al insertar la `Asistencia` la clave ajena pedía un bloqueo sobre la inscripción: el orden contrario. Se corrigió con un orden común inscripción → sesión (spec-006 plan R3).
+
+**Datos de ejemplo.** El seed tenía a `asistente1` registrado en dos sesiones solapadas, un estado que la aplicación ya no permite (spec-006 converge-2 F2). La asistencia del Auditorio pasa a `demo01`; la ocupación mostrada es la misma. *Los vídeos de la demo se grabaron con el seed anterior.*
 
 ---
 
@@ -434,8 +459,9 @@ Resultado de la regresión completa de cada rama antes de integrarla, tal como q
 | spec-007 | 35/35 | 36/36 (22 + 14) | 11/11 (7 + 4) | ✔ |
 | spec-008 | 37/37 | 38/38 (22 + 16) | 12/12 (7 + 5) | ✔ |
 | **main integrada** | **42/42** | **163/163** | **46/46** | ✔ |
+| **main tras la segunda ronda (2026-11-05, `50c56e8`)** | **48/48** | **183/183** | **48/48** | ✔ |
 
-Con todo integrado en `main` se ejecutan **42 pruebas unitarias, 163 de integración y 46 e2e** (las 45 de las ramas más la de T011 de spec-005), todas en verde. Algunas mediciones destacadas:
+Con todo integrado en `main` se ejecutaron **42 pruebas unitarias, 163 de integración y 46 e2e** (las 45 de las ramas más la de T011 de spec-005), todas en verde. Tras la segunda ronda (§4.5) son **48, 183 y 48**: 6 unitarias, 17 de integración y 2 e2e nuevas, más los 3 recorridos de §5.4. Algunas mediciones destacadas:
 
 - **Escaneo** (spec-006): menos de 1 s en todas las ejecuciones.
 - **Concurrencia**: 1 admitido de 10 escaneos simultáneos (spec-006) y 1 reserva de 20 peticiones por la última plaza (spec-005).
@@ -546,7 +572,11 @@ Ejecutada el 2026-11-04 sobre el mismo árbol, después de añadir los recorrido
 | Tipos (`tsc --noEmit`) y lint de la prueba nueva | sin errores ✔ |
 | E2E (Playwright, `pnpm build && pnpm test:e2e`) | 1.ª ejecución: **44 ✔, 1 ✘, 1 sin ejecutar**. Falla `005-agenda.spec.ts:40` (US1-6) porque una prueba de spec-008 confirmaba la inscripción de asistente4 (ver registro mínimo). Tras corregir la prueba de spec-008: **46/46** ✔ en dos ejecuciones seguidas |
 
-Los 4 criterios de tiempo con una persona real (§5.3) siguen pendientes de verificación manual.
+**2026-11-05, tras la segunda ronda**: dominio **48/48**, integración **183/183** y e2e **48/48** sobre `main` (`50c56e8`), con lint, typecheck y `next build` sin errores. Cada PR (#11, #14–#17) pasó además la regresión completa antes de fusionarse.
+
+*Nota de entorno*: el e2e se lanza con un puerto libre (`E2E_PORT=3300 pnpm test:e2e`). Si queda un `next start` antiguo en el puerto 3100, Playwright lo reutiliza (`reuseExistingServer`) y fallan 8 pruebas de inicio de sesión que no tienen nada que ver con la aplicación.
+
+Los 4 criterios de tiempo con una persona real (§5.3) siguen pendientes de verificación manual (issues #1–#4).
 
 #### 5.4.3 Balance de la iteración
 
@@ -559,6 +589,10 @@ Compara la versión inicial de cada spec (antes del primer `clarify`) con la fin
 | Brechas de implementación (`/speckit-converge`) | 12 tareas añadidas | **8/12 cerradas** con prueba primero. Quedan **4/12 abiertas**, todas de medición humana (T015, T020, T022, T013), con una estimación KLM registrada que anticipa que se cumplen 4/4 con un mecanógrafo medio y 3/4 con el perfil lento | `informes/converge-*.md`, [estimacion-klm.md](../specs/000-core/informes/estimacion-klm.md) |
 | Criterios de aceptación de las 8 historias | 105 (79 FR + 26 SC) | **101/105 verificados**: 79/79 FR y 22/26 SC. Los 4 SC restantes son las mediciones humanas | `informes/verificacion.md`, §5.2 |
 | Recorridos entre historias | 0 | **3/3** en verde, que cubren **8/8 historias** | §5.4.1 |
+| **2.ª ronda** · ambigüedades sobre la versión funcional | 8/8 historias revisadas | **6 preguntas, 6/6 respondidas y justificadas por el responsable**; 2/8 historias sin ambigüedades nuevas (se conserva el informe y se explica por qué se mantienen los criterios) | `informes/clarify-2.md` (003 y 006: `clarify-3.md`) |
+| **2.ª ronda** · incidencias documentales (`analyze-3`) | 20 detectadas en 5 specs: 0 CRITICAL, 0 HIGH, 13 MEDIUM y 7 LOW | **20/20 cerradas**; `analyze-4` sin hallazgos en 5/5 | `informes/analyze-3.md`, `analyze-4.md`, `analyze-registro.md` |
+| **2.ª ronda** · brechas (`converge-2`) | 6 detectadas en 4 specs (documentación, una prueba e2e, el seed y una tarea sin marcar) | **6/6 cerradas**; las 5 specs quedan *converged* (`converge-3` en 001, 004, 005 y 006; spec-007 ya en `converge-2`) | `informes/converge-2.md`, `converge-3.md` |
+| **2.ª ronda** · defectos previos encontrados | — | 1: interbloqueo `anadir` ∥ `escanear`, corregido con prueba (§4.5) | spec-006 `verificacion.md` #15 |
 
 #### 5.4.4 Registro mínimo
 
@@ -589,8 +623,16 @@ Recoge las decisiones y hallazgos con efecto en la funcionalidad, al menos uno p
 | HU-08 · US3 | I1 HIGH: la prueba independiente era incompatible con el seed | analyze | spec, quickstart | T009b · `86cd97d` | `008/cambiar-sala.test.ts` ✔ | Cerrado |
 | HU-08 · Edge «conexión falla» | F1 MEDIUM: el panel mostraba «Failed to fetch» | converge | `panel.tsx` | T014 · `c8cb253`, `450a2b7` | e2e `008-panel` con red cortada ✔ | Cerrado |
 | HU-01…HU-08 · §5.4 | Faltaba una verificación que encadenara historias | verificación integrada | `tests/integration/integrado/recorridos.test.ts` | RC-1, RC-2, RC-3 · `98db582` | 3/3 ✔ | Cerrado |
-| HU-01 SC-001 · HU-02 SC-003 · HU-03 SC-004 · HU-04 SC-001 | Las 4 tareas de medición humana no tenían ningún dato. Se estiman con KLM sobre la interfaz real; HU-01 con el resumen tecleado y el perfil lento no cumple (235 s > 180 s) | verificación integrada (estimación KLM) | `tests/klm/estimar-klm.ts`, [estimacion-klm.md](../specs/000-core/informes/estimacion-klm.md), `verificacion.md` y `tasks.md` de 001–004 | T015, T020, T022, T013 · pendiente de commit | Medio 4/4 ✔ · lento 3/4 | **Abierto** (falta la medición real) |
+| HU-01 SC-001 · HU-02 SC-003 · HU-03 SC-004 · HU-04 SC-001 | Las 4 tareas de medición humana no tenían ningún dato. Se estiman con KLM sobre la interfaz real; HU-01 con el resumen tecleado y el perfil lento no cumple (235 s > 180 s) | verificación integrada (estimación KLM) | `tests/klm/estimar-klm.ts`, [estimacion-klm.md](../specs/000-core/informes/estimacion-klm.md), `verificacion.md` y `tasks.md` de 001–004 | T015, T020, T022, T013 · `7e59b84` | Medio 4/4 ✔ · lento 3/4 | **Abierto** (falta la medición real, issues #1–#4) |
 | HU-05 · US1-6 ↔ HU-08 · US1-1 | La regresión e2e falla de forma intermitente: la prueba del panel confirmaba en la BD «la primera inscripción pendiente» (`findFirst` sin orden), que podía ser la de asistente4, la que US1-6 de spec-005 necesita pendiente. Los ficheros e2e se ejecutan en paralelo y en orden no determinista; el 46/46 de la integración fue fortuito | verificación integrada (regresión) | `tests/e2e/008-panel.spec.ts` | `68433b3` | Antes: 44 ✔, 1 ✘ (`005-agenda.spec.ts:40`), 1 sin ejecutar. Después: **46/46** en dos ejecuciones seguidas ✔ | Cerrado |
+| HU-01 · FR-011 | clarify-2 P4 (responsable): sin títulos repetidos del mismo autor en un congreso | clarify → plan → analyze-3 (A1–A4) → implement → converge-2 (F2) | spec, plan dec. 6, R6, contrato, `000-core/data-model.md`, migración `propuesta_titulo_unico`, `propuesta.ts` | T016–T018 · `e6144ed`, `7282677`, `4190f17`, `24b6176`, `68c40b3` · PR #11 | `001/enviar.test.ts` (k)–(n): antes 3 ✘, después ✔; e2e US1-7 ✔ | Cerrado |
+| HU-02 · FR-012 | clarify-2 P3 (responsable): se mantiene la asignación sin restricción por área | clarify | spec | `1a4dbdf` · PR #12 | comportamiento existente | Cerrado |
+| HU-03 | clarify-3: sin ambigüedades nuevas; criterios mantenidos con justificación | clarify | informe | `c9dc9f1` · PR #13 | e2e 003 ✔ | Cerrado |
+| HU-04 · FR-014 | clarify-2 P4 (responsable): cancelar una pendiente y volver a inscribirse; revoca en parte P1 | clarify → plan (R7, misma fila) → analyze-3 (A1–A6) → implement → converge-2 (F1, F2) | spec, plan dec. 2/3/8/9, contratos 004 y 000-core, `data-model.md`, migración `inscripcion_cancelada`, `inscripcion.ts`, área personal | T014–T016 · `bd6061a`, `10c9ad3`, `fdcd6f1`, `5016a3f`, `7dcf917` · PR #14 | `004/cancelar.test.ts`: antes 8 ✘, después 24/24; e2e US2-6 ✔ | Cerrado |
+| HU-05 · FR-010 | clarify-2 P2 (responsable): la reserva vale hasta inicio + 10 min | clarify → plan (dec. 7) → analyze-3 (A1–A3) → implement → converge-2 (F1) | spec, plan, A6 en `agrupamiento.md` y 000-core, `packages/domain/ocupacion.ts` | T012–T013 · `7af049e`, `4cce371`, `8ee3a6f`, `80d1d5c` · PR #15 | `ocupacion.test.ts`: antes ✘, después ✔; puerta en spec-006 (k) | Cerrado |
+| HU-06 · FR-011, FR-009 | clarify-3 P4 (responsable): sin entrar en dos sesiones solapadas; FR-009 matizada por HU-05 | clarify → plan (R3 orden de bloqueo) → analyze-3 (A1–A4) → implement → converge-2 (F1 e2e, F2 seed) | spec, plan, contrato, `acreditacion.ts`, `seed.ts`, e2e 006 | T011–T013 · `58dbbc1`, `2d03870`, `290f4cf`, `b8e88bd`, `b108420` · PR #16 | `006/escanear.test.ts` (k)–(n): antes 4 ✘ (incluido el interbloqueo 40P01), después 20/20; e2e 48/48 | Cerrado |
+| HU-07 · FR-002 | clarify-2 P3 (responsable): las sesiones solapadas cuentan como una | clarify → plan (dec. 4, R4) → analyze-3 (A1–A3) → implement → converge-2 | spec, plan, `packages/domain/certificado.ts`, `server/certificado.ts`, pantalla | T012–T013 · `9f457a8`, `d9bee1a`, `d298c37`, `c5853e1`, `ca41a0f` · PR #17 | `certificado.test.ts` y `007/estado.test.ts` (i): antes 6 ✘, después ✔ | Cerrado |
+| HU-08 | clarify-2: sin ambigüedades nuevas; criterios mantenidos con justificación | clarify | informe | `85d6a30` · PR #18 | e2e 008 ✔ | Cerrado |
 
 #### 5.4.5 Matriz de trazabilidad
 
@@ -614,6 +656,11 @@ Hay dos criterios por historia, los de más riesgo. La matriz completa *requisit
 | HU-07 | FR-005 · Solo el titular lo descarga | Titularidad por construcción (decisión 3) | T005c/d, T007 | `integration/007/descarga.test.ts` |
 | HU-08 | FR-004 · Refresco en tiempo real | Sondeo cada 5 s (decisión 1, A9) | T004d, T006, T013 | e2e `008-panel.spec.ts` |
 | HU-08 | FR-005 · Cambiar a una sala mayor | Aforo ≥ ocupación, sin solape (decisiones 4 y 5, P2/P3) | T009–T011 | `integration/008/cambiar-sala.test.ts` + RC-2 |
+| HU-01 | FR-011 · Sin títulos repetidos (2.ª ronda) | Índice único en la BD (decisión 6, R6) | T016, T017 | `integration/001/enviar.test.ts` (k)–(n) + e2e US1-7 |
+| HU-04 | FR-014 · Cancelar una pendiente (2.ª ronda) | Misma fila, `updateMany` atómicos (decisiones 2 y 8, R7) | T014, T015 | `integration/004/cancelar.test.ts` + e2e US2-6 |
+| HU-05 | FR-010 · Reserva hasta inicio + 10 min (2.ª ronda) | `reservaVigente` en `packages/domain` (decisión 7) | T012 + spec-006 T011 | `domain/ocupacion.test.ts` + `integration/006/escanear.test.ts` (k) |
+| HU-06 | FR-011 · Sin sesiones solapadas en la puerta (2.ª ronda) | Comprobación A7 y bloqueo inscripción → sesión (decisiones 2 y 3) | T012, T013 | `integration/006/escanear.test.ts` (l)–(n) |
+| HU-07 | FR-002 · Turnos de sesiones solapadas (2.ª ronda) | `recuentoPorTurnos` (decisión 4, R4) | T012, T013 | `domain/certificado.test.ts` + `integration/007/estado.test.ts` (i) |
 
 **Revisión de la cobertura.** Se ha comprobado que existe cada fichero de la columna *prueba prevista* y que la suite lo ejecuta en verde (§5.4.2). No se han introducido errores artificiales. El revisor es una autorrevisión diferida, por la misma razón que en §5.3.
 
@@ -687,6 +734,7 @@ Hay tres congresos de ejemplo:
 | 0. Arranque | Lectura del enunciado, reparto ([agrupamiento.md](agrupamiento.md)), acuerdos A1–A10, constitución 1.0.0 → 1.1.0 | `speckit-constitution`, `speckit-specify` (×9) |
 | 1. Base común | 000-core: clarify (4 preguntas), plan, tasks, analyze ×2, implement (T001–T041), converge ×2 (T042–T044) | ciclo completo |
 | 2–9. Una historia por iteración, en el orden 001 → 008 | Para cada spec: clarify (2–3 preguntas, y una 2.ª sesión en 003 y 006 por hallazgos de analyze), plan con actualización del contrato de 000-core, tasks, analyze ×2 con registro de hallazgos, implement con las pruebas primero, converge, implement de las tareas de convergencia y converge-2 hasta *converged* | ciclo completo |
+| 10. Refinamiento sobre la versión funcional (4–5 nov.) | Corrección de la primera entrega: clarify de las 8 historias sobre la aplicación funcionando, con respuestas del responsable (§4.5); ciclo plan → analyze-3/4 → implement → converge-2/3 en 001, 004, 005, 006 y 007; un PR por historia | `speckit-clarify`, `speckit-plan`, `speckit-analyze`, `speckit-implement`, `speckit-converge` |
 
 Resumen de hallazgos y su tratamiento:
 - **Hallazgos de analyze** (todos cerrados): 4 CRITICAL, 4 HIGH, 11 MEDIUM y 23 LOW. Los CRITICAL fueron contratos no reflejados en 000-core y un caso de error que faltaba; los HIGH dieron lugar a nuevas sesiones de clarify o a correcciones de la spec.
@@ -697,8 +745,8 @@ Resumen de hallazgos y su tratamiento:
 ### 7.2 Ramas, issues y PR
 
 - **Ramas**: `main` y una por spec (`spec-001` … `spec-008`), todas creadas desde `main`. Las dependencias entre ramas se anotan en el `tasks.md` de cada spec; por ejemplo, el enlace «Mi agenda» se hace al integrar. Para que cada historia se pudiera probar sola, en dos casos se copió sin cambios código de otra rama (`fechas.ts` de spec-003 en spec-005; el `global-setup` de los e2e de spec-002).
-- **Issues**: no se han creado. El backlog vive en el `tasks.md` de cada spec, con identificadores, trazabilidad y estado. El comando `speckit-taskstoissues` aparece como obsoleto en Spec Kit 1.2.4 y no se usó.
-- **Pull requests**: no se han usado. La integración se hizo con un **merge directo en `main`**: primero se fusionaron las 8 ramas en orden (001 → 008) en una rama de ensayo para resolver los conflictos y pasar todas las pruebas, y después se llevó el resultado a `main` en un único commit de merge que tiene como padres `main` y las 8 ramas `spec-*`. Los conflictos fueron los previstos:
+- **Issues**: en la primera entrega no se crearon (el backlog vivía solo en los `tasks.md`). En la segunda ronda se abrieron **10 issues**: #1–#4 para las mediciones humanas (abiertas), #5–#9 para implementar las decisiones de clarify (cerradas por sus PR) y #10 para esta actualización de la memoria. Cada tarea de `tasks.md` cita su issue. `speckit-taskstoissues` aparece como obsoleto en Spec Kit 1.2.4 y no se usó.
+- **Pull requests**: la segunda ronda se integró con **8 PR**, uno por historia (#11–#18, ramas `spec-00X-clarify-2`). Cada uno documenta su ciclo con un commit por paso, la evidencia del «antes» y la regresión completa, y cierra su issue. #16 se construyó sobre #15, porque necesita `reservaVigente`, y se fusionó después. En la primera entrega no se usaron PR: la integración se hizo con un **merge directo en `main`**: primero se fusionaron las 8 ramas en orden (001 → 008) en una rama de ensayo para resolver los conflictos y pasar todas las pruebas, y después se llevó el resultado a `main` en un único commit de merge que tiene como padres `main` y las 8 ramas `spec-*`. Los conflictos fueron los previstos:
   - `root.ts`, donde cada rama registra su router: se conservan todos;
   - los índices de `organizador/`, `area-personal/` y la ficha del congreso: se combinan los enlaces de cada spec (propuestas, programa, panel; inscripción y programa; QR, «Mi agenda» y certificado);
   - el contrato y el plan de 000-core: se combinan las filas de cada spec;
@@ -708,7 +756,7 @@ Resumen de hallazgos y su tratamiento:
 
 ### 7.3 Historial de commits
 
-El historial de `main` tiene **84 commits**: 1 del 26 de octubre (inicio del proyecto), 79 del 3 de noviembre (todo el ciclo SDD de las 9 specs y la integración) y 4 del 4 de noviembre (limpieza, verificación de 000-core y recorridos de §5.4). La tabla siguiente cuenta los 77 commits de pasos del ciclo:
+Tras la segunda ronda, `main` tiene **139 commits**: los 84 de la primera entrega más 53 de la ronda de refinamiento (40 de pasos del ciclo y 13 merges, entre ellos los 8 de PR). En la primera entrega, el historial de `main` tenía **84 commits**: 1 del 26 de octubre (inicio del proyecto), 79 del 3 de noviembre (todo el ciclo SDD de las 9 specs y la integración) y 4 del 4 de noviembre (limpieza, verificación de 000-core y recorridos de §5.4). La tabla siguiente cuenta los 77 commits de pasos del ciclo:
 
 | Rama | Commits |
 |------|---------|
@@ -763,7 +811,8 @@ gitGraph
 - Las **8 historias integradas en `main`** con un merge de las 8 ramas, y la batería completa de pruebas en verde sobre la aplicación conjunta.
 - Las **8 historias de usuario implementadas**, cada una con su spec, su plan, sus tareas trazadas y sus pruebas. Cada spec terminó con converge en estado *converged*, salvo las mediciones humanas.
 - **Reglas de negocio en el servidor**, comprobadas con pruebas que llaman directamente a la API: anonimato, plazos, mínimo de 2 evaluaciones, solapes, aforo con concurrencia, pago confirmado, 80 % de asistencia y permisos por rol.
-- **Un único modelo de datos** para las 8 specs, sin migraciones adicionales, gracias a 000-core y al principio V.
+- **Un único modelo de datos** para las 8 specs, gracias a 000-core y al principio V. Solo la segunda ronda añadió dos migraciones pequeñas (índice único de títulos y valor `CANCELADA`), registradas primero en 000-core.
+- **Una segunda ronda de clarify sobre la versión funcional** con las decisiones tomadas por el responsable, llevada por todo el ciclo y con un PR por historia (§4.5).
 - Programa público con **SEO 100 en Lighthouse**.
 - **Evidencia completa del proceso**: cada clarify, analyze y converge guardado con su diff o su registro de hallazgos.
 
@@ -778,10 +827,14 @@ gitGraph
 | Detalles de robustez detectados por converge: mensajes de red en inglés, PDF con caracteres no latinos | Tareas de convergencia con prueba primero |
 | Entorno: PostgreSQL parado tras reinicios y tipos obsoletos en `.next` | Arranque del clúster antes de las pruebas y `rm -rf .next` al cambiar de rama |
 | Grupo de una sola persona: sin revisión cruzada real | Autorrevisión diferida con la lista de calidad y dos pasadas de analyze |
+| En la primera ronda, 22 de 24 respuestas de clarify se aceptaron por delegación | Segunda ronda sobre la versión funcional con las 6 decisiones y sus justificaciones del responsable (§4.5) |
+| Interbloqueo `anadir` ∥ `escanear` que las pruebas de la primera entrega no cubrían | Prueba concurrente que lo reproduce y orden de bloqueo común (spec-006 R3) |
+| Un analyze dio por comprobadas las pruebas sin mirar las e2e ni el seed (spec-006) | La regresión e2e lo detectó; converge-2 lo corrigió, y desde spec-007 analyze revisa también e2e y seed |
+| Un servidor `next start` antiguo reutilizado por Playwright daba fallos falsos | Ejecutar el e2e con `E2E_PORT` libre |
 
 ### 8.3 Trabajo futuro
 
-1. **Hacer las 4 mediciones humanas** (T015, T020, T022, T013) y registrarlas junto a su estimación KLM. En HU-01, anotar si el resumen se pegó o se tecleó.
+1. **Hacer las 4 mediciones humanas** (T015, T020, T022, T013; issues #1–#4) y registrarlas junto a su estimación KLM. En HU-01, anotar si el resumen se pegó o se tecleó.
 2. Unificar los bloqueos de `programa` (spec-003) y `panel` (spec-008) cuando ambos escriben en la misma sala, para que un alta de sesión y un cambio de sala simultáneos se serialicen también entre sí.
 3. Fuera del alcance de la versión 1 y solo si entran en una spec:
    - gestión de congresos desde la interfaz;
