@@ -16,7 +16,9 @@ export function FormularioPago({ inscripcionId, importe }: { inscripcionId: stri
   const pagar = useMutation(
     trpc.inscripcion.pagar.mutationOptions({
       onSuccess: (r) => {
-        if (r.resultado === "APROBADO") router.push("/area-personal?pagada=1");
+        if (r.resultado !== "APROBADO") return;
+        router.push("/area-personal?pagada=1");
+        router.refresh(); // invalida la caché del router: el área personal ya no muestra «Pendiente de pago» (converge-4 F1)
       },
     }),
   );
