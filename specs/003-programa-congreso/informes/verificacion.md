@@ -29,3 +29,15 @@ dominio 38/38 · integración 44/44 (000-core 22 + spec-003 22) · e2e 12/12 (00
 ## Estimación KLM (SC-004 < 1 min) · 2026-11-04
 
 Medición con persona real **todavía pendiente**. Mientras tanto, estimación con el *Keystroke-Level Model* sobre la interfaz real ([informe](../../000-core/informes/estimacion-klm.md), script `apps/web/tests/klm/estimar-klm.ts`): 15,9 s (medio) / 23,2 s (lento) ✔.
+
+## Medición con personas de SC-004 (T022) · 2026-11-05
+
+Mediciones del responsable con 3 personas (A, B, C) que no conocían la aplicación, cronometradas con la aplicación en local y el seed recargado antes de cada persona. `organizador@`, Jornadas de Pediatría 2027. Inicio: «Programa» abierto. Fin: la sesión aparece en el programa.
+
+| Persona | Tiempo | < 1 min |
+|---------|--------|---------|
+| A | 42 s | ✔ |
+| B | 58 s | ✔ |
+| C | 1 min 12 s | ✘ |
+
+**SC-004: 2/3**. El paso más lento fue elegir la hora de inicio y la de fin. El responsable decide **mantener el criterio y mejorar la interfaz** (converge-3, T023) y repetir la medición.

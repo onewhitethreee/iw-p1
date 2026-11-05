@@ -97,6 +97,8 @@ apps/web/tests/
 6. **Público dinámico** (R4): `export const dynamic = "force-dynamic"` en las páginas públicas → los cambios se ven en la siguiente visita (US3-4) y el HTML siempre se genera en el servidor (SC-003).
 7. **SEO** (R5): `generateMetadata` (title, description, canonical, Open Graph), JSON-LD `Event` con `subEvent` por sesión y `location`; `sitemap.ts` con congresos publicados y sus sesiones; `robots.ts` permite todo salvo `/organizador`, `/comite`, `/ponente`, `/area-personal`, `/acreditacion`, `/api`, `/entrar` y `/registro` (formularios sin valor para buscadores). Mientras el programa está en borrador, su página pública lleva `noindex` para que no se indexe una página sin sesiones; al publicarse pasa a `index`. *(Añadido tras converge F2.)*
 
+**Decisión añadida (converge-3, SC-004, 2026-11-05)**: al elegir sala o día, el formulario propone las horas del **primer hueco libre de 60 min** en esa sala ese día, desde las 09:00 (`primerHueco` en `packages/domain/src/intervalos.ts`, regla A7 y sin cruzar la medianoche). Solo propone: si el organizador escribe una hora, ya no se cambia. El servidor sigue validando solapes de ponente y de sala (Constitución IV).
+
 ## Complexity Tracking
 
 Sin violaciones que justificar.
