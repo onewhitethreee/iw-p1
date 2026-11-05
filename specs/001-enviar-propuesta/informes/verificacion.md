@@ -69,3 +69,5 @@ Mediciones del responsable con 3 personas (A, B, C) que no conocían la aplicaci
 | 2 | pegado | 2 min 23 s | ✔ |
 
 **Estado**: 2/2 mediciones válidas bajo 3 min. Para tener 3 personas como en el resto de criterios falta **1 medición más** pegando el resumen (issue #1).
+
+**Cierre (2026-11-05)**: el responsable da por suficientes las **2 mediciones válidas** (1:35 y 2:23, las dos bajo 3 min, con un margen de 37 s en la peor). Queda constancia de que SC-001 se ha medido con 2 personas, y no con 3 como los demás criterios. T015 cerrada.

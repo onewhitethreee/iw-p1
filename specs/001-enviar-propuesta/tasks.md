@@ -144,7 +144,7 @@ Tras T003:  T004 (enviar.test.ts)  ∥  T009 (mias.test.ts)
 
 ## Phase 6: Convergence
 
-- [ ] T015 Medir con una persona real (el responsable u otra) el tiempo desde abrir `/ponente/enviar` hasta ver «Propuesta enviada» con una propuesta válida y registrar el resultado (objetivo < 3 min) en `specs/001-enviar-propuesta/informes/verificacion.md` per SC-001 (partial) · **2026-11-04**: estimación KLM registrada en `verificacion.md` ([informe](../000-core/informes/estimacion-klm.md)); sigue abierta hasta la medición real · **2026-11-05**: medición con 3 personas (A pegado 1:35 ✔; B y C tecleado 2:48 y 3:22). Clarify-3 P5: SC-001 se mide con el resumen pegado, así que solo A es válida y **faltan 2 mediciones pegando el resumen** (issue #1) · **2.ª medición válida (pegado): 2:23 ✔** → 2/2; falta 1 para llegar a 3 personas
+- [X] T015 Medir con una persona real (el responsable u otra) el tiempo desde abrir `/ponente/enviar` hasta ver «Propuesta enviada» con una propuesta válida y registrar el resultado (objetivo < 3 min) en `specs/001-enviar-propuesta/informes/verificacion.md` per SC-001 (partial) · **2026-11-04**: estimación KLM registrada en `verificacion.md` ([informe](../000-core/informes/estimacion-klm.md)); sigue abierta hasta la medición real · **2026-11-05**: medición con 3 personas (A pegado 1:35 ✔; B y C tecleado 2:48 y 3:22). Clarify-3 P5: SC-001 se mide con el resumen pegado, así que solo A es válida y **faltan 2 mediciones pegando el resumen** (issue #1) · **2.ª medición válida (pegado): 2:23 ✔** → 2/2; falta 1 para llegar a 3 personas · **Cerrada**: el responsable da por suficientes 2 mediciones válidas (issue #1)
 
 ## Clarify sobre la versión funcional (2026-11-04) · pendiente de plan y analyze
 
