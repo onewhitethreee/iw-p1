@@ -1,4 +1,4 @@
-import { cumpleUmbral, fecha, horasCertificadas, porcentajeAsistencia } from "@congresalia/domain";
+import { cumpleUmbral, fecha, horasCertificadas, porcentajeAsistencia, recuentoPorTurnos } from "@congresalia/domain";
 import type { db as Db } from "~/server/db";
 
 /**
@@ -55,14 +55,14 @@ export async function calcularCertificado(db: typeof Db, usuarioId: string, cong
     return { estado: "SIN_INSCRIPCION", disponible: false, motivo: "No tienes una inscripción confirmada en este congreso", ...vacio, congreso, titular: null };
   }
 
-  // R4: denominador = agenda; numerador = agenda ∩ asistencias (las de fuera de la agenda no cuentan)
+  // R4: denominador = turnos de la agenda (sesiones solapadas cuentan como una, clarify-2 P3); numerador = turnos con
+  // asistencia. Las asistencias de fuera de la agenda no cuentan.
   const asistio = new Set(ins.asistencias.map((a) => a.sesionId));
   const sesiones: SesionCertificado[] = ins.agenda
     .map(({ sesion: s }) => ({ id: s.id, titulo: s.propuesta.titulo, sala: s.sala.nombre, inicio: s.inicio, fin: s.fin, asistida: asistio.has(s.id) }))
     .sort((a, b) => a.inicio.getTime() - b.inicio.getTime());
-  const total = sesiones.length;
+  const { asistidas, total } = recuentoPorTurnos(sesiones);
   const asistidasSes = sesiones.filter((s) => s.asistida);
-  const asistidas = asistidasSes.length;
   const porcentaje = porcentajeAsistencia(asistidas, total);
   const base = { porcentaje, asistidas, total, horas: horasCertificadas(asistidasSes), sesiones, congreso, titular: ins.usuario.nombre };
 

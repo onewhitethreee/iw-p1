@@ -4,6 +4,28 @@ import { crearCaller, crearUsuario } from "../helpers";
 import { asistente, DESPUES, DURANTE, escenario, FIN } from "./fixtures";
 
 describe("certificado.estado (US1)", () => {
+  it("(i) US1-8 / clarify-2 P3: dos sesiones solapadas de la agenda cuentan como un solo turno", async () => {
+    const e = await escenario();
+    // «Sesión 3» (240–300) pasa a 150–210 y se solapa con «Sesión 2» (120–180), como si el organizador la hubiera movido
+    const [s1, s2, s3, s4, s5] = e.agenda;
+    await db.sesion.update({ where: { id: s3!.id }, data: { inicio: new Date(s2!.inicio.getTime() + 30 * 60_000), fin: new Date(s2!.fin.getTime() + 30 * 60_000) } });
+    const asistir = async (insId: string, sesiones: typeof e.agenda) => {
+      for (const s of sesiones) await db.asistencia.create({ data: { inscripcionId: insId, sesionId: s.id, registradaPorId: e.puerta.id, registradaEn: s.inicio } });
+    };
+    const lucia = await asistente(e);
+    await asistir(lucia.ins.id, [s1!, s2!, s4!, s5!]);
+    const r = await (await crearCaller(lucia.u.id, DESPUES)).certificado.estado({ congresoId: e.c.id });
+    expect(r).toMatchObject({ estado: "DISPONIBLE", porcentaje: 100, asistidas: 4, total: 4 });
+    expect(r.sesiones).toHaveLength(5);
+
+    const pedro = await asistente(e, { nombre: "Pedro" });
+    await asistir(pedro.ins.id, [s1!, s4!, s5!]);
+    expect(await (await crearCaller(pedro.u.id, DESPUES)).certificado.estado({ congresoId: e.c.id })).toMatchObject({
+      estado: "BAJO_UMBRAL",
+      motivo: "No disponible: has asistido al 75 % de las sesiones de tu agenda (3 de 4); se necesita al menos el 80 %",
+    });
+  });
+
   it("(a) US1-1 4 de 5 con el congreso finalizado → DISPONIBLE, 80 %, horas de las asistidas y sesiones marcadas", async () => {
     const e = await escenario();
     const { u } = await asistente(e, { asistidas: 4 });
