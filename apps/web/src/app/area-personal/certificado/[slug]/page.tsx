@@ -39,6 +39,9 @@ export default async function CertificadoPage({ params }: { params: Promise<{ sl
             <p className="text-3xl font-semibold tabular-nums" data-testid="porcentaje">
               {c.porcentaje} % ({c.asistidas} de {c.total} sesiones)
             </p>
+            {c.total < c.sesiones.length && (
+              <p className="text-sm text-muted-foreground">Las sesiones de tu agenda que se solapan cuentan como una.</p>
+            )}
             <p className="text-muted-foreground">Horas de formación: {c.horas.texto}</p>
           </CardContent>
         </Card>

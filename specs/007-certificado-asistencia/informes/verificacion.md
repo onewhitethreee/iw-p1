@@ -24,3 +24,18 @@
 | 8 | FR-004 con nombre no latino | integración descarga (T011): titular «刘洋峰 Łukasz», título con «≥» | 200 y PDF válido; caracteres no representables sustituidos («Lukasz», «>=», «?») | Igual | ✔ |
 
 **Regresión**: dominio 35/35 · integración 36/36 (000-core 22 + spec-007 14) · e2e 11/11 (000-core 7 + spec-007 4) · lint, typecheck y `next build` sin errores.
+
+## Iteración tras clarify-2 (T012–T013, FR-002 por turnos) · 2026-11-05
+
+Rama `spec-007-clarify-2`. Las pruebas se escribieron **antes** del código y se ejecutaron sobre el código anterior.
+
+| # | Escenario | Entrada | Esperado | Observado **antes** | Observado **después** | Resultado |
+|---|-----------|---------|----------|---------------------|-----------------------|-----------|
+| 12 | Regla de turnos (dominio) | sin solapes · B∥C con/sin asistencia · cadena A–B–C · contiguas · vacía | 2/3 · 2/2 y 0/1 · 1/1 · 1/2 · 0/0 | ✘ `recuentoPorTurnos` no existía (5 failed) | Igual que lo esperado | ✔ |
+| 13 | US1-8 / (i) | agenda de 5 con «Sesión 3» solapada con «Sesión 2»; asistencia a 1, 2, 4 y 5 | `DISPONIBLE`, 100 %, 4 de 4, 5 sesiones listadas | ✘ 4 de 5 (80 %): el solape contaba dos veces | Igual que lo esperado | ✔ |
+| 14 | US1-8 / (i) | la misma agenda; asistencia a 1, 4 y 5 | `BAJO_UMBRAL` «… 75 % … (3 de 4) …» | ✘ 3 de 5 (60 %) | Igual que lo esperado | ✔ |
+
+Comandos del «antes»: dominio `tests/certificado.test.ts` → 5 failed | 7 passed; integración `tests/integration/007` → 1 failed | 14 passed. Después: 12/12 y 15/15.
+
+**Regresión**: dominio 48/48 · integración **183/183** · e2e **48/48** (los números de `asistente1` 80 % y `asistente2` 60 % no cambian: sus agendas no tienen solapes) · lint, typecheck y `next build` ✔.
+

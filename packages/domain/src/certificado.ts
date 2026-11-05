@@ -25,3 +25,29 @@ export function horasCertificadas(sesiones: readonly Intervalo[]): { minutos: nu
   const texto = m === 0 ? `${h} h` : h === 0 ? `${m} min` : `${h} h ${m} min`;
   return { minutos, texto };
 }
+
+/**
+ * spec-007 FR-002 (clarify-2 P3, plan R4): las sesiones de la agenda que se solapan entre sí (A7, directa o
+ * encadenadamente) forman un turno, que cuenta una vez y está asistido si lo está cualquiera de sus sesiones.
+ * Barrido por inicio: una sesión entra en el turno actual si empieza antes del fin más tardío del turno.
+ */
+export function recuentoPorTurnos(sesiones: readonly (Intervalo & { asistida: boolean })[]): { asistidas: number; total: number } {
+  const orden = [...sesiones].sort((a, b) => a.inicio.getTime() - b.inicio.getTime());
+  let total = 0;
+  let asistidas = 0;
+  let finTurno = -Infinity;
+  let turnoAsistido = false;
+  for (const s of orden) {
+    if (s.inicio.getTime() < finTurno) {
+      finTurno = Math.max(finTurno, s.fin.getTime());
+      turnoAsistido ||= s.asistida;
+      continue;
+    }
+    if (turnoAsistido) asistidas++;
+    total++;
+    finTurno = s.fin.getTime();
+    turnoAsistido = s.asistida;
+  }
+  if (turnoAsistido) asistidas++;
+  return { asistidas, total };
+}

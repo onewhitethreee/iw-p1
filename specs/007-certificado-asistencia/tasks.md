@@ -60,6 +60,7 @@ Una sola historia (MVP = US1 completa): primero la regla de dominio (T002), desp
 | FR-004 (PDF y contenido) | T005a,b, T007 |
 | FR-005 (recomprobar; solo titular) | T005c,d, T007 |
 | FR-006 (sin inscripción / agenda vacía) | T004d,e, T006 |
+| Clarify-2 P3 (turnos) · US1-8 | T012, T013 |
 | Clarify P1 / P2 | T004g, T005d / T002, T004f |
 | US1-1…US1-7 | T004–T009 |
 | SC-001 / SC-002 / SC-003 | T004, T009 / T005a, T010 / T004a |
@@ -67,3 +68,10 @@ Una sola historia (MVP = US1 completa): primero la regla de dominio (T002), desp
 ## Phase 5: Convergence
 
 - [X] T011 Garantizar que el PDF se genera con cualquier nombre o título: en `apps/web/src/server/pdf-certificado.ts` sanear el texto antes de dibujarlo (caracteres no representables en WinAnsi → letra base sin diacrítico o «?»), con prueba en `apps/web/tests/integration/007/descarga.test.ts` para un titular «刘洋峰 Łukasz» y un título con «≥» (200 y PDF válido) per FR-004 / US1-1 (partial)
+
+## Clarify sobre la versión funcional (2026-11-04) · pendiente de plan y analyze
+
+Tareas que salen de `informes/clarify-2.md`. Se implementan después de revisar `plan.md` y de `/speckit-analyze`.
+
+- [X] T012 Recuento por turnos (FR-002, Clarifications P3; plan decisión 4, R4; precisada por analyze-3 A2): `recuentoPorTurnos(sesiones: (Intervalo & { asistida })[]) → { asistidas, total }` en `packages/domain/src/certificado.ts`. **Prueba primero** en `packages/domain/tests/certificado.test.ts`: sin solapes = recuento por sesión; B∥C con asistencia a B → el turno cuenta como asistido; B∥C sin ninguna → no asistido; cadena A–B–C (A y C no se tocan) → 1 turno; contiguas (A7) → 2 turnos; agenda vacía → 0/0 (issue #9)
+- [X] T013 Usar `recuentoPorTurnos` en `apps/web/src/server/certificado.ts` (estado y descarga, decisión 1) y, en `area-personal/certificado/[slug]/page.tsx`, la frase «Las sesiones de tu agenda que se solapan cuentan como una» cuando `total` < sesiones de la agenda (decisión 7, analyze-3 A1). **Prueba primero** en `apps/web/tests/integration/007/estado.test.ts`: agenda de 5 con «Sesión 3» movida para solaparse con «Sesión 2», asistencia a 1, 2, 4 y 5 → `DISPONIBLE`, «100 %», 4 de 4, 5 sesiones listadas; asistencia solo a 1, 4 y 5 → `BAJO_UMBRAL` «… 75 % … (3 de 4)» (issue #9)
