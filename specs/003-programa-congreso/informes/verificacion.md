@@ -29,3 +29,38 @@ dominio 38/38 · integración 44/44 (000-core 22 + spec-003 22) · e2e 12/12 (00
 ## Estimación KLM (SC-004 < 1 min) · 2026-11-04
 
 Medición con persona real **todavía pendiente**. Mientras tanto, estimación con el *Keystroke-Level Model* sobre la interfaz real ([informe](../../000-core/informes/estimacion-klm.md), script `apps/web/tests/klm/estimar-klm.ts`): 15,9 s (medio) / 23,2 s (lento) ✔.
+
+## Medición con personas de SC-004 (T022) · 2026-11-05
+
+Mediciones del responsable con 3 personas (A, B, C) que no conocían la aplicación, cronometradas con la aplicación en local y el seed recargado antes de cada persona. `organizador@`, Jornadas de Pediatría 2027. Inicio: «Programa» abierto. Fin: la sesión aparece en el programa.
+
+| Persona | Tiempo | < 1 min |
+|---------|--------|---------|
+| A | 42 s | ✔ |
+| B | 58 s | ✔ |
+| C | 1 min 12 s | ✘ |
+
+**SC-004: 2/3**. El paso más lento fue elegir la hora de inicio y la de fin. El responsable decide **mantener el criterio y mejorar la interfaz** (converge-3, T023) y repetir la medición.
+
+### Iteración converge-3 → T023 · 2026-11-05
+
+| # | Escenario | Esperado | Observado **antes** | Observado **después** | Resultado |
+|---|-----------|----------|---------------------|-----------------------|-----------|
+| 1 | `primerHueco` (dominio) | 5 casos del límite | ✘ función inexistente (4 failed) | 52/52 en dominio | ✔ |
+| 2 | e2e: elegir «Auditorio» (ocupado 10:00–10:30) | horas propuestas 09:00–10:00; lo escrito (12:00) se respeta al cambiar de sala | ✘ `Expected "09:00" · Received ""` (sin el cambio de interfaz) | Igual que lo esperado | ✔ |
+
+**Regresión**: dominio 52/52 · integración 183/183 · e2e **49/49** · lint, typecheck y build ✔.
+
+**Pendiente**: repetir la medición de SC-004 con la interfaz nueva (como mínimo la persona C) para cerrar T022 (issue #3).
+
+### Nueva medición de SC-004 con la interfaz de T023 · 2026-11-05
+
+Mismas personas y mismo procedimiento; ahora, al elegir sala, se proponen las horas del primer hueco libre.
+
+| Persona | Antes (sin T023) | Después (con T023) | < 1 min |
+|---------|------------------|--------------------|---------|
+| A | 42 s | 42 s | ✔ |
+| B | 58 s | 58 s | ✔ |
+| C | 1 min 12 s | 59 s | ✔ |
+
+**SC-004: 3/3 ✔** con la interfaz nueva. T022 cerrada. El margen de C es pequeño (1 s), así que conviene repetir la medición si el formulario cambia.

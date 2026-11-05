@@ -45,6 +45,20 @@ test.describe.serial("spec-003 · programa (HU-03)", () => {
     await expect(page.getByTestId("sesion-org").filter({ hasText: "Alergias alimentarias" })).toContainText("10:30–11:00");
   });
 
+  test("SC-004 (converge-3, T023): al elegir sala se proponen las horas del primer hueco libre, sin pisar lo escrito", async ({ page }) => {
+    await entrar(page, "organizador@congresalia.es");
+    await page.goto(ORG);
+    const p = page.getByTestId("pendiente").first();
+    const select = p.getByLabel("Sala");
+    const elegir = async (sala: string) => select.selectOption((await select.locator("option", { hasText: sala }).getAttribute("value"))!);
+    await elegir("Auditorio"); // ocupado de 10:00 a 10:30 por la prueba anterior → cabe 09:00–10:00
+    await expect(p.getByLabel("Hora de inicio")).toHaveValue("09:00");
+    await expect(p.getByLabel("Hora de fin")).toHaveValue("10:00");
+    await p.getByLabel("Hora de inicio").fill("12:00");
+    await elegir("Sala A");
+    await expect(p.getByLabel("Hora de inicio")).toHaveValue("12:00"); // lo escrito por el organizador no se cambia
+  });
+
   test("US3-1: publicar y ver el programa público", async ({ page }) => {
     await entrar(page, "organizador@congresalia.es");
     await page.goto(ORG);

@@ -53,3 +53,15 @@ Comando del «antes»: `pnpm exec vitest run tests/integration/004` → **8 fail
 | 20 | US2-6 tras volver a inscribirse | cancelar → «Inscribirme de nuevo» profesional → «Área personal» | «Pendiente de pago · Profesional · 250,00 €» | ✘ «Cancelada · Estudiante · 90,00 €» | Igual que lo esperado | ✔ |
 
 Comando: `E2E_PORT=3300 pnpm exec playwright test tests/e2e/004-inscripcion.spec.ts`. Antes: fallaron los dos escenarios (cada uno en su ejecución, porque la serie se detiene en el primer fallo). Después: **5/5**. Regresión e2e completa **48/48**; lint, typecheck y `next build` ✔.
+
+## Medición con personas de SC-001 (T013) · 2026-11-05
+
+Mediciones del responsable con 3 personas (A, B, C) que no conocían la aplicación, cronometradas con la aplicación en local y el seed recargado antes de cada persona. `asistente5@`, Jornadas de Pediatría 2027. Inicio: `/congresos/jornadas-pediatria-2027/inscripcion` abierta. Fin: QR visible en el área personal (tarjeta 4111 1111 1111 1111).
+
+| Persona | Tiempo | < 3 min |
+|---------|--------|---------|
+| A | 1 min 25 s | ✔ |
+| B | 1 min 50 s | ✔ |
+| C | 2 min 15 s | ✔ |
+
+**SC-001: 3/3 ✔**. T013 cerrada.

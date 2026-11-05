@@ -30,3 +30,15 @@ dominio 34/34 · integración 50/50 (000-core 22 + spec-002 28) · e2e 14/14 (00
 ## Estimación KLM (SC-003 < 2 min) · 2026-11-04
 
 Medición con persona real **todavía pendiente**. Mientras tanto, estimación con el *Keystroke-Level Model* sobre la interfaz real ([informe](../../000-core/informes/estimacion-klm.md), script `apps/web/tests/klm/estimar-klm.ts`): 58,7 s (medio) / 111,1 s (lento) ✔, de los que 29,7 s son leer la propuesta (99 palabras a 200 ppm). Con el perfil lento queda poco margen: el tiempo depende de leer y escribir, no de la interfaz.
+
+## Medición con personas de SC-003 (T020) · 2026-11-05
+
+Mediciones del responsable con 3 personas (A, B, C) que no conocían la aplicación, cronometradas con la aplicación en local y el seed recargado antes de cada persona. `comite1@`, propuesta «Uso racional de antibióticos…». Inicio: la asignación abierta. La persona avisa al terminar de leer el resumen. Fin: «Evaluación guardada».
+
+| Persona | Total | Lectura del resumen | Evaluación tras leer (SC-003) | < 2 min |
+|---------|-------|---------------------|-------------------------------|---------|
+| A | 2 min 05 s | 55 s | 1 min 10 s | ✔ |
+| B | 2 min 40 s | 1 min 20 s | 1 min 20 s | ✔ |
+| C | 2 min 50 s | 1 min 15 s | 1 min 35 s | ✔ |
+
+**SC-003: 3/3 ✔**. T020 cerrada.

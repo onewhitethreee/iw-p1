@@ -49,3 +49,25 @@ Comando del «antes»: `pnpm exec vitest run tests/integration/001/enviar.test.t
 
 **Regresión** (enunciado §5.4): dominio 42/42 · integración **170/170** (166 + 4) · e2e **47/47** (46 + 1, `E2E_PORT=3300`) · lint y typecheck sin errores · `next build` correcto. `prisma migrate diff` desde la BD hacia `schema.prisma` da una migración vacía: Prisma no intentará borrar el índice.
 
+## Medición con personas de SC-001 (T015) · 2026-11-05
+
+Mediciones del responsable con 3 personas (A, B, C) que no conocían la aplicación, cronometradas con la aplicación en local y el seed recargado antes de cada persona. Inicio: el formulario «Enviar propuesta» abierto (`ponente1@`). Fin: «Propuesta enviada.».
+
+| Persona | Resumen | Tiempo | Válida para SC-001 (clarify-3 P5) | Resultado |
+|---------|---------|--------|-----------------------------------|-----------|
+| A | pegado | 1 min 35 s | sí | ✔ |
+| B | tecleado | 2 min 48 s | no (referencia) | — |
+| C | tecleado | 3 min 22 s | no (referencia) | — |
+
+**Estado**: 1/1 medición válida bajo 3 min; faltan 2 con el resumen pegado para cerrar T015. Las mediciones tecleando confirman lo que anticipaba la estimación KLM (perfil lento > 180 s).
+
+### Segunda medición de SC-001 con el resumen pegado (clarify-3 P5) · 2026-11-05
+
+| Medición válida | Resumen | Tiempo | < 3 min |
+|-----------------|---------|--------|---------|
+| 1 (persona A) | pegado | 1 min 35 s | ✔ |
+| 2 | pegado | 2 min 23 s | ✔ |
+
+**Estado**: 2/2 mediciones válidas bajo 3 min. Para tener 3 personas como en el resto de criterios falta **1 medición más** pegando el resumen (issue #1).
+
+**Cierre (2026-11-05)**: el responsable da por suficientes las **2 mediciones válidas** (1:35 y 2:23, las dos bajo 3 min, con un margen de 37 s en la peor). Queda constancia de que SC-001 se ha medido con 2 personas, y no con 3 como los demás criterios. T015 cerrada.
