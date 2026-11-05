@@ -3,6 +3,7 @@
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { primerHueco } from "@congresalia/domain";
 import { Button } from "~/components/ui/button";
 import { Input, NativeSelect } from "~/components/ui/input";
 import { useTRPC } from "~/trpc/react";
@@ -35,8 +36,20 @@ function SelectorSala({ salas, value, onChange }: { salas: SalaOpcion[]; value: 
   );
 }
 
-/** spec-003 US1: sala + día + horas locales (clarify P2/P3). Las reglas las aplica el servidor. */
-export function FormularioProgramar({ propuestaId, salas, diaPorDefecto }: { propuestaId: string; salas: SalaOpcion[]; diaPorDefecto: string }) {
+/** Sesión ya programada, en horas locales del congreso (para proponer un hueco libre). */
+export interface Ocupada {
+  salaId: string;
+  dia: string;
+  inicio: string;
+  fin: string;
+}
+
+/**
+ * spec-003 US1: sala + día + horas locales (clarify P2/P3). Las reglas las aplica el servidor.
+ * SC-004 (converge-3): al elegir sala o día se proponen las horas del primer hueco libre de 60 min en esa sala,
+ * mientras el organizador no las haya escrito él.
+ */
+export function FormularioProgramar({ propuestaId, salas, diaPorDefecto, ocupadas }: { propuestaId: string; salas: SalaOpcion[]; diaPorDefecto: string; ocupadas: Ocupada[] }) {
   const router = useRouter();
   const trpc = useTRPC();
   const programar = useMutation(trpc.programa.programar.mutationOptions({ onSuccess: () => router.refresh() }));
@@ -44,13 +57,20 @@ export function FormularioProgramar({ propuestaId, salas, diaPorDefecto }: { pro
   const [dia, setDia] = useState(diaPorDefecto);
   const [horaInicio, setHoraInicio] = useState("");
   const [horaFin, setHoraFin] = useState("");
+  const [propuestas, setPropuestas] = useState(true); // false en cuanto el organizador escribe una hora
+  const proponer = (sala: string, d: string) => {
+    if (!propuestas || !sala) return;
+    const hueco = primerHueco(ocupadas.filter((o) => o.salaId === sala && o.dia === d));
+    setHoraInicio(hueco?.horaInicio ?? "");
+    setHoraFin(hueco?.horaFin ?? "");
+  };
   return (
     <div className="grid gap-1">
       <div className="flex flex-wrap items-center gap-2">
-        <SelectorSala salas={salas} value={salaId} onChange={setSalaId} />
-        <Input aria-label="Día" type="date" value={dia} onChange={(e) => setDia(e.target.value)} className="h-8 w-40 text-xs" />
-        <Input aria-label="Hora de inicio" type="time" value={horaInicio} onChange={(e) => setHoraInicio(e.target.value)} className="h-8 w-28 text-xs" />
-        <Input aria-label="Hora de fin" type="time" value={horaFin} onChange={(e) => setHoraFin(e.target.value)} className="h-8 w-28 text-xs" />
+        <SelectorSala salas={salas} value={salaId} onChange={(v) => { setSalaId(v); proponer(v, dia); }} />
+        <Input aria-label="Día" type="date" value={dia} onChange={(e) => { setDia(e.target.value); proponer(salaId, e.target.value); }} className="h-8 w-40 text-xs" />
+        <Input aria-label="Hora de inicio" type="time" value={horaInicio} onChange={(e) => { setPropuestas(false); setHoraInicio(e.target.value); }} className="h-8 w-28 text-xs" />
+        <Input aria-label="Hora de fin" type="time" value={horaFin} onChange={(e) => { setPropuestas(false); setHoraFin(e.target.value); }} className="h-8 w-28 text-xs" />
         <Button size="sm" disabled={!salaId || !horaInicio || !horaFin || programar.isPending} onClick={() => programar.mutate({ propuestaId, salaId, dia, horaInicio, horaFin })}>
           Programar
         </Button>

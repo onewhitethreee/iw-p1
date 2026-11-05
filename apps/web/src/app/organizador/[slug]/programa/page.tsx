@@ -9,7 +9,7 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
 import { api } from "~/trpc/server";
-import { AccionesSesion, FormularioProgramar, PublicarPrograma, type SalaOpcion } from "./acciones";
+import { AccionesSesion, FormularioProgramar, PublicarPrograma, type Ocupada, type SalaOpcion } from "./acciones";
 
 export const metadata: Metadata = { title: "Programa" };
 export const dynamic = "force-dynamic";
@@ -31,6 +31,7 @@ export default async function ProgramaOrganizadorPage({ params }: { params: Prom
   const finalizado = congresoFinalizado(c, ahora);
   const salas: SalaOpcion[] = c.salas.map((s) => ({ id: s.id, nombre: s.nombre, aforo: s.aforo }));
   const primerDia = diaLocal(c.inicio, z);
+  const ocupadas: Ocupada[] = sesiones.map((s) => ({ salaId: s.sala.id, dia: diaLocal(s.inicio, z), inicio: hora(s.inicio, z), fin: hora(s.fin, z) }));
   const porDia = new Map<string, typeof sesiones>();
   for (const s of sesiones) {
     const d = diaLocal(s.inicio, z);
@@ -77,7 +78,7 @@ export default async function ProgramaOrganizadorPage({ params }: { params: Prom
                   <span className="font-medium">{p.titulo}</span>
                   <span className="text-sm text-muted-foreground"> · {p.autor.nombre} · {p.area.nombre}</span>
                 </div>
-                <FormularioProgramar propuestaId={p.propuestaId} salas={salas} diaPorDefecto={primerDia} />
+                <FormularioProgramar propuestaId={p.propuestaId} salas={salas} diaPorDefecto={primerDia} ocupadas={ocupadas} />
               </div>
             ))}
           </CardContent>

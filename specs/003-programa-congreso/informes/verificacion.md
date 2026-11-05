@@ -41,3 +41,14 @@ Mediciones del responsable con 3 personas (A, B, C) que no conocían la aplicaci
 | C | 1 min 12 s | ✘ |
 
 **SC-004: 2/3**. El paso más lento fue elegir la hora de inicio y la de fin. El responsable decide **mantener el criterio y mejorar la interfaz** (converge-3, T023) y repetir la medición.
+
+### Iteración converge-3 → T023 · 2026-11-05
+
+| # | Escenario | Esperado | Observado **antes** | Observado **después** | Resultado |
+|---|-----------|----------|---------------------|-----------------------|-----------|
+| 1 | `primerHueco` (dominio) | 5 casos del límite | ✘ función inexistente (4 failed) | 52/52 en dominio | ✔ |
+| 2 | e2e: elegir «Auditorio» (ocupado 10:00–10:30) | horas propuestas 09:00–10:00; lo escrito (12:00) se respeta al cambiar de sala | ✘ `Expected "09:00" · Received ""` (sin el cambio de interfaz) | Igual que lo esperado | ✔ |
+
+**Regresión**: dominio 52/52 · integración 183/183 · e2e **49/49** · lint, typecheck y build ✔.
+
+**Pendiente**: repetir la medición de SC-004 con la interfaz nueva (como mínimo la persona C) para cerrar T022 (issue #3).
