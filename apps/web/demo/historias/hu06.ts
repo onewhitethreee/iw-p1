@@ -27,10 +27,10 @@ export const hu06: Historia = {
   id: "hu06",
   hu: "HU-06",
   titulo: "Controlar el acceso a la sala con QR",
-  /** Cámara simulada de Chromium que «enseña» el QR de Asistente 2. */
+  /** Cámara simulada de Chromium que «enseña» el QR de Asistente demo 3 (Asistente 2 ya está en otra sala a esa hora). */
   async preparar() {
     const png = join(tmpdir(), "congresalia-demo-qr.png");
-    await QRCode.toFile(png, await codigoDe("asistente2@congresalia.es", EDU), { width: 210, margin: 2 });
+    await QRCode.toFile(png, await codigoDe("demo03@congresalia.es", EDU), { width: 210, margin: 2 });
     execFileSync("ffmpeg", ["-v", "error", "-y", "-loop", "1", "-i", png, "-t", "4", "-r", "10", "-vf", "scale=210:210,pad=640:480:(ow-iw)/2:(oh-ih)/2:white,format=yuv420p", CAMARA]);
     return { args: [`--use-file-for-fake-video-capture=${CAMARA}`] };
   },
@@ -48,9 +48,9 @@ export const hu06: Historia = {
       "Ocupación de la sala actualizada en la puerta",
     ]);
 
-    // Acreditación de Asistente 2
-    await e.entrar("asistente2@congresalia.es");
-    await e.escenario("Previo", "La acreditación del asistente", "Asistente 2 tiene su inscripción confirmada: en su área personal está su QR y el código impreso debajo.");
+    // Acreditación de Asistente demo 3
+    await e.entrar("demo03@congresalia.es");
+    await e.escenario("Previo", "La acreditación del asistente", "Asistente demo 3 tiene su inscripción confirmada: en su área personal está su QR y el código impreso debajo.");
     await e.clic(p.getByRole("link", { name: "Área personal" }), 1000);
     await e.resaltar(p.getByTestId("inscripcion").filter({ hasText: "Innovación Educativa" }), 3000);
 
@@ -62,7 +62,7 @@ export const hu06: Historia = {
     await e.resaltar(p.getByTestId("sesion-acreditacion").filter({ hasText: "Aprendizaje basado en proyectos" }), 1800);
 
     // ── US1-1 con la cámara
-    await e.escenario("US1-1", "Escanear un QR válido con la cámara", "Asistente 2 enseña su QR: «Admitido», con su nombre; se registra la asistencia y la ocupación sube.");
+    await e.escenario("US1-1", "Escanear un QR válido con la cámara", "Asistente demo 3 enseña su QR: «Admitido», con su nombre; se registra la asistencia y la ocupación sube.");
     await e.clic(p.getByTestId("sesion-acreditacion").filter({ hasText: "Aprendizaje basado en proyectos" }).getByRole("link", { name: "Aprendizaje basado en proyectos en secundaria" }), 1200);
     await e.resaltar(ocupacion, 1500);
     await e.clic(p.getByRole("button", { name: "Escanear con la cámara" }), 300);
@@ -83,6 +83,13 @@ export const hu06: Historia = {
     await validar(e, `  ${a3}  `);
     await e.resaltar(resultado, 2200);
     await e.resaltar(ocupacion, 1800);
+
+    // ── US1-8 (clarify-3 P4)
+    await e.escenario("US1-8", "Nadie está en dos sesiones a la vez", "Asistente 2 ya entró en «Rúbricas compartidas…» (Aula 3), que se celebra a la misma hora: no puede entrar también en el Auditorio.");
+    await validar(e, await codigoDe("asistente2@congresalia.es", EDU));
+    await e.resaltar(resultado, 2600);
+    await e.resaltar(ocupacion, 1500);
+    await e.narrar("No se registra la asistencia ni se ocupa plaza. En una sesión que empiece cuando acaba la otra, sí podría entrar.", 2000);
 
     // ── US2-1
     await e.escenario("US2-1", "Otra puerta de la misma sala", "Por otra puerta del Auditorio entra otra asistente. Sin recargar, esta pantalla actualiza la ocupación en pocos segundos.");
@@ -121,12 +128,39 @@ export const hu06: Historia = {
     await e.resaltar(resultado, 2400);
 
     // ── US1-2
-    await e.escenario("US1-2", "Sala con el aforo completo", "«Rúbricas compartidas…» se celebra en el Aula 3 (aforo 2) y ya hay 2 personas dentro.");
+    await e.escenario("US1-2", "Sala con el aforo completo", "«Rúbricas compartidas…» se celebra en el Aula 3 (aforo 2) y ya hay 2 personas dentro. Llega Asistente demo 4.");
     await abrirPuerta(e, "Rúbricas compartidas entre departamentos");
     await e.resaltar(ocupacion, 1500);
-    await validar(e, a3);
+    await validar(e, await codigoDe("demo04@congresalia.es", EDU));
     await e.resaltar(resultado, 2200);
     await e.resaltar(ocupacion, 1500);
+
+    // ── US1-9 (spec-005 clarify-2 P2): las reservas no presentadas se liberan a los 10 min
+    await e.escenario("US1-9", "Plazas reservadas de quien no se presenta", "«Competencia digital docente» (Aula 3, aforo 2) tiene sus 2 plazas reservadas y nadie ha entrado. Llega Asistente demo 5, sin reserva.");
+    const competencia = await db.sesion.findFirstOrThrow({ where: { propuesta: { titulo: "Competencia digital docente" } } });
+    const extra = await db.inscripcion.findFirstOrThrow({ where: { usuario: { email: "demo06@congresalia.es" }, congreso: { slug: EDU } } });
+    const reservaExtra = await db.entradaAgenda.create({ data: { inscripcionId: extra.id, sesionId: competencia.id } });
+    const mover = (minDesdeInicio: number) =>
+      db.sesion.update({ where: { id: competencia.id }, data: { inicio: new Date(Date.now() - minDesdeInicio * 60_000), fin: new Date(Date.now() + (60 - minDesdeInicio) * 60_000) } });
+    await mover(5);
+    await e.aviso("Dato preparado en BD: la sesión empezó hace 5 minutos y tiene 2 reservas (Asistente 1 y Asistente demo 6)");
+    const a5 = await codigoDe("demo05@congresalia.es", EDU);
+    await abrirPuerta(e, "Competencia digital docente");
+    await e.resaltar(ocupacion, 1400);
+    await validar(e, a5);
+    await e.resaltar(resultado, 2400);
+    await e.narrar("Durante los primeros 10 minutos, las plazas reservadas siguen guardadas para quien reservó.", 1800);
+    await mover(11);
+    await e.aviso("Dato preparado en BD: ahora la sesión empezó hace 11 minutos");
+    await e.pausa(1200);
+    await validar(e, a5);
+    await e.resaltar(resultado, 2400);
+    await e.resaltar(ocupacion, 1600);
+    await e.narrar("Pasados 10 minutos, quien no se ha presentado pierde la plaza; la sesión sigue en su agenda.", 2000);
+    await db.asistencia.deleteMany({ where: { sesionId: competencia.id } });
+    await db.entradaAgenda.delete({ where: { id: reservaExtra.id } });
+    await db.sesion.update({ where: { id: competencia.id }, data: { inicio: competencia.inicio, fin: competencia.fin } });
+    await e.aviso(null);
 
     // ── Sin conexión
     await e.escenario("Sin red", "Se cae la conexión", "La validación avisa en español y la ocupación se marca «sin actualizar»; al volver la red, todo se recupera.");

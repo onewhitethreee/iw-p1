@@ -40,6 +40,19 @@ export const hu01: Historia = {
     await e.resaltar(p.getByText("Propuesta enviada."), 1500);
     await e.resaltar(p.getByTestId("fila-propuesta").first(), 2600);
 
+    // ── US1-7 (clarify-2 P4)
+    await e.escenario("US1-7", "La misma propuesta dos veces", "Pablo vuelve a enviar el mismo título (en minúsculas y con espacios): el sistema no guarda una copia que el comité tendría que evaluar dos veces.");
+    await e.ir("/ponente/enviar", 800);
+    await e.elegir(p.getByLabel("Congreso"), { contiene: "Jornadas de Pediatría 2027" });
+    await e.elegir(p.getByLabel("Área temática"), { contiene: "Neonatología" });
+    await e.escribir(p.getByLabel("Título"), "  cribado auditivo neonatal: tres años de resultados ");
+    await e.rellenar(p.getByLabel("Resumen"), RESUMEN);
+    await e.clic(p.getByRole("button", { name: "Enviar propuesta" }), 1200);
+    await e.resaltar(p.getByRole("alert").filter({ hasText: "Ya has enviado una propuesta con este título a este congreso" }), 2600);
+    await e.ir("/ponente", 900);
+    await e.resaltar(p.getByTestId("fila-propuesta").filter({ hasText: "Cribado auditivo neonatal" }), 2000);
+    await e.narrar("Sigue habiendo una sola. El mismo título en otro congreso sí se admitiría.", 1800);
+
     // ── US1-4
     await e.escenario("US1-4", "Formulario con datos no válidos", "Sin área y con un resumen demasiado corto: el formulario señala cada campo y no se envía nada.");
     await e.ir("/ponente/enviar", 800);

@@ -1,4 +1,4 @@
-import { idCongreso } from "../lib/db";
+import { db, idCongreso } from "../lib/db";
 import type { Escena } from "../lib/escena";
 import type { Historia } from "../lib/tipos";
 
@@ -59,6 +59,25 @@ export const hu07: Historia = {
     await p.mouse.move(720, 400);
     for (let i = 0; i < 4; i++) await e.desplazar(260, 1100);
     await e.pausa(1500);
+
+    // ── US1-8 (clarify-2 P3)
+    await e.escenario("US1-8", "Sesiones que se solapan por un cambio del programa", "Si la organización mueve una sesión de su agenda y se solapa con otra, Asistente 1 no puede ir a las dos: cuentan como una.");
+    const ins = await db.inscripcion.findFirstOrThrow({
+      where: { usuario: { email: "asistente1@congresalia.es" }, congresoId: simposio },
+      include: { agenda: { include: { sesion: { include: { propuesta: { select: { titulo: true } } } } } }, asistencias: true },
+    });
+    const fue = new Set(ins.asistencias.map((a) => a.sesionId));
+    const falta = ins.agenda.find((x) => !fue.has(x.sesionId))!.sesion;
+    const otra = ins.agenda.find((x) => fue.has(x.sesionId))!.sesion;
+    await db.sesion.update({ where: { id: falta.id }, data: { inicio: new Date(otra.inicio.getTime() + 30 * 60_000), fin: new Date(otra.fin.getTime() + 30 * 60_000) } });
+    await e.aviso(`Dato preparado en BD: «${falta.propuesta.titulo}» se movió y ahora se solapa con «${otra.propuesta.titulo}»`);
+    await e.ir("/area-personal", 600);
+    await abrir(e, "Simposio de Salud Digital 2026");
+    await e.resaltar(p.getByTestId("porcentaje"), 2400);
+    await e.resaltar(p.getByText("Las sesiones de tu agenda que se solapan cuentan como una."), 2600);
+    await e.narrar("5 sesiones en la agenda, pero 4 turnos: asistió a los 4 (100 %). Antes contaban las dos y se quedaba en 4 de 5.", 2400);
+    await db.sesion.update({ where: { id: falta.id }, data: { inicio: falta.inicio, fin: falta.fin } });
+    await e.aviso(null);
 
     // ── US1-4
     await e.escenario("US1-4", "Congreso que aún no ha terminado", "En el Congreso de Innovación Educativa (en curso) ve su porcentaje provisional y cuándo estará disponible.");
