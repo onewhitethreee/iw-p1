@@ -52,3 +52,15 @@ Mediciones del responsable con 3 personas (A, B, C) que no conocían la aplicaci
 **Regresión**: dominio 52/52 · integración 183/183 · e2e **49/49** · lint, typecheck y build ✔.
 
 **Pendiente**: repetir la medición de SC-004 con la interfaz nueva (como mínimo la persona C) para cerrar T022 (issue #3).
+
+### Nueva medición de SC-004 con la interfaz de T023 · 2026-11-05
+
+Mismas personas y mismo procedimiento; ahora, al elegir sala, se proponen las horas del primer hueco libre.
+
+| Persona | Antes (sin T023) | Después (con T023) | < 1 min |
+|---------|------------------|--------------------|---------|
+| A | 42 s | 42 s | ✔ |
+| B | 58 s | 58 s | ✔ |
+| C | 1 min 12 s | 59 s | ✔ |
+
+**SC-004: 3/3 ✔** con la interfaz nueva. T022 cerrada. El margen de C es pequeño (1 s), así que conviene repetir la medición si el formulario cambia.

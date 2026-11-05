@@ -161,7 +161,7 @@ US1 (MVP: montar el programa) → US2 (ajustes) → US3 (publicación y SEO) →
 ## Phase 7: Convergence
 
 - [x] T021 Documentar en `specs/003-programa-congreso/plan.md` (decisión 7) las dos protecciones SEO que el código añade sin estar previstas —`noindex` de la página pública mientras el programa está en borrador (`apps/web/src/app/congresos/[slug]/programa/page.tsx`) y `Disallow: /entrar` y `/registro` en `apps/web/src/app/robots.ts`— y su motivo, o retirarlas per plan: decisión 7 (unrequested)
-- [ ] T022 Medir con una persona real el tiempo para programar una ponencia desde `/organizador/[slug]/programa` (objetivo < 1 min) y registrarlo en `specs/003-programa-congreso/informes/verificacion.md` per SC-004 (partial) · **2026-11-04**: estimación KLM registrada en `verificacion.md` ([informe](../000-core/informes/estimacion-klm.md)); sigue abierta hasta la medición real · **2026-11-05**: medido con 3 personas: 42 s ✔, 58 s ✔, **1:12 ✘**. Se corrige la interfaz (converge-3 → T023) y se repite la medición (issue #3)
+- [X] T022 Medir con una persona real el tiempo para programar una ponencia desde `/organizador/[slug]/programa` (objetivo < 1 min) y registrarlo en `specs/003-programa-congreso/informes/verificacion.md` per SC-004 (partial) · **2026-11-04**: estimación KLM registrada en `verificacion.md` ([informe](../000-core/informes/estimacion-klm.md)); sigue abierta hasta la medición real · **2026-11-05**: medido con 3 personas: 42 s ✔, 58 s ✔, **1:12 ✘**. Se corrige la interfaz (converge-3 → T023) y se repite la medición (issue #3) · **2026-11-05 (2.ª medición, con T023)**: 42 s, 58 s y 59 s → 3/3 ✔ (issue #3)
 
 ## Convergencia tras la medición con personas (converge-3, 2026-11-05)
 

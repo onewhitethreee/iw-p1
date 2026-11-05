@@ -60,3 +60,12 @@ Mediciones del responsable con 3 personas (A, B, C) que no conocían la aplicaci
 | C | tecleado | 3 min 22 s | no (referencia) | — |
 
 **Estado**: 1/1 medición válida bajo 3 min; faltan 2 con el resumen pegado para cerrar T015. Las mediciones tecleando confirman lo que anticipaba la estimación KLM (perfil lento > 180 s).
+
+### Segunda medición de SC-001 con el resumen pegado (clarify-3 P5) · 2026-11-05
+
+| Medición válida | Resumen | Tiempo | < 3 min |
+|-----------------|---------|--------|---------|
+| 1 (persona A) | pegado | 1 min 35 s | ✔ |
+| 2 | pegado | 2 min 23 s | ✔ |
+
+**Estado**: 2/2 mediciones válidas bajo 3 min. Para tener 3 personas como en el resto de criterios falta **1 medición más** pegando el resumen (issue #1).
